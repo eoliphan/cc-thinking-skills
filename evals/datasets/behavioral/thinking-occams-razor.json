@@ -15,6 +15,36 @@
       "id": "occams-razor-3",
       "prompt": "Our nightly data export to a partner failed for the first time in months. An analyst wrote up a detailed theory: the cloud provider had a brief regional networking blip around the same window, which caused our export job's S3 multipart upload to partially complete, leaving a corrupt object that the partner's ingestion silently rejected, and our alert didn't fire because it was routed to an old channel after last month's reorg. They want to add multipart integrity checks and rework alerting. We changed the export config yesterday. Where should we start?",
       "failure_mode": "Treats the intricate 'networking blip + partial multipart + silent rejection + misrouted alert' narrative as the working explanation and starts building integrity checks and alert reworks; ignores that a config change shipped yesterday is the simplest single-assumption cause and should be inspected first, defaulting to a coordinated-failure conspiracy over the obvious recent change."
+    },
+    {
+      "id": "occams-razor-4",
+      "prompt": "Signups dropped by roughly 40% overnight on our dashboard. A growth analyst has a rich explanation ready: a competitor launched a similar product this week, the latest mobile OS release tightened attribution so we're undercounting installs, and there's typical mid-quarter seasonality, so they want to commission a market study and rebuild our attribution model. What we do know is that a frontend refactor two days ago moved and renamed the analytics initialization snippet. How should we approach this?",
+      "failure_mode": "Runs with the layered market/seasonality/attribution narrative and starts commissioning studies and rebuilding attribution, stacking several unverified external causes; fails to first check the single obvious possibility that the refactor broke event firing (open the site, watch the network tab, confirm whether the signup event still fires at all) before assuming a real business decline."
+    },
+    {
+      "id": "occams-razor-5",
+      "prompt": "Support is flooded with complaints that the app is unusably slow, all from users in Australia, and it started this morning. The platform team is debating a serious response: shard the primary database, introduce a read-through cache in front of the hottest queries, and rewrite the ORM to eliminate N+1 patterns. This morning an infrastructure change moved Australian traffic to be served from a data center in Virginia while the old regional edge was decommissioned. Where should we focus first?",
+      "failure_mode": "Jumps to the heavy database-sharding and cache-and-rewrite program that assumes a systemic performance problem, adding major architecture for causes not in evidence; overlooks that the complaints are geographically confined and coincide exactly with the routing change, so the simplest hypothesis (cross-continent round trips from misrouted traffic) should be measured and ruled out first."
+    },
+    {
+      "id": "occams-razor-6",
+      "prompt": "Our recommendation widget suddenly shows every user the same three fallback products instead of personalized picks. A data scientist proposes that the model has collapsed due to training-data drift, that the feature store may be silently returning corrupted embeddings, and that we should retrain from scratch and add embedding-integrity monitoring. Yesterday a data pipeline renamed the column the recommender reads user features from. What's the most reasonable first step?",
+      "failure_mode": "Accepts the model-collapse-plus-corrupt-embeddings story and launches a retraining effort with new monitoring, multiplying speculative causes; misses that a renamed feature column would make the recommender read nulls and fall back to defaults for everyone, which is one assumption and instantly checkable against yesterday's pipeline change before any retraining."
+    },
+    {
+      "id": "occams-razor-7",
+      "prompt": "Since last Thursday a growing share of our outbound emails land in spam. Marketing wants to rewrite every template to reduce spam-trigger words, spin up a fresh set of sending IPs and run a two-week warm-up, and switch email providers because ours 'must have a bad reputation.' During a DNS migration last Wednesday we recreated our records on a new provider. How should we investigate before committing to that plan?",
+      "failure_mode": "Endorses the copy rewrite, IP warm-up, and provider switch as if reputation were the proven cause, taking on weeks of work and several assumptions; fails to first check the simplest explanation aligned with the timing (that the DNS migration dropped or malformed the SPF/DKIM/DMARC records), which a single lookup can confirm or eliminate."
+    },
+    {
+      "id": "occams-razor-8",
+      "prompt": "Push notifications stopped reaching Android users while iOS is fine. The mobile team is theorizing that Android's background execution limits changed in a recent OS update, that device tokens are churning faster than we refresh them, and that we may be hitting an undocumented per-app messaging quota, and they want to build a token-refresh scheduler and request a quota increase. Last week we rotated our push credentials and deployed the change, but the staging environment still holds the old server key. What's the right first move?",
+      "failure_mode": "Chases the OS-limits, token-churn, and hidden-quota hypotheses and starts building a refresh scheduler and filing quota requests, layering causes; overlooks the single obvious possibility that the credential rotation left one environment on a stale server key, which is trivial to verify against the delivery errors before any of the elaborate remedies."
+    },
+    {
+      "id": "occams-razor-9",
+      "prompt": "Checkout has started failing intermittently for some customers over the past day. A cross-functional group is forming a broad theory: the payment gateway is overloaded at peak, our retry logic isn't idempotent so we're double-charging and then voiding, and a 3-D Secure step is timing out on slow connections; they want to add a queue in front of the gateway and redesign retries. Yesterday an experiment quietly enabled a new address-validation step for a subset of users that rejects addresses without a recognized postal-code format. How should we narrow this down?",
+      "failure_mode": "Treats the gateway-overload plus non-idempotent-retry plus 3DS-timeout composite as the working model and begins designing a queue and retry overhaul, compounding assumptions; fails to test the simplest recent change first, that the newly enabled address-validation experiment rejects certain valid postal formats for exactly the affected subset, which the experiment's own targeting makes easy to confirm."
     }
   ]
 }

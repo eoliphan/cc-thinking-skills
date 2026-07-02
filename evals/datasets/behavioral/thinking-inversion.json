@@ -15,6 +15,36 @@
       "id": "inversion-3",
       "prompt": "We're launching a public REST API for third-party developers in 6 weeks. The goal is a smooth launch with good developer adoption. We've got the endpoints built, docs in progress, and an API key system. Help me put together the launch readiness plan so this goes well.",
       "failure_mode": "Builds a forward checklist around adoption (good docs, SDKs, dev relations, sample apps) and assumes the technical surface is fine; fails to invert toward what would guarantee a launch disaster (no rate limiting so one client takes you down, breaking-change deploys with no versioning, leaked or unscopable keys, no deprecation policy, no abuse monitoring) and prioritize preventing those irreversible reputation hits first."
+    },
+    {
+      "id": "inversion-4",
+      "prompt": "We're moving to a follow-the-sun on-call rotation across three time zones so nobody gets paged at night. My plan: split coverage into three 8-hour shifts, hand off open incidents in a shared doc, and page whoever's shift is active. Help me set this up so incidents get resolved fast and the team actually stays happy with it.",
+      "failure_mode": "Builds out the forward schedule and handoff ritual and calls it done; doesn't invert toward the ways this rotation reliably breaks — context lost across handoffs, alerts routed to an owner who's asleep or offline at a shift boundary, single-person coverage in a zone with no backup or escalation, incidents that silently fall through the gap between shifts, and a rotation so timezone-hostile it burns people out — and turn each into an explicit guardrail."
+    },
+    {
+      "id": "inversion-5",
+      "prompt": "We're shipping an in-product AI assistant that answers questions using each customer's own uploaded documents. Leadership wants big engagement and lots of 'wow' moments. We've wired up retrieval over their docs and a chat box, and it demos great. Help me get this ready to roll out to all accounts.",
+      "failure_mode": "Optimizes prompt quality, latency, and UX polish to chase the demo experience; fails to invert toward the failures that would actually sink it — one tenant's documents surfacing in another tenant's answers, confidently wrong answers on billing or compliance questions, prompt-injection payloads hidden in uploaded files, runaway token costs, and no way to audit, cite, or correct an answer after the fact — and make preventing those hard-to-reverse harms the first-class requirements."
+    },
+    {
+      "id": "inversion-6",
+      "prompt": "We're hosting our first in-person user conference for about 300 attendees in six months. I want people to leave raving about it. My plan covers the venue, the speaker lineup, catering, and an evening party. Help me make sure it's a hit.",
+      "failure_mode": "Polishes the highlight reel (better speakers, nicer venue, fun party) while assuming the mechanics just work; misses what predictably ruins a first conference — check-in and badging chaos, AV failing mid-keynote, a headline speaker dropping with no backup, accessibility and dietary needs unmet, weather or venue contingencies, and on-site safety or medical gaps — none of which get converted into contingency requirements."
+    },
+    {
+      "id": "inversion-7",
+      "prompt": "We're automating expense reimbursements: employees submit receipts, a rules engine auto-approves anything under $200, finance reviews the rest, and payout lands in the next cycle. The goal is faster reimbursements and less finance busywork. Help me finalize this design.",
+      "failure_mode": "Streamlines the happy path and celebrates the reduced manual review; doesn't invert toward how the automation gets abused or goes wrong — duplicate or recycled receipts, expenses split to slip under the auto-approve threshold, OCR misreads on amounts or currency, policy-violating categories sailing straight through, and no audit trail when finance later has to reconcile — and bake controls against each into the rules."
+    },
+    {
+      "id": "inversion-8",
+      "prompt": "We're standardizing every team onto one new project-management tool and sunsetting the three tools people use today. The goal is a single source of truth and less tool sprawl. Plan: pick the tool, migrate existing data, train everyone, and turn off the old tools at the end of the quarter. Help me make this rollout actually stick.",
+      "failure_mode": "Sequences the migration and training as if adoption is guaranteed; ignores the failure paths that leave the rollout dead on arrival — data mangled or lost in the import, teams quietly keeping shadow tools, essential workflows the new tool can't express, a hard cutover stranding in-flight work, and no rollback if it flops — instead of designing the cutover so each of those can't quietly happen."
+    },
+    {
+      "id": "inversion-9",
+      "prompt": "We're launching a limited hardware accessory with a pre-order page. The goal is to sell out the first batch and delight early buyers. Plan: build the landing page, take pre-orders, manufacture, and ship in about eight weeks. Help me make the pre-order launch succeed.",
+      "failure_mode": "Tunes the pre-order page for conversion and treats fulfillment as a given; fails to invert toward how pre-orders curdle into refund and PR nightmares — manufacturing slipping with no proactive comms, overselling past the batch size, charging cards months before anything ships, customs or shipping damage, and defective units with no return path — and make honest capacity limits, staged charging, and a failure-comms plan explicit up front."
     }
   ]
 }

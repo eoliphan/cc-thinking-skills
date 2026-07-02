@@ -11,7 +11,9 @@
 
 **The mission produced ZERO robust-ELEVATE skills.** No skill met the full ELEVATE bar (≥5pp lift on its primary value surface, passes paired test at p<0.05, AND replicates on a fresh independent sample in the same direction). The strongest candidate — `scientific-method` — finished **DIRECTIONAL-NOT-REPLICATED**. Its M5 fresh primary scored +5.3pp, p=0.061, post-edit, directional, NOT replicated (fails the p<0.05 gate). Its replication was significant (+8.0pp, p=0.001, post-edit, significant, replication-sample that does NOT rescue the failed primary → skill-level NOT replicated), but a successful replication cannot rescue a primary that fails the paired-test gate.
 
-This is an honest, evidence-backed conclusion. The mission deliberately did NOT chase significance by enlarging samples after seeing borderline p-values (per documented anti-p-hacking decision 2026-06-07 in AGENTS.md). A properly pre-registered larger-N primary study for `scientific-method` is recommended as future work.
+> **✅ 2026-07-02 UPDATE:** the recommended pre-registered larger-N study was executed (`analysis/PRE-REGISTERED-VERDICT-STUDIES.md`, commit `7b35377`; artifact `evals/results/sci-method-larger-n/swe-scientific-method.json`). Result: n=426 on a fresh frozen SWE-bench Verified pool, **+4.0pp, McNemar p≈0.0005 — significant but below the 5pp gate → `scientific-method` is now DIRECTIONAL-ONLY** (verdict rule verbatim: p<0.05 AND Δ<5pp). The lift is real (third same-direction result) but its best estimate is ~4pp. ZERO skills hold ELEVATE. Companion confirmations: `five-whys-plus` NO-LIFT (n=199, +1.5pp p=0.546) and `occams-razor` NO-LIFT (n=199, +0.5pp p=1.0) on fresh disjoint Verified slices.
+
+This is an honest, evidence-backed conclusion. The mission deliberately did NOT chase significance by enlarging samples after seeing borderline p-values (per documented anti-p-hacking decision 2026-06-07 in AGENTS.md). The properly pre-registered larger-N primary study recommended here as future work **has since been run — see the 2026-07-02 update above.**
 
 ---
 
@@ -29,7 +31,7 @@ Skills where primary showed a positive signal but failed the replication gate (e
 
 | Skill | Primary | Replication | Status |
 |-------|---------|-------------|--------|
-| **scientific-method** | +5.3pp, p=0.061 (n=150, post-edit, directional, not replicated) | +8.0pp, p=0.001 (n=150, post-edit, significant, not replicated) | Primary fails p<0.05 gate; replication significant same-direction but cannot rescue. **Downgraded from ELEVATE. No skill currently holds ELEVATE.** |
+| **scientific-method** | +5.3pp, p=0.061 (n=150, post-edit, directional, not replicated) | +8.0pp, p=0.001 (n=150, post-edit, significant, not replicated) | Primary fails p<0.05 gate; replication significant same-direction but cannot rescue. **Downgraded from ELEVATE.** _2026-07-02: pre-registered larger-N (n=426, fresh Verified pool) gave **+4.0pp p≈0.0005 → DIRECTIONAL-ONLY** — significant, sub-5pp. No skill holds ELEVATE._ |
 
 ### 1.3 TRIGGER-ONLY — None Currently Verified
 
@@ -183,8 +185,8 @@ Each skill carries exactly one measured verdict below. These categories are mutu
 | Verdict Category | Count | Skills |
 |------------------|-------|--------|
 | **robust-ELEVATE** | **0** | — (ZERO skills achieved ELEVATE; mission outcome) |
-| **DIRECTIONAL-NOT-REPLICATED** | 1 | `scientific-method` (primary +5.3pp p=0.061 post-edit directional not replicated fails gate; replication +8.0pp p=0.001 post-edit significant not replicated cannot rescue) |
-| **NO-LIFT** | 6 | `red-team`, `systems`, `five-whys-plus`, `occams-razor`, `archetypes`, `fermi-estimation` |
+| **DIRECTIONAL-ONLY** (2026-07-02, was DIRECTIONAL-NOT-REPLICATED) | 1 | `scientific-method` (pre-registered larger-N n=426: +4.0pp p≈0.0005 significant, Δ<5pp gate; prior M5 +5.3pp p=0.061 / repl +8.0pp p=0.001) |
+| **NO-LIFT** | 6 | `red-team`, `systems`, `five-whys-plus` (reconfirmed 2026-07-02: n=199 +1.5pp p=0.546), `occams-razor` (reconfirmed 2026-07-02: n=199 +0.5pp p=1.0), `archetypes`, `fermi-estimation` |
 | **NO-LIFT (exploratory)** | 2 | `kepner-tregoe`, `map-territory` (surface-mismatch) |
 | **CEILING-NEEDS-HARDER-DATA** | 7 | `first-principles`, `cynefin`, `theory-of-constraints`, `reversibility`, `bayesian`, `debiasing`, `socratic` |
 | **Other measured** | 3 | `circle-of-competence` (no calibration benefit, post-edit, null, not replicated), `second-order` (no effect, post-edit, null, not replicated), `margin-of-safety` (headroom, no benefit, post-edit, null, not replicated) |

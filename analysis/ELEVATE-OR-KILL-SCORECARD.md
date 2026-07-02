@@ -1,7 +1,8 @@
 # ELEVATE-OR-KILL Scorecard — Canonical Single Source of Truth
 
 **Generated:** 2026-06-07  
-**Source:** `analysis/EVAL-COVERAGE.md` (cleanest snapshot) cross-checked against `evals/results/{run1,wavec,confirm,rerun}/*.json` and `evals/db/evals.db`  
+**Refreshed:** 2026-07-02 — verdict-studies mission (pre-registered `analysis/PRE-REGISTERED-VERDICT-STUDIES.md`, commit `7b35377` before any model call): scientific-method larger-N n=426 → **DIRECTIONAL-ONLY**; five-whys-plus and occams-razor fresh-item confirmations n=199 each → **NO-LIFT**. No skill holds ELEVATE.  
+**Source:** `analysis/EVAL-COVERAGE.md` (cleanest snapshot) cross-checked against `evals/results/{run1,wavec,confirm,rerun}/*.json` and `evals/db/evals.db`; 2026-07-02 rows from `evals/results/{sci-method-larger-n,verdict-five-whys,verdict-occams}/`  
 **Scope:** All 39 shipped skills (`skills/thinking-*`)
 
 ---
@@ -27,14 +28,14 @@
 
 | Skill | Dataset | N | Placebo → Skill | Δ (pp) | p | Verdict | Provenance |
 |-------|---------|---|-----------------|--------|---|---------|------------|
-| **scientific-method** | SWE-bench fault localization (frozen 150-item set) | 150 | 85% → 91% | **+5.3** | 0.061 | **DIRECTIONAL-NOT-REPLICATED** (primary +5.3pp p=0.061 fails paired test; replication +8.0pp p=0.001 cannot rescue) | `OBJ-powered-directional` |
+| **scientific-method** | SWE-bench Verified fresh pool (pre-registered larger-N, `2026-07-02`) | 426 | 88.5% → 92.5% | **+4.0** | 0.0005 | **DIRECTIONAL-ONLY** (significant, 19–2 discordant; Δ<5pp preregistered gate — third same-direction result after +5.3 p=0.061 / +8.0 p=0.001 on the old 150-item set) | `OBJ-powered-significant` |
 | red-team | Security decisive (CWEs) | 70 | 43% → 44% | +1.4 | 1.0 | NO-LIFT (M5 primary; earlier +5.0 p=0.10 superseded) | `OBJ-powered-null` |
 | first-principles | authored constraint | 30 | 93% → 100% | +6.7 | 0.48 | ceiling | `OBJ-small-ceiling` |
 | systems | SWE-bench | 150 | 84% → 83% | −1.3 | 0.68 | no effect (was +5.3@n=150) | `OBJ-powered-null` |
-| five-whys-plus | SWE-bench | 150 | 83% → 84% | +1.3 | 0.75 | no effect (was +4.0@n=150) | `OBJ-powered-null` |
+| five-whys-plus | SWE-bench Verified fresh slice 1–200 (pre-registered, `2026-07-02`) | 199 | 88.4% → 89.9% | +1.5 | 0.546 | NO-LIFT (confirms n=150 +1.3 p=0.75 and decisive n=224 +0.9 p=0.724) | `OBJ-powered-null` |
 | fermi-estimation | jeggers/fermi | 150 | 41% → 41% | +0.7 | 1.0 | flat (rework +7.5@n=40 was noise) | `OBJ-powered-null` |
 | map-territory | authored verify | 30 | 97% → 100% | +3.3 | 1.0 | ceiling | `OBJ-small-ceiling` |
-| occams-razor | SWE-bench | 150 | 83% → 85% | +2 | 0.505 | not confirmed | `OBJ-powered-null` |
+| occams-razor | SWE-bench Verified fresh slice 201–400 (pre-registered, `2026-07-02`) | 199 | 87.4% → 87.9% | +0.5 | 1.0 | NO-LIFT (confirms n=150 +2.0 p=0.505 and decisive n=224 −0.9 p=0.724) | `OBJ-powered-null` |
 | second-order | consequence + StrategyQA | 70 | 90/85% → 83/85% | −6.7/0 | ns | no effect | `OBJ-powered-null` |
 | cynefin | authored classify | 30 | 97% → 100% | +3.3 | 1.0 | ceiling | `OBJ-small-ceiling` |
 | theory-of-constraints | authored bottleneck | 30 | 97% → 97% | 0 | 1.0 | ceiling | `OBJ-small-ceiling` |
@@ -70,9 +71,18 @@
 
 ## Objective Evidence — Skill Detail
 
-### DIRECTIONAL-NOT-REPLICATED (primary did not pass paired test)
+### DIRECTIONAL-ONLY (significant lift below the 5pp effect-size gate)
 
-#### `scientific-method` — **DIRECTIONAL-NOT-REPLICATED (primary fails p<0.05 gate)**
+#### `scientific-method` — **DIRECTIONAL-ONLY (pre-registered larger-N, 2026-07-02)**
+- **Pre-registered larger-N study (2026-07-02, supersedes the M5 verdict below as the current primary evidence):**
+  - **Dataset:** SWE-bench Verified fresh pool (frozen n=427, zero overlap with any prior SWE item on disk; seed 20260702; SHA `1ad90907…`)
+  - **N:** 426 scored (1/427 unscored after retries, reported in artifact)
+  - **Placebo → Skill:** 88.5% → 92.5%
+  - **Δ:** +4.0 pp
+  - **McNemar p:** ≈0.0005 (19–2 discordant split, 21 discordant)
+  - **Provenance:** `OBJ-powered-significant` | `post-edit` | `significant` | `replicated: false` (ELEVATE gate not met)
+  - **Source:** `evals/results/sci-method-larger-n/swe-scientific-method.json`
+  - **Note:** EVAL_RUN=sci-method-larger-n, solver=claude-sonnet-4-6 (high), CONC=4, isolation ON. Prereg committed `7b35377` BEFORE any model call; single stopping rule, no interim looks. Verdict rule verbatim: p<0.05 AND Δ<5pp → **DIRECTIONAL-ONLY**. Third same-direction result (+5.3 p=0.061, +8.0 p=0.001, +4.0 p≈0.0005): the lift is real but its best estimate at the largest clean n is ~4pp, below the preregistered 5pp MDE. Not ELEVATE.
 - **M5 Fresh Primary (VAL-POWERED-014 fix — replaces stale run1 evidence, full-n=150):**
   - **Dataset:** SWE-bench fault localization (ORIGINAL frozen 150-item set)
   - **N:** 150
@@ -125,22 +135,28 @@
 - **Stale claim flagged:** Run1 scorecard "ELEVATE" and mid-document ELEVATE-OR-KILL.md "firm ELEVATE" — **both superseded**. The original p=0.043 was borderline noise; replication crossed back to negative.
 - **Anti-p-hacking guarantee (VAL-DATASET-009):** Systems was NOT reworked in this mission (no rework spec; SKILL.md edit predates the mission, split frozen 2026-06-06 before the 2026-06-07 result), so its anti-p-hacking guarantee is `split-frozen-before-result` (VAL-DATASET-009 refined two-tier rule), and its NO-LIFT verdict is immune to win-manufacturing.
 
-#### `five-whys-plus` — **NO-LIFT (verified on decisive split)**
+#### `five-whys-plus` — **NO-LIFT (pre-registered fresh-item confirmation, 2026-07-02)**
+- **Pre-registered confirmation (2026-07-02, fresh SWE-bench Verified items, slice 1–200):** 88.4% → 89.9%, +1.5pp, p=0.546, 11 discordant, n=199 (1/200 unscored after retries, reported)
+  - **Source:** `evals/results/verdict-five-whys/swe-five-whys-plus.json` — EVAL_RUN=verdict-five-whys, solver=claude-sonnet-4-6 (high), CONC=4, isolation ON; prereg `analysis/PRE-REGISTERED-VERDICT-STUDIES.md` (commit `7b35377`). Slice disjoint from the occams-razor slice.
 - **Original powered run (n=150):** 83% → 87%, +4.0pp, p=0.041, 6 discordant — **superseded**
 - **Replication (n=150):** 83% → 84%, +1.3pp, p=0.752
 - **M5 decisive rerun (n=224, FROZEN split):** 59% → 59%, +0.9pp, p=0.724
 - **Provenance:** `OBJ-powered-null` | `post-edit` | `null` | `replicated: false`
 - **Sources:** `evals/results/run1/swe-five-whys-plus-powered.json` (superseded), `evals/results/wavec/swe-five-whys-plus-replication.json`, `evals/results/m5-primary-decisive/swe-five-whys-plus.json` (M5 decisive, n=224)
 - **Stale claim flagged:** Run1 scorecard "ELEVATE" and mid-document ELEVATE-OR-KILL.md "firm ELEVATE" — **both superseded**.
+- **Disposition impact:** third consecutive powered null on fresh items → moves from keep-full to **trigger-only candidate** in the consolidation recommendation.
 
-#### `occams-razor` — **NO-LIFT (verified on decisive split, full-n=224)**
-- **Dataset:** SWE-bench fault localization
+#### `occams-razor` — **NO-LIFT (pre-registered fresh-item confirmation, 2026-07-02)**
+- **Pre-registered confirmation (2026-07-02, fresh SWE-bench Verified items, slice 201–400):** 87.4% → 87.9%, +0.5pp, p=1.0, 13 discordant, n=199 (1/200 unscored after retries, reported)
+  - **Source:** `evals/results/verdict-occams/swe-occams-razor.json` — EVAL_RUN=verdict-occams, solver=claude-sonnet-4-6 (high), CONC=4, isolation ON; prereg `analysis/PRE-REGISTERED-VERDICT-STUDIES.md` (commit `7b35377`). Slice disjoint from the five-whys-plus slice.
+- **Dataset (prior evidence):** SWE-bench fault localization
 - **N:** 150 (run1) → 224 (M5 decisive, full-n)
 - **Placebo → Skill:** 83% → 85% (run1, +2.0pp) → 56% → 55% (M5 decisive, -0.9pp)
 - **McNemar p:** 0.505 (run1) → 0.724 (M5 decisive)
 - **Provenance:** `OBJ-powered-null` | `post-edit` | `null` | `replicated: false`
 - **Sources:** `evals/results/run1/swe-occams-razor-improved.json` (run1, n=150), `evals/results/m5-primary-decisive/swe-occams-razor.json` (M5 decisive, n=224)
 - **Note:** M5 primary run on 150-item set gave +4.7pp p=0.096 (directional, not significant — **originally misclassified as DIRECTIONAL-NOT-REPLICATED; corrected to NO-LIFT per blocker 3 fix**). M5 decisive-split rerun on the FROZEN 224-item split, full-n=224: -0.9pp, p=0.724 — a clear NO-LIFT. Trigger-scoped rework did not move needle.
+- **Disposition impact:** third consecutive powered null on fresh items → moves from keep-full to **trigger-only candidate** in the consolidation recommendation.
 
 #### `kepner-tregoe` — **NO-LIFT (exploratory — surface-mismatch, full-n=224)**
 - **M5 decisive rerun (n=224, FROZEN split):** 55% → 56%, −1.8pp, p=0.289

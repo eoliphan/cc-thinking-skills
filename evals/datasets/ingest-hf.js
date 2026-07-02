@@ -109,6 +109,19 @@ const SOURCES = {
       };
     },
   },
+  'swebench-verified': { // Track 2 verdict studies: fresh fault-localization pool from the human-validated Verified split
+    dataset: 'princeton-nlp/SWE-bench_Verified', config: 'default', split: 'test',
+    mode: 'swe-localize', license: 'MIT',
+    map: r => {
+      const files = [...new Set([...String(r.patch || '').matchAll(/diff --git a\/\S+ b\/(\S+)/g)].map(m => m[1]).filter(f => !/(test|tests)\//i.test(f) && /\.(py|js|ts|java|go|rb|c|cpp|h)$/.test(f)))];
+      if (!files.length || !r.problem_statement) return null;
+      return {
+        prompt: 'Repository: ' + r.repo + '\n\nGitHub issue:\n' + String(r.problem_statement).slice(0, 2500) +
+          '\n\nWhich single source file in this repository most likely needs to be modified to fix this issue? Reason about the symptom and where it originates, then give the repository-relative path. End with exactly: ANSWER: <path/to/file.ext>',
+        gold_files: files, repo: r.repo, instance_id: r.instance_id, skill_fit: ['scientific-method', 'systems', 'five-whys-plus'],
+      };
+    },
+  },
   strategyqa: { // second-order proxy: implicit multi-hop yes/no (balanced Yes/No)
     dataset: 'ChilleD/StrategyQA', config: 'default', split: 'train',
     mode: 'correctness', license: 'CC (Wikipedia-derived, Apache-2.0 repo)',

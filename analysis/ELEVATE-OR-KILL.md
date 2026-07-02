@@ -1,5 +1,11 @@
 # Elevate-or-Kill — synthesis & current verdicts
 
+> **✅ 2026-07-02 UPDATE — pre-registered verdict studies (see `analysis/PRE-REGISTERED-VERDICT-STUDIES.md`, commit `7b35377`):**
+> - **`scientific-method` → DIRECTIONAL-ONLY.** Larger-N study on a fresh frozen SWE-bench Verified pool: n=426, 88.5%→92.5%, **+4.0pp, McNemar p≈0.0005 (19–2 discordant)** — statistically robust, third same-direction result, but Δ<5pp preregistered gate. Not ELEVATE. Artifact: `evals/results/sci-method-larger-n/swe-scientific-method.json`.
+> - **`five-whys-plus` → NO-LIFT confirmed** on fresh Verified items (n=199, +1.5pp, p=0.546). Artifact: `evals/results/verdict-five-whys/swe-five-whys-plus.json`.
+> - **`occams-razor` → NO-LIFT confirmed** on fresh Verified items (n=199, +0.5pp, p=1.0). Artifact: `evals/results/verdict-occams/swe-occams-razor.json`.
+> - Every `DIRECTIONAL-NOT-REPLICATED` reference to scientific-method below is superseded by DIRECTIONAL-ONLY (significant, sub-5pp). ZERO skills hold ELEVATE. Canonical rows: `ELEVATE-OR-KILL-SCORECARD.{json,md}`.
+
 Ties the per-skill protocol (`PER-SKILL-EVAL-PROTOCOL.md`) to what we've actually measured this session. At the time of writing, most skills were **PENDING** a powered run (protocol + dataset ready); a subset had directional evidence from the isolated harness.
 
 ## Current evidence (isolated, length-controlled) [SUPERSEDED — historical pre-M5 exploration log; canonical verdicts in ELEVATE-OR-KILL-SCORECARD.{json,md}]
