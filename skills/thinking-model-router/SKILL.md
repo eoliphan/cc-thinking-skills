@@ -15,6 +15,51 @@ This is the **master routing skill** for all mental models. Instead of knowing 3
 
 **If you already know the right model, invoke it directly — don't route.** This skill is for when you're *unsure* which model fits. If the problem obviously calls for a specific model (e.g., "where's the bottleneck?" → theory-of-constraints; "how would an attacker break this?" → red-team), go straight to it. Routing is overhead you only pay when the match isn't obvious. Likewise, if no model clearly helps, just reason directly — don't force one.
 
+## Invoking a Model (Skill IDs)
+
+Every model below is a skill in this plugin. After routing, invoke the chosen model with the Skill tool using the exact ID `thinking-skills:thinking-<slug>`. Slugs are NOT always the display name lowercased (e.g. Systems Thinking → `thinking-systems`, 5 Whys Plus → `thinking-five-whys-plus`). Full mapping:
+
+| Model | Skill ID |
+|---|---|
+| 5 Whys Plus | `thinking-skills:thinking-five-whys-plus` |
+| Archetypes | `thinking-skills:thinking-archetypes` |
+| Bayesian | `thinking-skills:thinking-bayesian` |
+| Bounded Rationality | `thinking-skills:thinking-bounded-rationality` |
+| Circle of Competence | `thinking-skills:thinking-circle-of-competence` |
+| Cynefin | `thinking-skills:thinking-cynefin` |
+| Debiasing | `thinking-skills:thinking-debiasing` |
+| Dual-Process | `thinking-skills:thinking-dual-process` |
+| Effectuation | `thinking-skills:thinking-effectuation` |
+| Feedback Loops | `thinking-skills:thinking-feedback-loops` |
+| Fermi Estimation | `thinking-skills:thinking-fermi-estimation` |
+| First Principles | `thinking-skills:thinking-first-principles` |
+| Inversion | `thinking-skills:thinking-inversion` |
+| Jobs to be Done | `thinking-skills:thinking-jobs-to-be-done` |
+| Kepner-Tregoe | `thinking-skills:thinking-kepner-tregoe` |
+| Leverage Points | `thinking-skills:thinking-leverage-points` |
+| Lindy Effect | `thinking-skills:thinking-lindy-effect` |
+| Map-Territory | `thinking-skills:thinking-map-territory` |
+| Margin of Safety | `thinking-skills:thinking-margin-of-safety` |
+| Model Combination | `thinking-skills:thinking-model-combination` |
+| Model Selection | `thinking-skills:thinking-model-selection` |
+| Occam's Razor | `thinking-skills:thinking-occams-razor` |
+| OODA | `thinking-skills:thinking-ooda` |
+| Opportunity Cost | `thinking-skills:thinking-opportunity-cost` |
+| Pre-mortem | `thinking-skills:thinking-pre-mortem` |
+| Probabilistic | `thinking-skills:thinking-probabilistic` |
+| Red Team | `thinking-skills:thinking-red-team` |
+| Regret Minimization | `thinking-skills:thinking-regret-minimization` |
+| Reversibility | `thinking-skills:thinking-reversibility` |
+| Scientific Method | `thinking-skills:thinking-scientific-method` |
+| Second-Order | `thinking-skills:thinking-second-order` |
+| Socratic | `thinking-skills:thinking-socratic` |
+| Steel-manning | `thinking-skills:thinking-steel-manning` |
+| Systems Thinking | `thinking-skills:thinking-systems` |
+| Theory of Constraints | `thinking-skills:thinking-theory-of-constraints` |
+| Thought Experiment | `thinking-skills:thinking-thought-experiment` |
+| TRIZ | `thinking-skills:thinking-triz` |
+| Via Negativa | `thinking-skills:thinking-via-negativa` |
+
 ## Quick Router
 
 ### Step 1: What's Your Domain?
