@@ -14,7 +14,7 @@ const SKILLS_DIR = path.join(__dirname, '..', 'skills');
 
 // Required sections and their markers
 const REQUIRED_SECTIONS = [
-  { name: 'YAML Frontmatter', pattern: /^---\n[\s\S]*?name:[\s\S]*?description:[\s\S]*?---/m },
+  { name: 'YAML Frontmatter', pattern: /^---\r?\n[\s\S]*?name:[\s\S]*?description:[\s\S]*?---/m },
   { name: 'Overview', pattern: /^## Overview/m },
   { name: 'Core Principle', pattern: /\*\*Core Principle:\*\*/m },
   { name: 'When to Use', pattern: /^## When to Use/m },
