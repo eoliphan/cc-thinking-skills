@@ -22,6 +22,7 @@ const {
 const LEAN_BODY = `---
 name: thinking-example
 description: Short situation-named description under two hundred characters.
+disable-model-invocation: true
 ---
 
 ## When to Use
@@ -33,6 +34,7 @@ Do not use for routine Y.
 ## Procedure
 1. Observe evidence.
 2. Decide.
+3. Stop.
 
 ## Output
 Return a decision artifact.
@@ -55,6 +57,37 @@ test('required sections are When to Use / NOT / Procedure / Output / Verificatio
     enforceBudget: true,
   });
   assert.equal(ok.pass, true, JSON.stringify(ok.failed));
+});
+
+test('manual quarantine and procedure depth are enforced', () => {
+  const missingQuarantine = LEAN_BODY.replace('disable-model-invocation: true\n', '');
+  const quarantineResult = validateSkillContent(missingQuarantine, {
+    name: 'thinking-example',
+    maxWords: 100,
+    enforceBudget: true,
+    requireDisableModelInvocation: true,
+  });
+  assert.equal(quarantineResult.pass, false);
+  assert.ok(quarantineResult.failed.some(check => check.name === 'Manual-only Quarantine'));
+
+  const shallowProcedure = LEAN_BODY.replace('2. Decide.\n3. Stop.', '2. Decide.');
+  const procedureResult = validateSkillContent(shallowProcedure, {
+    name: 'thinking-example',
+    maxWords: 100,
+    enforceBudget: true,
+  });
+  assert.equal(procedureResult.pass, false);
+  assert.ok(procedureResult.failed.some(check => check.name === 'Procedure Steps'));
+
+  const deletedReference = `${LEAN_BODY}\nNever invoke thinking-deleted-example.\n`;
+  const referenceResult = validateSkillContent(deletedReference, {
+    name: 'thinking-example',
+    maxWords: 100,
+    enforceBudget: true,
+    forbiddenSkillIds: ['deleted-example'],
+  });
+  assert.equal(referenceResult.pass, false);
+  assert.deepEqual(referenceResult.forbidden_skill_refs, ['deleted-example']);
 });
 
 test('validator fails missing required sections and overlong description', () => {
@@ -114,18 +147,19 @@ ${words}
   assert.ok(result.failed.some(f => f.name === 'Word Budget'));
 });
 
-test('current pre-rewrite catalog fails new structural requirements (observable, not weakened)', () => {
+test('current lean catalog satisfies every structural contract', () => {
   const report = validateAllSkills();
   assert.equal(report.found_count, 28);
   assert.equal(report.expected_count, 28);
-  // Pre-rewrite skills lack lean sections; failures must remain visible
-  assert.equal(report.ok, false);
-  assert.ok(report.failed.length > 0, 'expected pre-rewrite skills to fail new section requirements');
-  const sample = report.failed[0];
-  assert.ok(sample.failed.length > 0);
-  // Ensure we did not silently filter failures
-  assert.equal(report.summary.failed, report.failed.length);
-  assert.equal(report.summary.total, 28);
+  assert.equal(report.ok, true, report.failed.map(result => result.name).join(', '));
+  assert.equal(report.failed.length, 0);
+  assert.equal(report.summary.passed, 28);
+  assert.equal(report.summary.failed, 0);
+  for (const result of report.results) {
+    assert.ok(result.procedure_steps >= 3 && result.procedure_steps <= 7, result.name);
+    assert.equal(result.frontmatter['disable-model-invocation'], 'true', result.name);
+    assert.deepEqual(result.forbidden_skill_refs, [], result.name);
+  }
 });
 
 test('validate-skills does not write quality-report.json', () => {

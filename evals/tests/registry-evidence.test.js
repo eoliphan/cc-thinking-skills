@@ -161,6 +161,64 @@ test('deleted_skills provenance fields are required and mutation-protected', () 
   assert.equal(okEmpty.ok, true, okEmpty.errors.join('; '));
 });
 
+test('every absorbed mechanism has a symmetric mutation-protected destination', () => {
+  const { registry, validation } = loadAndValidateRegistry();
+  assert.equal(validation.ok, true, validation.errors.join('; '));
+  const edges = [];
+  for (const [deletedId, deleted] of Object.entries(registry.deleted_skills)) {
+    for (const targetId of deleted.disposition.absorb_into) {
+      edges.push(`${deletedId}->${targetId}`);
+      const destination = registry.skills[targetId].disposition;
+      assert.ok(destination.absorbs.includes(deletedId), `${deletedId}->${targetId}`);
+      assert.deepEqual(
+        destination.absorbed_mechanisms.filter(entry => entry.id === deletedId),
+        [{ id: deletedId, mechanism: deleted.disposition.mechanism }],
+        `${deletedId}->${targetId}`
+      );
+    }
+  }
+  assert.equal(edges.length, 12);
+
+  const missingSource = JSON.parse(JSON.stringify(registry));
+  missingSource.skills.systems.disposition.absorbs =
+    missingSource.skills.systems.disposition.absorbs.filter(id => id !== 'feedback-loops');
+  const missingValidation = validateRegistry(missingSource);
+  assert.equal(missingValidation.ok, false);
+  assert.ok(missingValidation.errors.some(error => /systems missing absorbed source feedback-loops/.test(error)));
+
+  const wrongMechanism = JSON.parse(JSON.stringify(registry));
+  wrongMechanism.skills.probabilistic.disposition.absorbed_mechanisms
+    .find(entry => entry.id === 'bayesian').mechanism = 'generic updating';
+  const mechanismValidation = validateRegistry(wrongMechanism);
+  assert.equal(mechanismValidation.ok, false);
+  assert.ok(mechanismValidation.errors.some(error => /probabilistic absorbed mechanism mismatch for bayesian/.test(error)));
+});
+
+test('absorbed mechanisms remain executable in destination skill contracts', () => {
+  const contracts = [
+    ['systems', [/reinforcing/i, /balancing/i, /delay/i, /recurring structure/i, /leverage/i, /side effects/i]],
+    ['probabilistic', [/Prior odds/i, /Likelihood ratio/i, /Posterior odds/i, /Fermi-bound/i, /order-of-magnitude/i, /strongest evidence-based case/i]],
+    ['steel-manning', [/strongest faithful case/i, /base rates or concrete alternatives/i, /overturn conditions/i]],
+    ['pre-mortem', [/Failure-first reverse analysis/i, /necessary\/enabling conditions/i, /invert\W+each condition/i]],
+    ['model-router', [/problem fit ≥4/i, /weighted total ≥3\.5/i, /return \*\*NONE\*\*/i]],
+    ['scientific-method', [/fewest independent unsupported assumptions/i, /Parsimony ranks survivors after fit/i]],
+    ['reversibility', [/Asymmetric downside \/ recovery/i, /Not acting/i, /permanently closes/i]],
+    ['opportunity-cost', [/Future tradeoff \/ permanent forgone options/i, /permanent losses/i, /recoverable/i]],
+  ];
+  for (const [skillId, assertions] of contracts) {
+    const content = fs.readFileSync(
+      path.join(__dirname, '..', '..', 'skills', `thinking-${skillId}`, 'SKILL.md'),
+      'utf8'
+    );
+    for (const assertion of assertions) {
+      assert.match(content, assertion, `${skillId}: ${assertion}`);
+      const flags = assertion.flags.includes('i') ? 'gi' : 'g';
+      const mutated = content.replace(new RegExp(assertion.source, flags), '');
+      assert.doesNotMatch(mutated, assertion, `${skillId} mutation survived: ${assertion}`);
+    }
+  }
+});
+
 test('consumed migration coverage cannot count as fresh confirmatory data', () => {
   const { registry, validation } = loadAndValidateRegistry();
   assert.equal(validation.ok, true, validation.errors.join('; '));

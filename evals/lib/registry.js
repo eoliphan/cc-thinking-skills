@@ -226,6 +226,57 @@ function validateRegistry(registry) {
     validateSkillRow(id, skill, { active: false });
   }
 
+  // Every declared absorption must be recorded symmetrically at its active
+  // destination, including the exact mechanism contract. This prevents a
+  // deleted skill from silently losing its active ingredient at cutover.
+  for (const [deletedId, deleted] of Object.entries(deletedSkills)) {
+    const targets = deleted.disposition?.absorb_into || [];
+    for (const targetId of targets) {
+      const destination = skills[targetId];
+      if (!destination) continue; // Missing target is reported above.
+      const absorbs = destination.disposition?.absorbs;
+      const mechanisms = destination.disposition?.absorbed_mechanisms;
+      if (!Array.isArray(absorbs) || !absorbs.includes(deletedId)) {
+        errors.push(`skill ${targetId} missing absorbed source ${deletedId}`);
+      }
+      const matches = Array.isArray(mechanisms)
+        ? mechanisms.filter(entry => entry?.id === deletedId)
+        : [];
+      if (matches.length !== 1) {
+        errors.push(`skill ${targetId} must declare exactly one absorbed mechanism for ${deletedId}`);
+      } else if (matches[0].mechanism !== deleted.disposition.mechanism) {
+        errors.push(`skill ${targetId} absorbed mechanism mismatch for ${deletedId}`);
+      }
+    }
+  }
+  for (const [targetId, destination] of Object.entries(skills)) {
+    const absorbs = destination.disposition?.absorbs;
+    const mechanisms = destination.disposition?.absorbed_mechanisms;
+    if (!Array.isArray(absorbs)) {
+      errors.push(`skill ${targetId} disposition.absorbs must be an array`);
+      continue;
+    }
+    if (!Array.isArray(mechanisms)) {
+      errors.push(`skill ${targetId} disposition.absorbed_mechanisms must be an array`);
+      continue;
+    }
+    if (new Set(absorbs).size !== absorbs.length) {
+      errors.push(`skill ${targetId} disposition.absorbs contains duplicates`);
+    }
+    for (const deletedId of absorbs) {
+      if (!deletedSkills[deletedId]) {
+        errors.push(`skill ${targetId} absorbs unknown deleted skill ${deletedId}`);
+      } else if (!(deletedSkills[deletedId].disposition?.absorb_into || []).includes(targetId)) {
+        errors.push(`skill ${targetId} absorption not declared by deleted skill ${deletedId}`);
+      }
+    }
+    for (const entry of mechanisms) {
+      if (!absorbs.includes(entry?.id)) {
+        errors.push(`skill ${targetId} has orphan absorbed mechanism ${entry?.id || 'missing'}`);
+      }
+    }
+  }
+
   // declared data_adequacy must match computed active statuses (explicit, no silent filter)
   if (registry.data_adequacy) {
     const declaredUnknown = new Set(registry.data_adequacy.unknown_skill_ids || []);

@@ -73,6 +73,22 @@ function hasSection(content, name) {
   return sectionHeadingPattern(name).test(content);
 }
 
+function sectionBody(content, name) {
+  const match = sectionHeadingPattern(name).exec(content);
+  if (!match) return '';
+  const start = match.index + match[0].length;
+  const remainder = content.slice(start);
+  const next = remainder.search(/^##\s+/m);
+  return (next === -1 ? remainder : remainder.slice(0, next)).trim();
+}
+
+function numberedStepCount(content) {
+  return sectionBody(content, 'Procedure')
+    .split('\n')
+    .filter(line => /^\s*\d+\.\s+\S/.test(line))
+    .length;
+}
+
 /**
  * Pure validation of a single skill body.
  * @returns {object} structured result with pass/fail details
@@ -83,11 +99,16 @@ function validateSkillContent(content, opts = {}) {
   const descriptionMax = opts.descriptionMax ?? DEFAULT_DESCRIPTION_MAX;
   const maxWords = opts.maxWords != null ? opts.maxWords : null;
   const enforceBudget = opts.enforceBudget !== false && maxWords != null;
+  const requireDisableModelInvocation = opts.requireDisableModelInvocation === true;
+  const forbiddenSkillIds = opts.forbiddenSkillIds || [];
 
   const { frontmatter, has_frontmatter } = parseFrontmatter(content);
   const words = countWords(content);
   const description = frontmatter.description || '';
   const descriptionLen = description.length;
+  const procedureSteps = numberedStepCount(content);
+  const nonEmptySections = requiredSections.filter(name => sectionBody(content, name).length > 0);
+  const forbiddenRefs = forbiddenSkillIds.filter(id => content.includes(`thinking-${id}`));
 
   const sections = requiredSections.map(name => ({
     name,
@@ -97,8 +118,12 @@ function validateSkillContent(content, opts = {}) {
   const checks = [];
   checks.push({
     name: 'YAML Frontmatter',
-    pass: has_frontmatter && Boolean(frontmatter.name || frontmatter.description),
-    detail: has_frontmatter ? 'present' : 'missing frontmatter',
+    pass: has_frontmatter &&
+      frontmatter.name === skillName &&
+      Boolean(frontmatter.description),
+    detail: has_frontmatter
+      ? `name=${frontmatter.name || 'missing'}`
+      : 'missing frontmatter',
   });
   checks.push({
     name: 'Description Length',
@@ -115,6 +140,32 @@ function validateSkillContent(content, opts = {}) {
       detail: section.found ? 'found' : 'missing',
     });
   }
+  checks.push({
+    name: 'Required Section Content',
+    pass: nonEmptySections.length === requiredSections.length,
+    detail: nonEmptySections.length === requiredSections.length
+      ? 'all required sections are non-empty'
+      : `empty: ${requiredSections.filter(name => !nonEmptySections.includes(name)).join(', ')}`,
+  });
+  checks.push({
+    name: 'Procedure Steps',
+    pass: procedureSteps >= 3 && procedureSteps <= 7,
+    detail: `${procedureSteps} numbered steps (required 3-7)`,
+  });
+  if (requireDisableModelInvocation) {
+    checks.push({
+      name: 'Manual-only Quarantine',
+      pass: frontmatter['disable-model-invocation'] === 'true',
+      detail: `disable-model-invocation=${frontmatter['disable-model-invocation'] || 'missing'}`,
+    });
+  }
+  checks.push({
+    name: 'Deleted Skill References',
+    pass: forbiddenRefs.length === 0,
+    detail: forbiddenRefs.length === 0
+      ? 'none'
+      : forbiddenRefs.map(id => `thinking-${id}`).join(', '),
+  });
 
   if (enforceBudget) {
     checks.push({
@@ -140,6 +191,8 @@ function validateSkillContent(content, opts = {}) {
     description_length: descriptionLen,
     words,
     max_words: maxWords,
+    procedure_steps: procedureSteps,
+    forbidden_skill_refs: forbiddenRefs,
     sections,
     checks,
     failed,
@@ -183,6 +236,9 @@ function loadCatalogExpectations(registryPath) {
     descriptionMax: registry.frontmatter?.description_max_chars ?? DEFAULT_DESCRIPTION_MAX,
     budgets,
     survivors: new Set(registry.catalog?.survivors || []),
+    quarantined: new Set(Object.entries(registry.skills || {})
+      .filter(([, skill]) => skill.disposition?.disable_model_invocation_until_elevated === true)
+      .map(([id]) => id)),
     deletions: new Set(registry.catalog?.deletions || []),
     registry,
     registryValidation,
@@ -211,6 +267,8 @@ function validateAllSkills(opts = {}) {
       descriptionMax: catalog.descriptionMax,
       maxWords,
       enforceBudget,
+      requireDisableModelInvocation: catalog.quarantined?.has(id) || false,
+      forbiddenSkillIds: [...(catalog.deletions || [])],
     }));
   }
 
@@ -289,6 +347,8 @@ module.exports = {
   parseFrontmatter,
   countWords,
   hasSection,
+  sectionBody,
+  numberedStepCount,
   validateSkillContent,
   validateSkillFile,
   validateAllSkills,
