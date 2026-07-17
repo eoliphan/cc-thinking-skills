@@ -439,3 +439,213 @@ test('live solve usage counts attempts latency cache and estimated cost', async 
     estimated_cost_usd: 0.004,
   });
 });
+
+// --- arm order randomization ---
+
+test('absent armOrderSeed retains declared arm order and records declared policy', async () => {
+  const callOrder = [];
+  const envelope = await runObjectiveItems({
+    studyId: 'arm-order-legacy',
+    studyVersion: '1',
+    preregistrationSha256: 'p'.repeat(64),
+    dataset: { source: 'fixture', version: '1', split: 'heldout', sha256: 'd'.repeat(64) },
+    arms: [
+      { id: 'none' },
+      { id: 'lean', skillContent: 'lean body' },
+      { id: 'full_legacy', skillContent: 'full body' },
+    ],
+    solver: { model: 'fixture-model' },
+    scorer: 'boolean',
+    items: [
+      { id: 'i1', prompt: 'Q1', label: true },
+      { id: 'i2', prompt: 'Q2', label: true },
+    ],
+    solve: async ({ armId, item, trial }) => {
+      callOrder.push({ itemId: item.id, trial, armId });
+      return { ok: true, text: 'ANSWER: Yes', usage: { calls: 1 } };
+    },
+  });
+  assert.equal(envelope.statistics.arm_order_policy, 'declared');
+  assert.equal(envelope.statistics.arm_order_seed, null);
+  assert.deepEqual(
+    callOrder.map((c) => c.armId),
+    ['none', 'lean', 'full_legacy', 'none', 'lean', 'full_legacy'],
+  );
+  // Stable item/trial identity regardless of execution order.
+  const keys = envelope.items.map((r) => r.key).sort();
+  assert.equal(keys.length, 6);
+  assert.equal(new Set(keys).size, 6);
+});
+
+test('armOrderSeed is reproducible and varies across item/trial when possible', async () => {
+  const base = {
+    studyId: 'arm-order-seed',
+    studyVersion: '1',
+    preregistrationSha256: 'p'.repeat(64),
+    dataset: { source: 'fixture', version: '1', split: 'heldout', sha256: 'd'.repeat(64) },
+    arms: [
+      { id: 'none' },
+      { id: 'lean', skillContent: 'lean body' },
+      { id: 'full_legacy', skillContent: 'full body' },
+    ],
+    solver: { model: 'fixture-model' },
+    scorer: 'boolean',
+    trials: 2,
+    armOrderSeed: 42,
+    items: [
+      { id: 'i1', prompt: 'Q1', label: true },
+      { id: 'i2', prompt: 'Q2', label: true },
+    ],
+  };
+
+  async function captureOrder(spec) {
+    const callOrder = [];
+    const envelope = await runObjectiveItems({
+      ...spec,
+      solve: async ({ armId, item, trial, key, prompt }) => {
+        callOrder.push({ itemId: item.id, trial, armId, key, prompt });
+        // Distinct text per arm so responses cannot be reused across arms.
+        return {
+          ok: true,
+          text: `ANSWER: Yes // ${armId}:${item.id}:${trial}`,
+          usage: { calls: 1 },
+        };
+      },
+    });
+    return { callOrder, envelope };
+  }
+
+  const a = await captureOrder(base);
+  const b = await captureOrder(base);
+  assert.deepEqual(a.callOrder.map((c) => c.armId), b.callOrder.map((c) => c.armId));
+  assert.deepEqual(
+    a.envelope.items.map((r) => r.arm_id),
+    b.envelope.items.map((r) => r.arm_id),
+  );
+  assert.equal(a.envelope.statistics.arm_order_policy, 'seeded');
+  assert.equal(a.envelope.statistics.arm_order_seed, 42);
+
+  // Same seed + same item/trial => same order; different item or trial can differ.
+  const orderKey = (c) => `${c.itemId}|${c.trial}`;
+  const byUnit = new Map();
+  for (const c of a.callOrder) {
+    const k = orderKey(c);
+    if (!byUnit.has(k)) byUnit.set(k, []);
+    byUnit.get(k).push(c.armId);
+  }
+  const unitOrders = [...byUnit.values()].map((ids) => ids.join(','));
+  assert.equal(unitOrders.length, 4); // 2 items × 2 trials
+  assert.ok(
+    new Set(unitOrders).size > 1,
+    `expected arm order to vary across item/trial, got ${JSON.stringify(unitOrders)}`,
+  );
+
+  // Different seed changes at least one unit order.
+  const otherSeed = await captureOrder({ ...base, armOrderSeed: 99 });
+  assert.notDeepEqual(
+    a.callOrder.map((c) => c.armId),
+    otherSeed.callOrder.map((c) => c.armId),
+  );
+
+  // Declared arms array order does not pin the seeded presentation.
+  const reversedArms = await captureOrder({
+    ...base,
+    arms: [
+      { id: 'full_legacy', skillContent: 'full body' },
+      { id: 'lean', skillContent: 'lean body' },
+      { id: 'none' },
+    ],
+  });
+  assert.deepEqual(
+    a.callOrder.map((c) => c.armId),
+    reversedArms.callOrder.map((c) => c.armId),
+  );
+
+  // Identity keys and checkpoints still bind study/item/trial/arm, not execution order.
+  const keysA = a.envelope.items.map((r) => r.key).sort();
+  const keysB = b.envelope.items.map((r) => r.key).sort();
+  assert.deepEqual(keysA, keysB);
+  assert.equal(new Set(keysA).size, a.envelope.items.length);
+  for (const row of a.envelope.items) {
+    assert.ok(row.observation_checkpoint_key);
+    assert.match(row.key, new RegExp(`:${row.item_id}:`));
+    assert.match(row.key, new RegExp(`:${row.arm_id}$`));
+  }
+});
+
+test('seeded arm order keeps independent solve calls and never reuses responses', async () => {
+  const seen = [];
+  const envelope = await runObjectiveItems({
+    studyId: 'arm-order-independent',
+    studyVersion: '1',
+    preregistrationSha256: 'p'.repeat(64),
+    dataset: { source: 'fixture', version: '1', split: 'heldout', sha256: 'd'.repeat(64) },
+    arms: [
+      { id: 'none' },
+      { id: 'lean', skillContent: 'LEAN_BODY_MARKER' },
+      { id: 'full_legacy', skillContent: 'FULL_BODY_MARKER' },
+    ],
+    solver: { model: 'fixture-model' },
+    scorer: 'boolean',
+    armOrderSeed: 'portfolio-v1',
+    items: [{ id: 'only', prompt: 'Decide', label: true }],
+    solve: async ({ armId, prompt, key }) => {
+      seen.push({ armId, prompt, key });
+      return {
+        ok: true,
+        text: `ANSWER: Yes // unique-for-${armId}`,
+        usage: { calls: 1, input_tokens: 1, output_tokens: 1 },
+      };
+    },
+  });
+
+  assert.equal(seen.length, 3);
+  assert.equal(new Set(seen.map((s) => s.key)).size, 3);
+  assert.equal(new Set(seen.map((s) => s.prompt)).size, 3);
+  // Each arm got its own prompt content; no cross-arm response reuse.
+  const byArm = Object.fromEntries(seen.map((s) => [s.armId, s]));
+  assert.doesNotMatch(byArm.none.prompt, /LEAN_BODY_MARKER|FULL_BODY_MARKER/);
+  assert.match(byArm.lean.prompt, /LEAN_BODY_MARKER/);
+  assert.match(byArm.full_legacy.prompt, /FULL_BODY_MARKER/);
+  const responseHashes = envelope.items.map((r) => r.response_sha256);
+  assert.equal(new Set(responseHashes).size, 3);
+  assert.equal(envelope.usage.calls, 3);
+  assert.equal(envelope.statistics.arm_order_policy, 'seeded');
+  assert.equal(envelope.statistics.arm_order_seed, 'portfolio-v1');
+});
+
+test('duplicate resolved arm ids fail fast with and without armOrderSeed', async () => {
+  const base = {
+    studyId: 'arm-dup',
+    studyVersion: '1',
+    preregistrationSha256: 'p'.repeat(64),
+    dataset: { source: 'fixture', version: '1', split: 'heldout', sha256: 'd'.repeat(64) },
+    arms: [
+      { id: 'none' },
+      { id: 'lean', skillContent: 'a' },
+      { id: 'none', skillContent: 'shadow' },
+    ],
+    solver: { model: 'fixture-model' },
+    scorer: 'boolean',
+    items: [{ id: 'i1', prompt: 'Q', label: true }],
+    solve: async () => ({ ok: true, text: 'ANSWER: Yes', usage: { calls: 1 } }),
+  };
+
+  await assert.rejects(
+    () => runObjectiveItems(base),
+    (err) => {
+      assert.equal(err instanceof TypeError, true);
+      assert.match(err.message, /duplicate arm id "none"/);
+      return true;
+    },
+  );
+
+  await assert.rejects(
+    () => runObjectiveItems({ ...base, armOrderSeed: 7 }),
+    (err) => {
+      assert.equal(err instanceof TypeError, true);
+      assert.match(err.message, /duplicate arm id "none"/);
+      return true;
+    },
+  );
+});

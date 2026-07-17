@@ -426,6 +426,57 @@ function normalizeSolveUsage(result, countDefaultCall = false) {
   });
 }
 
+/** Mulberry32 PRNG — deterministic, no deps. */
+function mulberry32(seed) {
+  let a = seed >>> 0;
+  return function next() {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function seedToUint32(seed) {
+  if (Number.isInteger(seed) && seed >= 0) return seed >>> 0;
+  const hex = sha256(String(seed)).slice(0, 8);
+  return parseInt(hex, 16) >>> 0;
+}
+
+function unitSeed(parts) {
+  return seedToUint32(sha256(parts.map((p) => String(p)).join(':')));
+}
+
+/**
+ * Deterministic arm execution order from a frozen seed.
+ * Varies by itemId × trial when possible; stable across processes.
+ * Canonicalizes input order so declared arm array order cannot change the shuffle.
+ *
+ * @param {string[]} armIds
+ * @param {{seed:string|number, itemId:string, trial:number}} ctx
+ * @returns {string[]} arm ids in execution order
+ */
+function deterministicArmOrder(armIds, ctx = {}) {
+  if (!Array.isArray(armIds) || armIds.length === 0) {
+    throw new TypeError('armIds must be a non-empty array');
+  }
+  const ids = armIds.map(String);
+  const seed = ctx.seed == null ? 0 : ctx.seed;
+  const itemId = ctx.itemId == null ? '' : String(ctx.itemId);
+  const trial = Number.isInteger(ctx.trial) ? ctx.trial : 1;
+  const rng = mulberry32(unitSeed([seed, itemId, trial, ids.slice().sort().join(',')]));
+  const out = ids.slice().sort();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    const tmp = out[i];
+    out[i] = out[j];
+    out[j] = tmp;
+  }
+  return out;
+}
+
+
 /**
  * Run every arm × item × trial. Never drops attempted rows.
  *
@@ -438,6 +489,7 @@ function normalizeSolveUsage(result, countDefaultCall = false) {
  * @param {object|string} spec.solver
  * @param {Array}  spec.items
  * @param {number} [spec.trials=1]
+ * @param {string|number} [spec.armOrderSeed] - when set, shuffle arm order per item×trial deterministically
  * @param {string|function} spec.scorer - adapter name or custom (text,item,arm)=>score
  * @param {object} [spec.scorerOptions]
  * @param {function} [spec.solve] - async ({item, arm, trial, prompt}) => {ok,text,usage,failure,...}
@@ -450,6 +502,11 @@ async function runObjectiveItems(spec) {
   const armsIn = Array.isArray(spec.arms) ? spec.arms : [];
   if (!armsIn.length) throw new TypeError('runObjectiveItems: arms required');
   const trials = Number.isInteger(spec.trials) && spec.trials > 0 ? spec.trials : 1;
+  const armOrderSeed = Object.prototype.hasOwnProperty.call(spec, 'armOrderSeed')
+    && spec.armOrderSeed != null
+    ? spec.armOrderSeed
+    : null;
+  const armOrderPolicy = armOrderSeed == null ? 'declared' : 'seeded';
   const scorerName = typeof spec.scorer === 'string' ? spec.scorer : (spec.scorerName || null);
   const scorerFn = typeof spec.scorer === 'function' ? spec.scorer : null;
   const scorerOptions = spec.scorerOptions || {};
@@ -476,6 +533,15 @@ async function runObjectiveItems(spec) {
       raw: arm,
     };
   });
+
+  // Fail fast: duplicate resolved IDs collapse the seeded map and duplicate keys.
+  const seenArmIds = new Set();
+  for (const arm of armMeta) {
+    if (seenArmIds.has(arm.id)) {
+      throw new TypeError(`runObjectiveItems: duplicate arm id "${arm.id}"`);
+    }
+    seenArmIds.add(arm.id);
+  }
 
   const outItems = [];
   const failures = [];
@@ -512,7 +578,17 @@ async function runObjectiveItems(spec) {
     const itemId = String(item.id || item.item_id || item.instance_id || '');
     if (!itemId) throw new TypeError('runObjectiveItems: every item needs id');
     for (let trial = 1; trial <= trials; trial++) {
-      for (const arm of armMeta) {
+      // Optional frozen-seed arm order: independent solve per arm, identity keys unchanged.
+      let armsForTrial = armMeta;
+      if (armOrderSeed != null) {
+        const orderedIds = deterministicArmOrder(
+          armMeta.map((a) => a.id),
+          { seed: armOrderSeed, itemId, trial },
+        );
+        const byId = new Map(armMeta.map((a) => [a.id, a]));
+        armsForTrial = orderedIds.map((id) => byId.get(id));
+      }
+      for (const arm of armsForTrial) {
         attempted += 1;
         const identityKey = itemKey({
           studyId: spec.studyId,
@@ -780,6 +856,8 @@ async function runObjectiveItems(spec) {
 
   const statistics = {
     ...(spec.statistics || {}),
+    arm_order_policy: armOrderPolicy,
+    arm_order_seed: armOrderSeed,
     per_arm: {},
   };
   for (const arm of armMeta) {
@@ -835,6 +913,9 @@ module.exports = {
   scoreFileLocalization,
   scoreWithAdapter,
   runObjectiveItems,
+  deterministicArmOrder,
+  mulberry32,
+  seedToUint32,
   goldForItem,
   normalizeRepoPath,
   normalizeSolveUsage,

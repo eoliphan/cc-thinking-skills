@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "registry_version": "phase2-cutover-v1",
-  "generated_note": "Executable study/catalog registry for the 28-skill cutover. registry.skills holds the 28 active survivors; deleted_skills preserves the 11 cutover deletions with absorption/provenance metadata. All survivors remain manual-only with disable-model-invocation until evidence gates elevate them.",
+  "registry_version": "phase4-portfolio-v1",
+  "generated_note": "Executable registry for the 28-skill catalog and portfolio-v1 evidence gate. The portfolio was preregistered but no solver calls were eligible: all survivors remain manual-only, with zero automatic elevations.",
   "catalog": {
     "baseline_count": 39,
     "cutover_count": 28,
-    "current_phase": "cutover",
+    "current_phase": "portfolio_evidence",
     "expected_count": 28,
     "expected_dirs": [
       "thinking-bounded-rationality",
@@ -2428,6 +2428,16 @@
       "judged_studies_policy": "manual_only",
       "declared_inline": true,
       "contract_key": "judge_panel_calibration"
+    },
+    {
+      "study_id": "portfolio-v1",
+      "path": "evals/studies/portfolio-v1",
+      "kind": "portfolio_preregistration_no_run",
+      "skill_id": null,
+      "confirmatory_eligible_by_default": false,
+      "decision_eligible": false,
+      "status": "preregistered_blocked",
+      "product_disposition": "manual_only_quarantine"
     }
   ],
   "workflow": {
