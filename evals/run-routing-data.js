@@ -104,9 +104,12 @@ async function runItem(item) {
 }
 
 function balancedAcc(rows, who) {
-  const pos = rows.filter(r => r.label), neg = rows.filter(r => !r.label);
-  const tpr = pos.length ? pos.filter(r => r[who]).length / pos.length : 0; // recall on YES
-  const tnr = neg.length ? neg.filter(r => r[who]).length / neg.length : 0; // recall on NO
+  // Null predictions are always incorrect — never true negatives or true positives.
+  // who is a prediction field such as 'skill_yes' | 'placebo_yes' (true/false/null).
+  const pos = rows.filter(r => r.label);
+  const neg = rows.filter(r => !r.label);
+  const tpr = pos.length ? pos.filter(r => r[who] === true).length / pos.length : 0;
+  const tnr = neg.length ? neg.filter(r => r[who] === false).length / neg.length : 0;
   return +(((tpr + tnr) / 2)).toFixed(3);
 }
 
@@ -140,4 +143,7 @@ async function main() {
   console.log(`  balanced-acc: skill ${(out.balanced_acc_with_skill * 100).toFixed(0)}% vs placebo ${(out.balanced_acc_placebo * 100).toFixed(0)}%  (labels: ${out.n_yes_label} YES / ${out.n_no_label} NO)`);
   console.log(`  -> ${file}`);
 }
-main();
+module.exports = { balancedAcc, decideYes, isCorrect };
+if (require.main === module) {
+  main();
+}

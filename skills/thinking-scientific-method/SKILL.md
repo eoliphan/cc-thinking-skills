@@ -1,6 +1,7 @@
 ---
 name: thinking-scientific-method
 description: Use when a symptom could have several causes and you must find the faulty code by ranking falsifiable hypotheses and checking the cheapest discriminating observation first.
+disable-model-invocation: true
 ---
 
 # Hypothesis-Differential Debugging
@@ -79,12 +80,14 @@ For each hypothesis, write what result would make you drop it. This prevents con
 | H3 frontend retry | same failure occurs in API-only reproduction |
 ```
 
-### Step 4: Rank by likelihood x cheapness
+### Step 4: Rank observations; prefer least-assumptive survivors
 
-Test the observation with the best expected information per unit of effort. Start with the cheapest observation that separates your top hypotheses, not the most elaborate investigation.
+Rank *observations* by likelihood × cheapness: make the cheapest observation that best separates your top hypotheses, not the most elaborate investigation.
+
+Separately, after each observation, filter to hypotheses that still fit the evidence, then prefer the survivor with the fewest unsupported assumptions as the working explanation and next focus. Count only independent, load-bearing assumptions (extra components, timing dependence, rare conditions, external dependencies). Do not treat simplicity as truth: a leaner hypothesis that fails a falsifier is out; escalate complexity only when evidence has ruled out simpler survivors.
 
 ```
-For each hypothesis → name falsifier → rank by likelihood x cheapness → observe → update/drop → localize fault
+For each hypothesis → name falsifier → pick observation by likelihood × cheapness → observe → drop falsified → among survivors prefer fewest unsupported assumptions → localize fault
 ```
 
 ### Step 5: Stop on direct localization
@@ -139,8 +142,28 @@ Localized fault: `app/export/serializer.py`.
 - Narrating the scientific method without proposing competing causes
 - Looking only for evidence that supports your first guess
 - Calling an expensive experiment a "test" when a cheap observation exists
+- Preferring a “simpler” hypothesis that the evidence already contradicts, or treating fewest assumptions as proof rather than a ranking rule among survivors
 - Stopping at a plausible explanation before ruling out alternatives
 - Continuing to analyze after the faulty file/function is localized
+
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "hypothesis_needed",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.
 
 ## Verification Checklist
 
@@ -148,6 +171,7 @@ Localized fault: `app/export/serializer.py`.
 - [ ] Each hypothesis has a cheap observation available now
 - [ ] Each hypothesis has a stated falsifier
 - [ ] Observations are ranked by likelihood x cheapness
+- [ ] Among evidence-surviving hypotheses, preferred the least-assumptive one without treating simplicity as truth
 - [ ] Final answer names the localized file/function/config and the evidence
 
 ## Key Questions

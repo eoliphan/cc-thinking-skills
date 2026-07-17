@@ -120,7 +120,7 @@ C) The Fed cut rates by less than 75 basis points total, keeping the rate above 
 D) The Fed raised rates further, bringing the rate above 4.75% by January 2026
 E) The Fed held rates exactly steady at 4.25-4.50% throughout the entire period`,
       answer: 'C',
-      skills: ['probabilistic', 'bayesian', 'margin-of-safety'],
+      skills: ['probabilistic', 'margin-of-safety'],
       desc: 'Post-cutoff Fed rate forecasting. Model must reason about macro conditions, not compute. Answer C: the Fed cut rates cautiously (< 75bps) given persistent inflation.',
     },
     {
@@ -133,7 +133,7 @@ C) The cases produced mixed or narrow rulings that required some licensing or op
 D) All major cases were dismissed on procedural grounds before reaching substantive rulings
 E) AI companies preemptively settled by agreeing to destroy all models trained on copyrighted material`,
       answer: 'C',
-      skills: ['probabilistic', 'bayesian'],
+      skills: ['probabilistic'],
       desc: 'Post-cutoff AI legal forecasting. Model must assess the trajectory of multiple court cases. Answer C: mixed/narrow rulings emerged as the dominant pattern.',
     },
     {
@@ -146,7 +146,7 @@ C) Global CO2 emissions continued rising at their pre-2020 trend rate, with rene
 D) A major technological breakthrough in fusion energy was deployed at commercial scale, fundamentally changing emissions trajectories
 E) Global CO2 emissions declined sharply due to an unexpected global recession`,
       answer: 'B',
-      skills: ['probabilistic', 'fermi-estimation'],
+      skills: ['probabilistic'],
       desc: 'Post-cutoff climate/energy forecasting. Model must assess competing signals. Answer B: emissions plateaued — renewables offset growth but didn\'t yet cause decline.',
     },
     {
@@ -159,7 +159,7 @@ C) H5N1 continued causing sporadic animal-to-human spillover cases without susta
 D) H5N1 was completely eradicated from both animal and human populations through aggressive culling and vaccination
 E) H5N1 mutated into a milder form that became endemic in humans like seasonal flu`,
       answer: 'C',
-      skills: ['probabilistic', 'bayesian', 'margin-of-safety'],
+      skills: ['probabilistic', 'margin-of-safety'],
       desc: 'Post-cutoff pandemic risk forecasting. Tests calibration of tail-risk estimates. Answer C: continued sporadic spillover without sustained human transmission.',
     },
     {
@@ -172,7 +172,7 @@ C) Incumbents generally held power in most elections, reversing the 2024 trend
 D) Elections were postponed or cancelled in most of these countries due to political instability
 E) Coalition governments became impossible to form, leading to constitutional crises in multiple countries`,
       answer: 'B',
-      skills: ['probabilistic', 'bayesian'],
+      skills: ['probabilistic'],
       desc: 'Post-cutoff political forecasting. Tests whether model over-extrapolates from 2024 incumbent losses. Answer B: mixed results, no clear global pattern.',
     },
     {
@@ -198,7 +198,7 @@ C) The U.S. defaulted on its debt obligations due to a prolonged debt ceiling cr
 D) A wealth tax and major new social spending programs were enacted, significantly increasing the size of government
 E) A balanced budget amendment to the Constitution was passed and ratified`,
       answer: 'B',
-      skills: ['probabilistic', 'margin-of-safety', 'bayesian'],
+      skills: ['probabilistic', 'margin-of-safety'],
       desc: 'Post-cutoff fiscal policy forecasting. Model must assess political economy constraints. Answer B: tax cuts extended without major deficit reduction.',
     },
     {
@@ -211,7 +211,7 @@ C) AI progress completely stalled as models hit fundamental scaling limits no ar
 D) Major governments shut down frontier AI development through international treaty due to safety concerns
 E) All frontier AI models were open-sourced, leading to widespread democratization but also enabling misuse`,
       answer: 'B',
-      skills: ['probabilistic', 'bayesian'],
+      skills: ['probabilistic'],
       desc: 'Post-cutoff AI capabilities forecasting. Tests calibration between hype-skepticism extremes. Answer B: continued benchmark gains with diminishing real-world returns.',
     },
     {
@@ -237,7 +237,7 @@ C) China's economy accelerated back to 7%+ growth as stimulus programs fully rev
 D) China abandoned its manufacturing export model and transitioned entirely to a domestic consumption economy
 E) China's economy was largely unaffected by these issues and continued growing at its historical ~6% rate`,
       answer: 'B',
-      skills: ['probabilistic', 'bayesian', 'margin-of-safety'],
+      skills: ['probabilistic', 'margin-of-safety'],
       desc: 'Post-cutoff China economy forecasting. Answer B: low positive growth with mixed sectoral performance.',
     },
   ];
@@ -274,7 +274,7 @@ C) The reviewer is partially right. While there is a compositional effect, the 3
 D) The data is insufficient to determine whether discrimination exists.
 E) The reviewer is wrong because the sample size (240 applicants) is too small for statistical significance.`,
       answer: 'B',
-      skills: ['bayesian', 'probabilistic', 'debiasing'],
+      skills: ['probabilistic'],
       desc: 'Simpson\'s paradox. Many LLMs struggle with aggregation reversal. Answer B is correct — women have higher rates in both departments.',
     },
     // 2.2 Medical test with dependent testing
@@ -292,7 +292,7 @@ C) About 16% — somewhat elevated but still more likely a false positive
 D) About 1.9% — still very low despite two positive tests
 E) About 67% — the average of the two test sensitivities`,
       answer: 'D',
-      skills: ['bayesian', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Double-test Bayes with very low base rate. Most people (and LLMs) dramatically overestimate the posterior after two positive tests. Answer D: ~1.9%.',
     },
     // 2.3 Monty Hall variant with unequal doors
@@ -306,7 +306,7 @@ C) Switch to either door #2 or #4 — they each have 2/5 probability of having t
 D) It doesn't matter whether you switch or stay — all three remaining doors have equal 1/3 probability
 E) Switch to door #4 specifically — the host's choice of which goats to reveal gives extra information`,
       answer: 'C',
-      skills: ['bayesian', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Generalized Monty Hall (n=5, host opens 2). Answer C: stay=1/5, each switch target=2/5.',
     },
     // 2.4 Base rate neglect with explicit warning
@@ -322,7 +322,7 @@ C) About 28% — the low base rate of true effects (10%) means most significant 
 D) About 85% — the 15% effect size is large enough to overcome the low base rate
 E) About 10% — matching the historical base rate exactly`,
       answer: 'C',
-      skills: ['bayesian', 'probabilistic', 'debiasing'],
+      skills: ['probabilistic'],
       desc: 'Base rate neglect with p-values. Tests whether model falls for the "p-value = probability null is false" fallacy. Answer C: ~28% via Bayes.',
     },
     // 2.5 Conjunction fallacy trap
@@ -336,7 +336,7 @@ C) The model achieves 99% recall in production.
 D) The fraud rate among flagged transactions exceeds 80%.
 E) The model is deployed in Q1 and detects fraud in Q1.`,
       answer: 'A',
-      skills: ['bayesian', 'probabilistic', 'debiasing'],
+      skills: ['probabilistic'],
       desc: 'Conjunction fallacy. P(A) > P(A AND B) always. Many LLMs fall for the detailed narrative. Answer A.',
     },
     // 2.6 Statistical power trap
@@ -352,7 +352,7 @@ C) The researchers commit the "fallacy of the non-significant trend." A non-sign
 D) The researchers should have used a one-tailed test, which would have made the result significant.
 E) The researchers are correct because 12% is larger than the typical 5% clinical significance threshold.`,
       answer: 'C',
-      skills: ['bayesian', 'probabilistic', 'debiasing'],
+      skills: ['probabilistic'],
       desc: 'Statistical inference trap — "approaching significance" fallacy. Answer C is the statistically rigorous response.',
     },
     // 2.7 Berkson's paradox / collider bias
@@ -368,7 +368,7 @@ C) The negative correlation is an artifact of collider bias (Berkson's paradox):
 D) The sample size is too small to draw conclusions.
 E) Confounding by education level explains the correlation.`,
       answer: 'C',
-      skills: ['bayesian', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Berkson\'s paradox / collider bias. Answer C — selection on a collider induces spurious correlation.',
     },
     // 2.8 Bayes factor interpretation
@@ -384,7 +384,7 @@ C) Neither is definitively "stronger" because they answer different questions. p
 D) Both results are weak and the study should be disregarded.
 E) The two results are contradictory, so the data must be re-analyzed.`,
       answer: 'C',
-      skills: ['bayesian', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'P-value vs Bayes factor interpretation. Model must resist treating p-values and BFs as interchangeable. Answer C.',
     },
     // 2.9 Regression to the mean trap
@@ -400,7 +400,7 @@ C) The model was underfit and needed more features.
 D) Gambler's fallacy — the model should have bet the opposite direction.
 E) Sample selection bias — the model only analyzed high-scoring games.`,
       answer: 'B',
-      skills: ['probabilistic', 'bayesian', 'debiasing'],
+      skills: ['probabilistic'],
       desc: 'Regression to the mean. Model must distinguish real effects from statistical artifact. Answer B.',
     },
     // 2.10 Multiple comparisons trap
@@ -414,7 +414,7 @@ C) 2.5 — about 50 × 0.05 expected under the null
 D) 3 — exactly matching the number of findings
 E) 5 — 10% false positive rate is standard in genetics`,
       answer: 'C',
-      skills: ['bayesian', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Multiple comparisons / family-wise error rate. Answer C: ~2.5 expected false positives by chance alone.',
     },
     // 2.11 Prosecutor's fallacy
@@ -430,7 +430,7 @@ C) The prosecutor committed the "prosecutor's fallacy" — confusing P(match|inn
 D) DNA evidence is not admissible in court.
 E) The sample size (1 in 2 million) is too small for statistical confidence.`,
       answer: 'C',
-      skills: ['bayesian', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Prosecutor\'s fallacy — confusing P(E|H) with P(H|E). Answer C.',
     },
     // 2.12 Conditional probability chain
@@ -444,7 +444,7 @@ C) 0.122 — slightly higher than 0.1 because the system failure makes a B failu
 D) 0.271 — the probability that B failed AND the system failed, divided by the probability the system failed
 E) 0.900 — if the system fails, B almost certainly failed`,
       answer: 'D',
-      skills: ['bayesian', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Conditional probability chain. P(B failed | system failed) = P(B fails AND (any failure)) / P(system fails). Answer D: ~0.271.',
     },
   ];
@@ -473,7 +473,7 @@ C) ~2 × 10^9 kg (2 billion kg) — roughly the mass of the Great Pyramid of Giz
 D) ~1 × 10^10 kg (10 billion kg) — about the mass of all the gold ever mined
 E) ~5 × 10^11 kg (500 billion kg) — roughly the total mass of all living humans`,
       answer: 'C',
-      skills: ['fermi-estimation'],
+      skills: ['probabilistic'],
       desc: 'Multi-step Fermi: fleet size × utilization × mass. Answer C: ~25,000 planes × 20% airborne × 50,000 kg avg ≈ 2.5×10^8 kg, with fuel closer to 2×10^9 kg.',
     },
     {
@@ -490,7 +490,7 @@ C) ~10^13 meters — roughly 1 light-year
 D) ~7 × 10^13 meters — about 0.007 light-years, or roughly the distance light travels in 2.5 days
 E) ~10^16 meters — several light-years, enough to reach nearby stars`,
       answer: 'D',
-      skills: ['fermi-estimation'],
+      skills: ['probabilistic'],
       desc: 'Multi-step Fermi: cells × fraction nucleated × DNA length. Answer D: 3.7×10^13 × 0.84 × 2 ≈ 6.2×10^13 m ≈ 0.007 ly.',
     },
     {
@@ -507,7 +507,7 @@ C) ~190 zettabytes — continuing the ~25% annual growth trend
 D) ~500 zettabytes — exponential growth accelerated dramatically
 E) ~1,000 zettabytes (1 yottabyte) — a step-change from AI training data demands`,
       answer: 'C',
-      skills: ['fermi-estimation', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Fermi with trend extrapolation. Answer C: 150 × 1.25 ≈ 188 ZB.',
     },
     {
@@ -524,7 +524,7 @@ C) ~10^21 (1 sextillion) transistors — roughly the "1 sextillion transistors" 
 D) ~10^23 (100 sextillion) transistors
 E) ~10^25 (10 septillion) transistors`,
       answer: 'C',
-      skills: ['fermi-estimation'],
+      skills: ['probabilistic'],
       desc: 'Multi-step Fermi: annual chips × avg transistors × years dominated by recent production. Answer C: ~10^21 (1 sextillion) — often cited milestone.',
     },
     {
@@ -541,7 +541,7 @@ C) ~750 km³ — roughly the volume of Lake Erie
 D) ~7,500 km³ — about the volume of Lake Superior
 E) ~75,000 km³ — roughly the volume of all the Great Lakes combined`,
       answer: 'B',
-      skills: ['fermi-estimation'],
+      skills: ['probabilistic'],
       desc: 'Fermi with known constant: 2,400 m³/s × 31.5×10^6 s = 7.56×10^10 m³ = 75.6 km³. Answer B.',
     },
     {
@@ -558,7 +558,7 @@ C) ~10^32 J — roughly the total energy output of the Sun in one second
 D) ~10^35 J — the gravitational binding energy of Earth
 E) ~10^38 J — roughly the total energy output of the Sun in a million years`,
       answer: 'B',
-      skills: ['fermi-estimation'],
+      skills: ['probabilistic'],
       desc: 'Fermi with physics: E = ½Iω². I ≈ 9.7×10^37, ω ≈ 7.29×10^-5, E ≈ 2.6×10^29 J. Answer B.',
     },
     {
@@ -575,7 +575,7 @@ C) ~4 × 10^18 words — about 4 quintillion
 D) ~2 × 10^20 words — about 200 quintillion
 E) ~10^22 words — about 10 sextillion`,
       answer: 'C',
-      skills: ['fermi-estimation'],
+      skills: ['probabilistic'],
       desc: 'Multi-step Fermi: 117B people × 35yr avg × 365 days × 3,000 words. Answer C: ~4.5×10^18.',
     },
     {
@@ -592,7 +592,7 @@ C) ~10^22 FLOPS — 10 zettaFLOPS
 D) ~10^23 FLOPS — 100 zettaFLOPS
 E) ~10^24 FLOPS — 1 yottaFLOPS`,
       answer: 'C',
-      skills: ['fermi-estimation'],
+      skills: ['probabilistic'],
       desc: 'Multi-step Fermi: sum across device categories. Data centers dominate. Answer C: ~10^22 FLOPS (10 zettaFLOPS).',
     },
   ];
@@ -624,7 +624,7 @@ C) Anchoring bias — she anchored on the competitor's blog post. The corrective
 D) Availability bias — recent competitor news is over-weighted. The corrective: wait 6 months and re-evaluate.
 E) Hindsight bias — she thinks the competitor's failure was predictable. The corrective: document what she predicted before the launch.`,
       answer: 'B',
-      skills: ['debiasing', 'bayesian'],
+      skills: ['steel-manning', 'probabilistic'],
       desc: 'Confirmation bias in competitor analysis. All evidence filtered through pre-existing commitment. Answer B: explicit disconfirmation search.',
     },
     {
@@ -639,7 +639,7 @@ C) Survivorship bias. They should only count companies that are still operating.
 D) Hindsight bias. They should have predicted which companies would succeed before they did.
 E) Anchoring bias. They should compare their rate to the industry average of 10%.`,
       answer: 'A',
-      skills: ['debiasing', 'bayesian', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Selection skill assessment without counterfactual. Need unfunded company outcomes. Answer A.',
     },
     {
@@ -654,7 +654,7 @@ C) Use the outside view as the ANCHOR (7 months) and then adjust based on specif
 D) Average the two: plan for 5.5 months.
 E) Run a prediction market among the team to get a crowd estimate.`,
       answer: 'C',
-      skills: ['debiasing', 'probabilistic', 'bayesian'],
+      skills: ['probabilistic'],
       desc: 'Inside-view vs outside-view (reference class forecasting). Answer C: anchor on outside view, adjust modestly with quantified evidence.',
     },
     {
@@ -671,7 +671,7 @@ C) Distinguish between "root causes" (factors without which the incident would n
 D) The third-party API is the root cause because it triggered the cascade. Fix that first.
 E) Run all 5 fixes and A/B test which one prevents the most incidents over the next quarter.`,
       answer: 'C',
-      skills: ['debiasing', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Narrative fallacy in incident postmortems. Answer C: prioritize by expected future risk reduction, not narrative salience.',
     },
     {
@@ -692,7 +692,7 @@ C) Her estimate is too LOW — models that score 94% almost always do well. It s
 D) The base rate is irrelevant because her team is clearly better. 85% is correct.
 E) She should use the broader 70% base rate exclusively and ignore her team's track record.`,
       answer: 'B',
-      skills: ['bayesian', 'debiasing', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Reference class selection and shrinkage. Answer B: shrink narrow-class estimate toward broader base rate.',
     },
     {
@@ -709,7 +709,7 @@ C) The answer depends on the decision structure. If the company treats each sign
 D) Use Bayesian methods instead, which don't have this problem.
 E) Only run one experiment per quarter to avoid the multiplicity problem entirely.`,
       answer: 'C',
-      skills: ['bayesian', 'debiasing', 'probabilistic'],
+      skills: ['probabilistic'],
       desc: 'Multiplicity debate: per-decision vs family-wise error rate. Answer C: depends on decision structure — agree on error rate upfront.',
     },
     {
@@ -728,7 +728,7 @@ C) The colleague's intervention is sufficient — social accountability eliminat
 D) The contrast effect doesn't apply to interviews because they're qualitative.
 E) Biases only affect novice interviewers; experienced managers are immune.`,
       answer: 'B',
-      skills: ['debiasing'],
+      skills: ['probabilistic'],
       desc: 'Bias blind spot — mental correction is unreliable. Answer B: structural debiasing > mental adjustment.',
     },
     {
@@ -745,7 +745,7 @@ C) Quantify the trade-off: estimate the expected number of incorrect decisions f
 D) The accuracy difference (5%) is too small to matter — flip a coin.
 E) Use both models as an ensemble to get the best of both approaches.`,
       answer: 'C',
-      skills: ['debiasing', 'probabilistic', 'margin-of-safety'],
+      skills: ['probabilistic', 'margin-of-safety'],
       desc: 'Accuracy vs fairness trade-off. Answer C: quantify both dimensions rather than absolutist position.',
     },
   ];
@@ -770,7 +770,7 @@ C) 50,000 rps — provision for the worst case to eliminate all outage risk.
 D) Compute the expected cost at each level: at 25K rps, expected cost = $50K×25 + $2M×P(load>25K). If P(load>25K) ≈ 5%, then expected outage cost ≈ $100K/month. At 50K rps, expected cost = $50K×50 + $2M×0.01 = $2.5M + $20K. The 25K provisioning appears optimal, but verify the 95th percentile estimate is reliable — if uncertainty about the tail is high, a buffer beyond 25K may be warranted.
 E) Provision 10,000 rps and use auto-scaling to handle spikes — that eliminates the trade-off.`,
       answer: 'D',
-      skills: ['margin-of-safety', 'probabilistic', 'bayesian'],
+      skills: ['margin-of-safety', 'probabilistic'],
       desc: 'Capacity provisioning with cost optimization. Answer D: compute expected costs, verify tail estimate reliability.',
     },
     {
@@ -807,7 +807,7 @@ C) Quantify: the base design expects 0.25 failures/year (500K hrs × 5×10^-5 fa
 D) Add redundancy because public perception of aircraft safety makes any failure catastrophic for the business.
 E) Add a partial redundancy that saves 5kg of weight.`,
       answer: 'C',
-      skills: ['margin-of-safety', 'probabilistic', 'bayesian'],
+      skills: ['margin-of-safety', 'probabilistic'],
       desc: 'Safety margin with cost-benefit analysis. Answer C: quantify expected lives saved vs cost — $18B/life far exceeds norms.',
     },
     {
@@ -826,7 +826,7 @@ C) Option A for MVP, then migrate to Option B after 6 months.
 D) Use a hybrid: synchronous for critical paths, async for non-critical ones.
 E) Neither — use a third-party payment processor and avoid building this entirely.`,
       answer: 'A',
-      skills: ['margin-of-safety', 'probabilistic', 'debiasing'],
+      skills: ['margin-of-safety', 'probabilistic'],
       desc: 'Architecture margin-of-safety: consistency vs availability trade-off with bug risk. Answer A.',
     },
   ];
@@ -877,7 +877,7 @@ C) 0.10 — about 10%
 D) 0.01 — exactly 1%
 E) It's impossible for a fair coin`,
       answer: 'A',
-      skills: ['probabilistic', 'bayesian'],
+      skills: ['probabilistic'],
       desc: 'Near-miss: straightforward binomial probability. Tests basic computation, not nuanced reasoning.',
     },
     {

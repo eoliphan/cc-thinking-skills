@@ -1,6 +1,6 @@
 {
   "name": "thinking-skills",
-  "description": "39 eval-informed thinking skills and mental models for Claude Code",
+  "description": "28 eval-informed thinking skills and mental models for Claude Code",
   "version": "1.0.0",
   "author": {
     "name": "TJ Boudreaux",
@@ -15,7 +15,7 @@
     "decision-making",
     "systems-thinking",
     "first-principles",
-    "bayesian-reasoning",
+    "probabilistic-reasoning",
     "cognitive-bias",
     "strategic-thinking",
     "problem-solving"

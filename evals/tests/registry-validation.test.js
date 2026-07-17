@@ -116,8 +116,8 @@ ${words}
 
 test('current pre-rewrite catalog fails new structural requirements (observable, not weakened)', () => {
   const report = validateAllSkills();
-  assert.equal(report.found_count, 39);
-  assert.equal(report.expected_count, 39);
+  assert.equal(report.found_count, 28);
+  assert.equal(report.expected_count, 28);
   // Pre-rewrite skills lack lean sections; failures must remain visible
   assert.equal(report.ok, false);
   assert.ok(report.failed.length > 0, 'expected pre-rewrite skills to fail new section requirements');
@@ -125,7 +125,7 @@ test('current pre-rewrite catalog fails new structural requirements (observable,
   assert.ok(sample.failed.length > 0);
   // Ensure we did not silently filter failures
   assert.equal(report.summary.failed, report.failed.length);
-  assert.equal(report.summary.total, 39);
+  assert.equal(report.summary.total, 28);
 });
 
 test('validate-skills does not write quality-report.json', () => {
@@ -178,6 +178,31 @@ test('global split validator checks ids and clusters without requiring tracked o
   assert.ok(real.global);
   // ensure workflow-cases-replication is included when present
   assert.ok(real.workflow.some(w => w.file.includes('replication')) || !fs.existsSync(path.join(__dirname, '..', 'datasets', 'workflow-cases-replication.jsonl')));
+});
+
+test('consumed provisional authored rows are dev-only and non-fresh', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'split-consumed-'));
+  const authored = path.join(tmp, 'authored');
+  fs.mkdirSync(authored);
+  const consumed = {
+    id: 'consumed-1',
+    prompt: 'already evaluated',
+    cluster_id: 'consumed-cluster',
+    source_family: 'legacy',
+    split: 'heldout',
+    cluster_basis: 'legacy reuse',
+    evidence_status: 'consumed_provisional',
+    freshness_eligible: false,
+  };
+  fs.writeFileSync(path.join(authored, 'consumed.jsonl'), `${JSON.stringify(consumed)}\n`);
+  const invalid = validateAuthoredFile('consumed.jsonl', authored);
+  assert.equal(invalid.status, 'failed');
+  assert.ok(invalid.errors.some(error => /must use split=dev/.test(error)));
+
+  consumed.split = 'dev';
+  fs.writeFileSync(path.join(authored, 'consumed.jsonl'), `${JSON.stringify(consumed)}\n`);
+  const valid = validateAuthoredFile('consumed.jsonl', authored);
+  assert.equal(valid.status, 'passed', valid.errors.join('; '));
 });
 
 test('global validator detects cross-file authored id collisions', () => {

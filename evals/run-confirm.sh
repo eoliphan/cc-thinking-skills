@@ -9,6 +9,6 @@ run () { echo "===== $* =====" | tee -a "$LOG"; eval "$*" 2>&1 | grep -v "_omz_n
 echo "CONFIRM START $(date -u +%FT%TZ)" | tee -a "$LOG"
 # red-team: full balanced DiverseVul (200, 100/100) — no LIMIT to keep balance
 run "FORCE_SKILL=red-team CONC=4 OUTFILE=$OUT/redteam-diversevul-balanced-n200.json node evals/run-correctness.js diversevul-balanced"
-# fermi: n=150 numeric OOM
-run "FORCE_SKILL=fermi-estimation LIMIT=150 CONC=4 OUTFILE=$OUT/numeric-fermi-n150.json node evals/run-numeric.js fermi"
+# fermi dataset: n=150 numeric OOM under probabilistic skill
+run "FORCE_SKILL=probabilistic LIMIT=150 CONC=4 OUTFILE=$OUT/numeric-fermi-n150.json node evals/run-numeric.js fermi"
 echo "CONFIRM DONE $(date -u +%FT%TZ)" | tee -a "$LOG"

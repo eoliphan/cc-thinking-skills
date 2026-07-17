@@ -1,6 +1,7 @@
 ---
 name: thinking-thought-experiment
 description: You need to trace how a system would fail or behave at a scale you can't cheaply test or measure. Use to imagine the scenario and walk the consequence chain step by step.
+disable-model-invocation: true
 ---
 
 # Thought Experiments

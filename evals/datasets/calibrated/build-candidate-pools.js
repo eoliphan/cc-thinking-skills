@@ -26,7 +26,7 @@ const OUT = path.join(DATASETS, 'calibrated');
 const FAMILIES = {
   'debugging-fault-localization': {
     name: 'Debugging/fault-localization',
-    skills: ['scientific-method', 'five-whys-plus', 'systems', 'occams-razor', 
+    skills: ['scientific-method', 'five-whys-plus', 'systems',
              'map-territory', 'kepner-tregoe', 'second-order', 'theory-of-constraints'],
     valueSurface: 'localization',
     calibrationRange: [0.40, 0.70],
@@ -67,8 +67,8 @@ const FAMILIES = {
   },
   'routing-abstention': {
     name: 'Routing/abstention',
-    skills: ['circle-of-competence', 'cynefin', 'model-combination', 
-             'model-router', 'model-selection', 'socratic'],
+    skills: ['circle-of-competence', 'cynefin', 'model-combination',
+             'model-router', 'socratic'],
     valueSurface: 'routing/discoverability',
     calibrationRange: [0.40, 0.70],
     sources: {
@@ -87,7 +87,7 @@ const FAMILIES = {
   },
   'quantitative-uncertainty': {
     name: 'Quantitative/uncertainty',
-    skills: ['bayesian', 'debiasing', 'fermi-estimation', 'margin-of-safety', 'probabilistic'],
+    skills: ['probabilistic', 'margin-of-safety'],
     valueSurface: 'objective correctness',
     calibrationRange: [0.40, 0.70],
     sources: {
@@ -109,9 +109,9 @@ const FAMILIES = {
   },
   'conceptual-reframes': {
     name: 'Conceptual reframes',
-    skills: ['bounded-rationality', 'dual-process', 'effectuation', 'first-principles',
-             'inversion', 'jobs-to-be-done', 'lindy-effect', 'opportunity-cost',
-             'pre-mortem', 'regret-minimization', 'reversibility', 'steel-manning',
+    skills: ['bounded-rationality', 'effectuation', 'first-principles',
+             'jobs-to-be-done', 'lindy-effect', 'opportunity-cost',
+             'pre-mortem', 'reversibility', 'steel-manning',
              'thought-experiment', 'triz'],
     valueSurface: 'paired reasoning quality',
     calibrationRange: [0.40, 0.70],
@@ -124,7 +124,7 @@ const FAMILIES = {
         { file: 'external/debias-authored.jsonl', mode: 'adopt', filter: (item) => {
           // debias-authored already used in quantitative; for conceptual-reframes, 
           // include items that are more about cognitive reframing
-          return item.skill_fit && item.skill_fit.includes('debiasing');
+          return item.skill_fit && (item.skill_fit.includes('probabilistic') || item.skill_fit.includes('steel-manning'));
         }},
       ],
       nearMiss: [
@@ -138,7 +138,7 @@ const FAMILIES = {
   },
   'systems-product-strategy-pairwise': {
     name: 'Systems/product/strategy pairwise',
-    skills: ['archetypes', 'feedback-loops', 'leverage-points', 'ooda', 'via-negativa'],
+    skills: ['systems', 'ooda', 'via-negativa'],
     valueSurface: 'paired reasoning quality',
     calibrationRange: [0.40, 0.70],
     sources: {
@@ -545,7 +545,7 @@ function buildLeakageNotes(familyKey, sourceList) {
     'conceptual-reframes': 
       'First-principles-constraint, reversibility-doors, and second-order-consequence are locally authored datasets — zero external leakage. Debias-authored items are locally authored cognitive bias scenarios with anchoring bias types. Some items may resemble classic cognitive bias examples from psychology literature which models may have encountered. GLM distractor items may have training data overlap. Overall leakage risk is low because locally authored items dominate the target set.',
     'systems-product-strategy-pairwise': 
-      'Theory-of-constraints-bottleneck authored dataset is locally authored — zero external leakage. Behavioral items for archetypes, feedback-loops, leverage-points, ooda, and via-negativa are locally authored scenarios. Margin-of-safety-provision authored dataset provides near-miss items. All target items are locally authored with zero training data leakage risk. GLM distractor items may have training data overlap. Overall leakage risk is very low.',
+      'Theory-of-constraints-bottleneck authored dataset is locally authored — zero external leakage. Behavioral items for systems, ooda, and via-negativa are locally authored scenarios. Margin-of-safety-provision authored dataset provides near-miss items. All target items are locally authored with zero training data leakage risk. GLM distractor items may have training data overlap. Overall leakage risk is very low.',
   };
 
   const note = notes[familyKey] || 'Mixed sources with varying leakage profiles. External datasets may have training data overlap. Authored and behavioral datasets are locally created with zero external leakage risk.';

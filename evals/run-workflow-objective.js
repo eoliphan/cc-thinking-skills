@@ -30,12 +30,10 @@ const DATASETS = {
   'thinking-margin-of-safety': { file: 'evals/datasets/authored/margin-of-safety-provision.jsonl', decision_key: 'adequate_margin' },
   'thinking-map-territory': { file: 'evals/datasets/authored/map-territory-verify.jsonl', decision_key: 'map_contradicts_territory' },
   'thinking-pre-mortem': { file: 'evals/datasets/authored/pre-mortem-risk.jsonl', decision_key: 'pre_mortem_warranted' },
-  'thinking-inversion': { file: 'evals/datasets/authored/inversion-failure-paths.jsonl', decision_key: 'inversion_warranted' },
   'thinking-red-team': { file: 'evals/datasets/authored/red-team-vulnerability.jsonl', decision_key: 'vulnerability_present' },
   'thinking-scientific-method': { file: 'evals/datasets/authored/scientific-method-hypothesis.jsonl', decision_key: 'hypothesis_needed' },
   'thinking-kepner-tregoe': { file: 'evals/datasets/authored/kepner-tregoe-selective-defect.jsonl', decision_key: 'selective_defect' },
   'thinking-five-whys-plus': { file: 'evals/datasets/authored/five-whys-root-cause.jsonl', decision_key: 'root_cause_needed' },
-  'thinking-occams-razor': { file: 'evals/datasets/authored/occams-razor-competing-causes.jsonl', decision_key: 'simplest_explanation_fits' },
 };
 
 const CHALLENGING_DATASETS = {
@@ -45,7 +43,6 @@ const CHALLENGING_DATASETS = {
   'thinking-second-order': { file: 'evals/datasets/authored/challenging-second-order.jsonl', decision_key: 'second_order_consequence' },
   'thinking-margin-of-safety': { file: 'evals/datasets/authored/challenging-margin-of-safety.jsonl', decision_key: 'adequate_margin' },
   'thinking-pre-mortem': { file: 'evals/datasets/authored/challenging-pre-mortem.jsonl', decision_key: 'pre_mortem_warranted' },
-  'thinking-inversion': { file: 'evals/datasets/authored/challenging-inversion.jsonl', decision_key: 'inversion_warranted' },
   'thinking-cynefin': { file: 'evals/datasets/authored/challenging-cynefin.jsonl', decision_key: 'unordered_problem' },
 };
 const CHALLENGING_MODE = process.env.CHALLENGING_MODE === '1' || process.argv.includes('--challenging');

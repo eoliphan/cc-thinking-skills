@@ -1,6 +1,7 @@
 ---
 name: thinking-five-whys-plus
 description: Use when a fault is localized to a component and the proximate cause is known but the systemic root is not — chain 'why' with evidence, a counterfactual cause test, and an explicit stop condition.
+disable-model-invocation: true
 ---
 
 # Five Whys Plus
@@ -137,3 +138,22 @@ A completed Five Whys Plus analysis produces:
 | **Single-cause bias** | Assuming one root cause without branching | At each step, ask "what else could cause this?" and rule out alternatives |
 | **Confirmation bias** | Finding the cause you expected to find | Devil's advocate review; ask "what evidence contradicts this?" |
 | **Ritualistic chaining** | Asking five whys when one would do | Stop when the counterfactual test passes and the stop condition is met |
+
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "root_cause_needed",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.

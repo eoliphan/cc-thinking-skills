@@ -1,6 +1,7 @@
 ---
 name: thinking-ooda
 description: Use under time pressure (incident, outage, debugging a moving target) when you must act before you have certainty—cycle Observe→Orient→Decide→Act on ~70% confidence, then re-observe.
+disable-model-invocation: true
 ---
 
 # OODA Loop

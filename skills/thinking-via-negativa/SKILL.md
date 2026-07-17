@@ -1,6 +1,7 @@
 ---
 name: thinking-via-negativa
 description: About to add a feature/layer/process to fix a problem. First ask what to remove instead — subtraction is often more robust than addition. Use for simplification and complexity reduction.
+disable-model-invocation: true
 ---
 
 # Via Negativa

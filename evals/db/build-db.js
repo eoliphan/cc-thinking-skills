@@ -19,21 +19,20 @@ const REVIEWS = path.join(ROOT, 'reviews');
 const DB = path.join(__dirname, 'evals.db');
 
 const CATEGORY = {
-  'first-principles': 'Decision', 'second-order': 'Decision', 'inversion': 'Decision',
+  'first-principles': 'Decision', 'second-order': 'Decision',
   'pre-mortem': 'Decision', 'kepner-tregoe': 'Decision', 'reversibility': 'Decision',
-  'regret-minimization': 'Decision', 'opportunity-cost': 'Decision', 'occams-razor': 'Decision',
-  'bayesian': 'Cognitive', 'debiasing': 'Cognitive', 'dual-process': 'Cognitive',
+  'opportunity-cost': 'Decision',
   'bounded-rationality': 'Cognitive', 'socratic': 'Cognitive', 'probabilistic': 'Cognitive',
   'steel-manning': 'Cognitive', 'map-territory': 'Cognitive', 'circle-of-competence': 'Cognitive',
-  'systems': 'Systems', 'feedback-loops': 'Systems', 'archetypes': 'Systems', 'ooda': 'Systems',
-  'leverage-points': 'Systems', 'theory-of-constraints': 'Systems', 'cynefin': 'Systems',
+  'systems': 'Systems', 'ooda': 'Systems',
+  'theory-of-constraints': 'Systems', 'cynefin': 'Systems',
   'scientific-method': 'Systems', 'five-whys-plus': 'Systems',
-  'triz': 'Innovation/Risk', 'thought-experiment': 'Innovation/Risk', 'fermi-estimation': 'Innovation/Risk',
+  'triz': 'Innovation/Risk', 'thought-experiment': 'Innovation/Risk',
   'margin-of-safety': 'Innovation/Risk', 'lindy-effect': 'Innovation/Risk', 'via-negativa': 'Innovation/Risk',
   'red-team': 'Innovation/Risk', 'jobs-to-be-done': 'Product', 'effectuation': 'Product',
-  'model-router': 'Meta', 'model-selection': 'Meta', 'model-combination': 'Meta',
+  'model-router': 'Meta', 'model-combination': 'Meta',
 };
-const META = new Set(['thinking-model-router', 'thinking-model-selection', 'thinking-model-combination']);
+const META = new Set(['thinking-model-router', 'thinking-model-combination']);
 
 function readJson(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch (_) { return null; } }
 function sq(v) {

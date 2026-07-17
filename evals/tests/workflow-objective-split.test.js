@@ -16,7 +16,7 @@ test('SPLIT=heldout restricts loadItems to heldout rows only', () => {
 });
 
 test('SPLIT filter applies before LIMIT_PER_SKILL and keeps schema fields', () => {
-  const items = loadItems('thinking-occams-razor');
+  const items = loadItems('thinking-scientific-method');
   assert.ok(items.every(i => i.split === 'heldout'));
   assert.ok(items.every(i => typeof i.label === 'boolean'));
   assert.ok(items.every(i => i.cluster_id));

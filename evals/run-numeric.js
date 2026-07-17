@@ -3,8 +3,8 @@
 
 /**
  * Correctness eval for NUMERIC and BINARY-PROBABILITY ground truth (paired,
- * isolated, length-controlled). Unlocks fermi-estimation (order-of-magnitude),
- * bayesian/probabilistic (forecasting → accuracy + Brier).
+ * isolated, length-controlled). Unlocks probabilistic (order-of-magnitude Fermi
+ * bounds; forecasting → accuracy + Brier).
  *
  *   numeric      : score within K orders of magnitude of answer_num (default K=1)
  *   binary-prob  : model gives P(yes); correct if (P>0.5)==answer_bin; also Brier
@@ -12,7 +12,7 @@
  * Compares FORCE_SKILL vs length-matched placebo (paired McNemar). Optional
  * trigger arm via PAIRS-like TRIGGER=1.
  *
- * Usage: EVAL_RUN=run1 FORCE_SKILL=fermi-estimation MODE=numeric node evals/run-numeric.js fermi
+ * Usage: EVAL_RUN=run1 FORCE_SKILL=probabilistic MODE=numeric node evals/run-numeric.js fermi
  *        FORCE_SKILL=probabilistic MODE=binary-prob node evals/run-numeric.js forecasting
  */
 

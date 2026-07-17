@@ -20,7 +20,7 @@ const lib = require('./lib');
 
 const ROOT = lib.REPO_ROOT;
 const LIMIT = process.env.LIMIT || '24';
-const FORCE_SKILL = process.env.FORCE_SKILL || 'bayesian';
+const FORCE_SKILL = process.env.FORCE_SKILL || 'probabilistic';
 const TAGS = process.env.TAGS || 'medical';
 
 const SWEEPS = {

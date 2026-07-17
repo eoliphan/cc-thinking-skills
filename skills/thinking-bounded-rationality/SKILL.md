@@ -1,6 +1,7 @@
 ---
 name: thinking-bounded-rationality
 description: Use when a search or investigation could run indefinitely and you need a stopping rule. Set an explicit "good enough" threshold and stop at the first option that clears it.
+disable-model-invocation: true
 ---
 
 # Bounded Rationality and Satisficing
@@ -346,13 +347,13 @@ Use First Principles to determine:
 Then satisfice against those fundamentals
 ```
 
-### With Inversion
+### With Pre-Mortem
 
 ```
-Use Inversion to set aspiration level:
-- "What would make this solution unacceptable?"
-- Avoid those failure modes
-- Any option avoiding them satisfices
+Use pre-mortem (failure-first reverse analysis) to set and validate aspiration level:
+- "What would make this solution unacceptable?" → avoid those failure modes; any option avoiding them satisfices
+- "If this satisficed solution fails, why?" → adjust thresholds to prevent likely failures
+- Don't over-engineer against unlikely failures
 ```
 
 ### With Circle of Competence
@@ -366,15 +367,6 @@ Outside your circle:
 Inside your circle:
 - You can choose when to optimize vs satisfice
 - Trust your calibrated aspiration levels
-```
-
-### With Pre-Mortem
-
-```
-Run pre-mortem to validate aspiration level:
-- "If this satisficed solution fails, why?"
-- Adjust thresholds to prevent likely failures
-- Don't over-engineer against unlikely failures
 ```
 
 ## Verification Checklist

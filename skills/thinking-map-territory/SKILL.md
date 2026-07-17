@@ -1,6 +1,7 @@
 ---
 name: thinking-map-territory
 description: Use when behavior contradicts the docs, tests, diagram, or your assumption — stop reasoning from the description, go verify the running code or data directly, and let the territory overrule the map.
+disable-model-invocation: true
 ---
 
 # Map-Territory Thinking
@@ -109,3 +110,22 @@ A completed Map-Territory verification produces:
 | **Map-territory on artifacts being edited** | Spiral into verification when the doc/diagram IS the thing you're changing | The edited artifact IS the territory for that task |
 | **Over-applying to authoritative maps** | Second-guessing generated types or code-derived schemas | Authoritative/generated maps ARE the territory |
 | **Verifying irrelevant mismatches** | Noting a doc-code gap that can't affect the decision | If it doesn't change your action, note it and move on |
+
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "map_contradicts_territory",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.

@@ -1,42 +1,31 @@
 {
   "schema_version": 1,
-  "registry_version": "phase1-baseline-v1",
-  "generated_note": "Executable study/catalog registry for Phase 1 measurement foundation. Baseline expects 39 skills; cutover target is 28 survivors with disable-model-invocation.",
+  "registry_version": "phase2-cutover-v1",
+  "generated_note": "Executable study/catalog registry for the 28-skill cutover. registry.skills holds the 28 active survivors; deleted_skills preserves the 11 cutover deletions with absorption/provenance metadata. All survivors remain manual-only with disable-model-invocation until evidence gates elevate them.",
   "catalog": {
     "baseline_count": 39,
     "cutover_count": 28,
-    "current_phase": "baseline",
-    "expected_count": 39,
+    "current_phase": "cutover",
+    "expected_count": 28,
     "expected_dirs": [
-      "thinking-archetypes",
-      "thinking-bayesian",
       "thinking-bounded-rationality",
       "thinking-circle-of-competence",
       "thinking-cynefin",
-      "thinking-debiasing",
-      "thinking-dual-process",
       "thinking-effectuation",
-      "thinking-feedback-loops",
-      "thinking-fermi-estimation",
       "thinking-first-principles",
       "thinking-five-whys-plus",
-      "thinking-inversion",
       "thinking-jobs-to-be-done",
       "thinking-kepner-tregoe",
-      "thinking-leverage-points",
       "thinking-lindy-effect",
       "thinking-map-territory",
       "thinking-margin-of-safety",
       "thinking-model-combination",
       "thinking-model-router",
-      "thinking-model-selection",
-      "thinking-occams-razor",
       "thinking-ooda",
       "thinking-opportunity-cost",
       "thinking-pre-mortem",
       "thinking-probabilistic",
       "thinking-red-team",
-      "thinking-regret-minimization",
       "thinking-reversibility",
       "thinking-scientific-method",
       "thinking-second-order",
@@ -91,6 +80,21 @@
       "occams-razor",
       "regret-minimization"
     ],
+    "dropped_behavioral_datasets": {
+      "paths": [
+        "evals/datasets/behavioral/thinking-archetypes.json",
+        "evals/datasets/behavioral/thinking-bayesian.json",
+        "evals/datasets/behavioral/thinking-debiasing.json",
+        "evals/datasets/behavioral/thinking-dual-process.json",
+        "evals/datasets/behavioral/thinking-feedback-loops.json",
+        "evals/datasets/behavioral/thinking-fermi-estimation.json",
+        "evals/datasets/behavioral/thinking-inversion.json",
+        "evals/datasets/behavioral/thinking-leverage-points.json",
+        "evals/datasets/behavioral/thinking-occams-razor.json",
+        "evals/datasets/behavioral/thinking-regret-minimization.json"
+      ],
+      "reason": "Synthetic behavioral cases were labeled to removed skills and were not evidence-eligible; do not retag them without case-level review against the absorbing contract."
+    },
     "survivor_budgets": {
       "bounded-rationality": 450,
       "circle-of-competence": 450,
@@ -226,31 +230,23 @@
   },
   "data_adequacy": {
     "policy": "unknown_or_inadequate_is_explicit",
+    "scope": "active_skills",
     "inadequate_skill_ids": [
       "first-principles",
       "second-order",
       "theory-of-constraints"
     ],
     "unknown_skill_ids": [
-      "archetypes",
-      "bayesian",
       "bounded-rationality",
       "circle-of-competence",
-      "debiasing",
-      "dual-process",
       "effectuation",
-      "feedback-loops",
-      "fermi-estimation",
       "jobs-to-be-done",
-      "leverage-points",
       "lindy-effect",
       "model-combination",
       "model-router",
-      "model-selection",
       "ooda",
       "opportunity-cost",
       "probabilistic",
-      "regret-minimization",
       "steel-manning",
       "systems",
       "thought-experiment",
@@ -260,144 +256,35 @@
     "adequate_skill_ids": [
       "cynefin",
       "five-whys-plus",
-      "inversion",
       "kepner-tregoe",
       "map-territory",
       "margin-of-safety",
-      "occams-razor",
       "pre-mortem",
       "red-team",
       "reversibility",
       "scientific-method",
       "socratic"
-    ]
+    ],
+    "deleted_skills_provenance": {
+      "inadequate_skill_ids": [],
+      "unknown_skill_ids": [
+        "archetypes",
+        "bayesian",
+        "debiasing",
+        "dual-process",
+        "feedback-loops",
+        "fermi-estimation",
+        "leverage-points",
+        "model-selection",
+        "regret-minimization"
+      ],
+      "adequate_skill_ids": [
+        "inversion",
+        "occams-razor"
+      ]
+    }
   },
   "skills": {
-    "archetypes": {
-      "id": "archetypes",
-      "dir": "thinking-archetypes",
-      "contract_path": "evals/contracts/thinking-archetypes.json",
-      "primary_value_surface": "paired reasoning quality",
-      "primary_metric": "pairwise_win_rate_vs_placebo",
-      "secondary_metrics": [
-        "judge_agreement",
-        "format_length_controlled_win_rate",
-        "archetype_match_accuracy",
-        "intervention_appropriateness"
-      ],
-      "eval_family": "Systems/product/strategy pairwise",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 80,
-      "min_sample_replication": 80,
-      "planned_comparison": "trigger",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
-        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Novel problems with no historical precedent; one-off incidents without recurring structure; systems too simple to exhibit archetypal behavior; meta-questions about system archetypes",
-        "description": "Items where the recurring pattern library doesn't apply — genuinely novel dynamics or trivially simple systems"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "systems"
-        ],
-        "mechanism": "recurring cross-domain structure/pattern check",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
-    "bayesian": {
-      "id": "bayesian",
-      "dir": "thinking-bayesian",
-      "contract_path": "evals/contracts/thinking-bayesian.json",
-      "primary_value_surface": "calibrated classification",
-      "primary_metric": "posterior_calibration_error",
-      "secondary_metrics": [
-        "prior_elicitation_quality",
-        "likelihood_assessment_accuracy",
-        "update_correctness",
-        "base_rate_adherence"
-      ],
-      "eval_family": "Quantitative/uncertainty",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 60,
-      "min_sample_replication": 60,
-      "planned_comparison": "placebo",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND posterior_calibration_error < 0.10",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR base_rate_adherence < 0.50",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Questions with definitive answers; situations with no meaningful prior; meta-questions about Bayesian reasoning",
-        "description": "Items where probability estimation adds no value over direct knowledge or where priors cannot be meaningfully established"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "probabilistic"
-        ],
-        "mechanism": "prior → likelihood → posterior update",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
     "bounded-rationality": {
       "id": "bounded-rationality",
       "dir": "thinking-bounded-rationality",
@@ -594,130 +481,6 @@
       },
       "study_ids": []
     },
-    "debiasing": {
-      "id": "debiasing",
-      "dir": "thinking-debiasing",
-      "contract_path": "evals/contracts/thinking-debiasing.json",
-      "primary_value_surface": "calibrated classification",
-      "primary_metric": "bias_detection_accuracy",
-      "secondary_metrics": [
-        "calibration_improvement",
-        "base_rate_adherence",
-        "anchoring_resistance",
-        "confirmation_bias_mitigation"
-      ],
-      "eval_family": "Quantitative/uncertainty",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 60,
-      "min_sample_replication": 60,
-      "planned_comparison": "placebo",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND calibration_improvement >= 0.02",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR base_rate_adherence < 0.50",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Decisions with no identifiable bias risk; situations where the bias is already corrected by process; meta-questions about debiasing techniques",
-        "description": "Items where cognitive biases are not a meaningful threat to decision quality, or where the decision process already neutralizes them"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "probabilistic",
-          "steel-manning"
-        ],
-        "mechanism": "base-rate/alternative check; strongest-countercase check",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
-    "dual-process": {
-      "id": "dual-process",
-      "dir": "thinking-dual-process",
-      "contract_path": "evals/contracts/thinking-dual-process.json",
-      "primary_value_surface": "paired reasoning quality",
-      "primary_metric": "pairwise_win_rate_vs_placebo",
-      "secondary_metrics": [
-        "judge_agreement",
-        "format_length_controlled_win_rate",
-        "system1_system2_discrimination",
-        "override_appropriateness"
-      ],
-      "eval_family": "Conceptual reframes",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 80,
-      "min_sample_replication": 80,
-      "planned_comparison": "trigger",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
-        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Decisions where intuition is known reliable; situations where deliberation is clearly superior; time-critical decisions requiring immediate System 1 response; meta-questions about dual-process theory",
-        "description": "Items where the System 1/System 2 distinction adds no value — either intuition is clearly appropriate, or deliberation is clearly required"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [],
-        "mechanism": "human cognition taxonomy has no distinct agent procedure",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
     "effectuation": {
       "id": "effectuation",
       "dir": "thinking-effectuation",
@@ -761,131 +524,6 @@
         "disable_model_invocation_until_elevated": true
       },
       "max_words": 700,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
-    "feedback-loops": {
-      "id": "feedback-loops",
-      "dir": "thinking-feedback-loops",
-      "contract_path": "evals/contracts/thinking-feedback-loops.json",
-      "primary_value_surface": "paired reasoning quality",
-      "primary_metric": "pairwise_win_rate_vs_placebo",
-      "secondary_metrics": [
-        "judge_agreement",
-        "format_length_controlled_win_rate",
-        "loop_identification_accuracy",
-        "delay_recognition"
-      ],
-      "eval_family": "Systems/product/strategy pairwise",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 80,
-      "min_sample_replication": 80,
-      "planned_comparison": "trigger",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
-        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Open-loop systems; simple cause-effect chains without feedback; situations where behavior is driven by exogenous inputs only; meta-questions about feedback loops",
-        "description": "Items where no feedback structure exists, or where the system behavior is purely feedforward"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "systems"
-        ],
-        "mechanism": "reinforcing/balancing loop and delay check",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
-    "fermi-estimation": {
-      "id": "fermi-estimation",
-      "dir": "thinking-fermi-estimation",
-      "contract_path": "evals/contracts/thinking-fermi-estimation.json",
-      "primary_value_surface": "objective correctness",
-      "primary_metric": "estimation_accuracy_log_error",
-      "secondary_metrics": [
-        "decomposition_quality",
-        "factor_independence",
-        "range_calibration",
-        "sanity_check_pass_rate"
-      ],
-      "eval_family": "Quantitative/uncertainty",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 60,
-      "min_sample_replication": 60,
-      "planned_comparison": "placebo",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND log_error_reduction >= 0.20",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR decomposition_quality < 0.50",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Quantities that are cheaply lookup-able; decisions requiring precision over order-of-magnitude; meta-questions about Fermi estimation",
-        "description": "Items where the real answer is a query away, or where precise values are needed rather than order-of-magnitude"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "probabilistic"
-        ],
-        "mechanism": "decomposition and order-of-magnitude bounds",
-        "auto_invocation": false
-      },
-      "max_words": null,
       "data": {
         "status": "unknown",
         "gaps": [
@@ -1045,76 +683,6 @@
         "legacy-july-verdict-five-whys"
       ]
     },
-    "inversion": {
-      "id": "inversion",
-      "dir": "thinking-inversion",
-      "contract_path": "evals/contracts/thinking-inversion.json",
-      "primary_value_surface": "paired reasoning quality",
-      "primary_metric": "pairwise_win_rate_vs_placebo",
-      "secondary_metrics": [
-        "judge_agreement",
-        "format_length_controlled_win_rate",
-        "failure_mode_coverage",
-        "avoidance_actionability"
-      ],
-      "eval_family": "Conceptual reframes",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 80,
-      "min_sample_replication": 80,
-      "planned_comparison": "trigger",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
-        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Problems where failure modes are already well-known and mitigated; simple reversible tasks; situations where positive visualization is more effective; meta-questions about inversion",
-        "description": "Items where enumerating failure paths adds no value because risks are already managed or the task is too simple to fail meaningfully"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "pre-mortem"
-        ],
-        "mechanism": "failure-first reverse analysis",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "adequate",
-        "gaps": [],
-        "sources": [
-          {
-            "path": "evals/datasets/authored/inversion-failure-paths.jsonl",
-            "sha256": "0727f530cd678e4d9972883d24aad3534b4a26036c9448bb315f3c8c38308bb7"
-          },
-          {
-            "path": "evals/datasets/authored/challenging-inversion.jsonl",
-            "sha256": "248982e7c511180d8aee2224a6270453cf6e9386d4a515d4ead5ebe5c6f1d553"
-          }
-        ],
-        "row_counts": {
-          "n": 72,
-          "splits": {
-            "dev": 9,
-            "heldout": 30,
-            "replication": 33,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
     "jobs-to-be-done": {
       "id": "jobs-to-be-done",
       "dir": "thinking-jobs-to-be-done",
@@ -1241,69 +809,6 @@
             "dev": 10,
             "heldout": 30,
             "replication": 32,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
-    "leverage-points": {
-      "id": "leverage-points",
-      "dir": "thinking-leverage-points",
-      "contract_path": "evals/contracts/thinking-leverage-points.json",
-      "primary_value_surface": "paired reasoning quality",
-      "primary_metric": "pairwise_win_rate_vs_placebo",
-      "secondary_metrics": [
-        "judge_agreement",
-        "format_length_controlled_win_rate",
-        "intervention_ranking_quality",
-        "system_model_fidelity"
-      ],
-      "eval_family": "Systems/product/strategy pairwise",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 80,
-      "min_sample_replication": 80,
-      "planned_comparison": "trigger",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
-        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Simple linear systems; problems where the bottleneck is already obvious; situations where high-leverage interventions are already in place; meta-questions about leverage points",
-        "description": "Items where the system is too simple for leverage point analysis, or where the highest-leverage interventions are already being applied"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "systems"
-        ],
-        "mechanism": "intervention ranking by leverage and side effects",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
             "other": 0
           }
         },
@@ -1646,135 +1151,6 @@
       },
       "study_ids": []
     },
-    "model-selection": {
-      "id": "model-selection",
-      "dir": "thinking-model-selection",
-      "contract_path": "evals/contracts/thinking-model-selection.json",
-      "primary_value_surface": "routing/discoverability",
-      "primary_metric": "routing_accuracy",
-      "secondary_metrics": [
-        "top_k_routing_accuracy",
-        "model_fit_justification_quality",
-        "fallback_appropriateness"
-      ],
-      "eval_family": "Routing/abstention",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 80,
-      "min_sample_replication": 80,
-      "planned_comparison": "placebo",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR model_fit_justification_quality < 0.60",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Problems with obvious single-model solutions; problems where model selection adds no value over direct invocation; meta-questions about model selection itself",
-        "description": "Items where the model choice is obvious or where selection overhead is unwarranted"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "model-router"
-        ],
-        "mechanism": "choice criteria and NONE/one-skill default",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
-    "occams-razor": {
-      "id": "occams-razor",
-      "dir": "thinking-occams-razor",
-      "contract_path": "evals/contracts/thinking-occams-razor.json",
-      "primary_value_surface": "paired reasoning quality",
-      "primary_metric": "explanation_selection_accuracy",
-      "secondary_metrics": [
-        "assumption_count_awareness",
-        "parsimony_justification",
-        "overfitting_avoidance",
-        "debugging_efficiency"
-      ],
-      "eval_family": "Debugging/fault-localization",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 60,
-      "min_sample_replication": 60,
-      "planned_comparison": "trigger",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR overfitting_avoidance < 0.50",
-        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Problems requiring complex multi-factor explanations; situations where simple explanations are known to be wrong; meta-questions about Occam's Razor",
-        "description": "Items where the simplest explanation is demonstrably incorrect or where complexity is genuinely required"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "scientific-method"
-        ],
-        "mechanism": "prefer the least-assumptive hypothesis that survives evidence",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "adequate",
-        "gaps": [],
-        "sources": [
-          {
-            "path": "evals/datasets/authored/occams-razor-competing-causes.jsonl",
-            "sha256": "08f867b12f9ff52ed55ce03bb15e3cf3a573cf97a0af7d3141b80bd555d86fe5"
-          }
-        ],
-        "row_counts": {
-          "n": 69,
-          "splits": {
-            "dev": 10,
-            "heldout": 30,
-            "replication": 29,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": [
-        "legacy-july-verdict-occams"
-      ]
-    },
     "ooda": {
       "id": "ooda",
       "dir": "thinking-ooda",
@@ -1984,7 +1360,24 @@
         },
         "required_heldout_min": 20,
         "required_hard_negatives_min": 10,
-        "required_replication_min": 10
+        "required_replication_min": 10,
+        "migration_coverage": {
+          "status": "consumed_provisional",
+          "freshness_eligible": false,
+          "excluded_from_confirmatory_counts": true,
+          "sources": [
+            {
+              "path": "evals/datasets/authored/pre-mortem-absorbed-inversion-failure-paths.jsonl",
+              "sha256": "f1c1a3a58a89407e5ffd80ec73358123350fce666486d7c0ad19337eb1e2dffa",
+              "rows": 69
+            },
+            {
+              "path": "evals/datasets/authored/challenging-pre-mortem-absorbed-inversion.jsonl",
+              "sha256": "e82d0260b0afdcbc77ef2666af122750be957043de6e82d67e72ce1589595c59",
+              "rows": 3
+            }
+          ]
+        }
       },
       "study_ids": []
     },
@@ -2130,70 +1523,6 @@
             "dev": 9,
             "heldout": 30,
             "replication": 36,
-            "other": 0
-          }
-        },
-        "required_heldout_min": 20,
-        "required_hard_negatives_min": 10,
-        "required_replication_min": 10
-      },
-      "study_ids": []
-    },
-    "regret-minimization": {
-      "id": "regret-minimization",
-      "dir": "thinking-regret-minimization",
-      "contract_path": "evals/contracts/thinking-regret-minimization.json",
-      "primary_value_surface": "paired reasoning quality",
-      "primary_metric": "pairwise_win_rate_vs_placebo",
-      "secondary_metrics": [
-        "judge_agreement",
-        "format_length_controlled_win_rate",
-        "future_self_alignment",
-        "reversibility_assessment"
-      ],
-      "eval_family": "Conceptual reframes",
-      "calibration_range": [
-        0.4,
-        0.7
-      ],
-      "min_sample_primary": 80,
-      "min_sample_replication": 80,
-      "planned_comparison": "trigger",
-      "decision_gate_legacy": {
-        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
-        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
-        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
-        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
-        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
-        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
-      },
-      "distractors": {
-        "off_target_set": "Low-stakes reversible decisions; decisions with no long-term consequences; purely technical choices without life/career impact",
-        "description": "Items where the decision is easily reversible or the stakes are too low for regret minimization to add value over simpler frameworks"
-      },
-      "disposition": {
-        "product": "delete_at_cutover",
-        "cutover": "delete",
-        "absorb_into": [
-          "reversibility",
-          "opportunity-cost"
-        ],
-        "mechanism": "asymmetric downside/recovery and future tradeoff",
-        "auto_invocation": false
-      },
-      "max_words": null,
-      "data": {
-        "status": "unknown",
-        "gaps": [
-          "no_declared_authored_dataset"
-        ],
-        "sources": [],
-        "row_counts": {
-          "n": 0,
-          "splits": {
-            "dev": 0,
-            "heldout": 0,
-            "replication": 0,
             "other": 0
           }
         },
@@ -2350,7 +1679,19 @@
         },
         "required_heldout_min": 20,
         "required_hard_negatives_min": 10,
-        "required_replication_min": 10
+        "required_replication_min": 10,
+        "migration_coverage": {
+          "status": "consumed_provisional",
+          "freshness_eligible": false,
+          "excluded_from_confirmatory_counts": true,
+          "sources": [
+            {
+              "path": "evals/datasets/authored/scientific-method-absorbed-occam-competing-causes.jsonl",
+              "sha256": "843735e8bf7b1d8bc616cf6d4c274832a6b9f3d25a0a03fe85ea583edee6c1ff",
+              "rows": 69
+            }
+          ]
+        }
       },
       "study_ids": [
         "legacy-july-sci-method-larger-n"
@@ -3140,14 +2481,14 @@
   },
   "family_counts": {
     "by_eval_family": {
-      "Systems/product/strategy pairwise": 5,
-      "Quantitative/uncertainty": 5,
-      "Conceptual reframes": 14,
-      "Routing/abstention": 6,
-      "Debugging/fault-localization": 8,
+      "Conceptual reframes": 11,
+      "Routing/abstention": 5,
+      "Debugging/fault-localization": 7,
+      "Quantitative/uncertainty": 2,
+      "Systems/product/strategy pairwise": 2,
       "Security/adversarial": 1
     },
-    "total_skills": 39,
+    "total_skills": 28,
     "survivors": 28,
     "deletions": 11,
     "efficacy_hypotheses": 84,
@@ -3157,11 +2498,722 @@
       "survivors_target": 28,
       "deployment_models": 3,
       "product": 84
-    }
+    },
+    "baseline_total_skills": 39,
+    "deleted_by_eval_family": {
+      "Systems/product/strategy pairwise": 3,
+      "Quantitative/uncertainty": 3,
+      "Conceptual reframes": 3,
+      "Routing/abstention": 1,
+      "Debugging/fault-localization": 1
+    },
+    "deleted_total_skills": 11
   },
   "source_integrity": {
     "validate_on_load": true,
     "require_source_sha_match": true,
     "require_split_count_match": true
+  },
+  "deleted_skills": {
+    "archetypes": {
+      "id": "archetypes",
+      "dir": "thinking-archetypes",
+      "contract_path": "evals/contracts/thinking-archetypes.json",
+      "primary_value_surface": "paired reasoning quality",
+      "primary_metric": "pairwise_win_rate_vs_placebo",
+      "secondary_metrics": [
+        "judge_agreement",
+        "format_length_controlled_win_rate",
+        "archetype_match_accuracy",
+        "intervention_appropriateness"
+      ],
+      "eval_family": "Systems/product/strategy pairwise",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 80,
+      "min_sample_replication": 80,
+      "planned_comparison": "trigger",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
+        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Novel problems with no historical precedent; one-off incidents without recurring structure; systems too simple to exhibit archetypal behavior; meta-questions about system archetypes",
+        "description": "Items where the recurring pattern library doesn't apply — genuinely novel dynamics or trivially simple systems"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "systems"
+        ],
+        "mechanism": "recurring cross-domain structure/pattern check",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "bayesian": {
+      "id": "bayesian",
+      "dir": "thinking-bayesian",
+      "contract_path": "evals/contracts/thinking-bayesian.json",
+      "primary_value_surface": "calibrated classification",
+      "primary_metric": "posterior_calibration_error",
+      "secondary_metrics": [
+        "prior_elicitation_quality",
+        "likelihood_assessment_accuracy",
+        "update_correctness",
+        "base_rate_adherence"
+      ],
+      "eval_family": "Quantitative/uncertainty",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 60,
+      "min_sample_replication": 60,
+      "planned_comparison": "placebo",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND posterior_calibration_error < 0.10",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR base_rate_adherence < 0.50",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Questions with definitive answers; situations with no meaningful prior; meta-questions about Bayesian reasoning",
+        "description": "Items where probability estimation adds no value over direct knowledge or where priors cannot be meaningfully established"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "probabilistic"
+        ],
+        "mechanism": "prior → likelihood → posterior update",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "debiasing": {
+      "id": "debiasing",
+      "dir": "thinking-debiasing",
+      "contract_path": "evals/contracts/thinking-debiasing.json",
+      "primary_value_surface": "calibrated classification",
+      "primary_metric": "bias_detection_accuracy",
+      "secondary_metrics": [
+        "calibration_improvement",
+        "base_rate_adherence",
+        "anchoring_resistance",
+        "confirmation_bias_mitigation"
+      ],
+      "eval_family": "Quantitative/uncertainty",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 60,
+      "min_sample_replication": 60,
+      "planned_comparison": "placebo",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND calibration_improvement >= 0.02",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR base_rate_adherence < 0.50",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Decisions with no identifiable bias risk; situations where the bias is already corrected by process; meta-questions about debiasing techniques",
+        "description": "Items where cognitive biases are not a meaningful threat to decision quality, or where the decision process already neutralizes them"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "probabilistic",
+          "steel-manning"
+        ],
+        "mechanism": "base-rate/alternative check; strongest-countercase check",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "dual-process": {
+      "id": "dual-process",
+      "dir": "thinking-dual-process",
+      "contract_path": "evals/contracts/thinking-dual-process.json",
+      "primary_value_surface": "paired reasoning quality",
+      "primary_metric": "pairwise_win_rate_vs_placebo",
+      "secondary_metrics": [
+        "judge_agreement",
+        "format_length_controlled_win_rate",
+        "system1_system2_discrimination",
+        "override_appropriateness"
+      ],
+      "eval_family": "Conceptual reframes",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 80,
+      "min_sample_replication": 80,
+      "planned_comparison": "trigger",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
+        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Decisions where intuition is known reliable; situations where deliberation is clearly superior; time-critical decisions requiring immediate System 1 response; meta-questions about dual-process theory",
+        "description": "Items where the System 1/System 2 distinction adds no value — either intuition is clearly appropriate, or deliberation is clearly required"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [],
+        "mechanism": "human cognition taxonomy has no distinct agent procedure",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "feedback-loops": {
+      "id": "feedback-loops",
+      "dir": "thinking-feedback-loops",
+      "contract_path": "evals/contracts/thinking-feedback-loops.json",
+      "primary_value_surface": "paired reasoning quality",
+      "primary_metric": "pairwise_win_rate_vs_placebo",
+      "secondary_metrics": [
+        "judge_agreement",
+        "format_length_controlled_win_rate",
+        "loop_identification_accuracy",
+        "delay_recognition"
+      ],
+      "eval_family": "Systems/product/strategy pairwise",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 80,
+      "min_sample_replication": 80,
+      "planned_comparison": "trigger",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
+        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Open-loop systems; simple cause-effect chains without feedback; situations where behavior is driven by exogenous inputs only; meta-questions about feedback loops",
+        "description": "Items where no feedback structure exists, or where the system behavior is purely feedforward"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "systems"
+        ],
+        "mechanism": "reinforcing/balancing loop and delay check",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "fermi-estimation": {
+      "id": "fermi-estimation",
+      "dir": "thinking-fermi-estimation",
+      "contract_path": "evals/contracts/thinking-fermi-estimation.json",
+      "primary_value_surface": "objective correctness",
+      "primary_metric": "estimation_accuracy_log_error",
+      "secondary_metrics": [
+        "decomposition_quality",
+        "factor_independence",
+        "range_calibration",
+        "sanity_check_pass_rate"
+      ],
+      "eval_family": "Quantitative/uncertainty",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 60,
+      "min_sample_replication": 60,
+      "planned_comparison": "placebo",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND log_error_reduction >= 0.20",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR decomposition_quality < 0.50",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Quantities that are cheaply lookup-able; decisions requiring precision over order-of-magnitude; meta-questions about Fermi estimation",
+        "description": "Items where the real answer is a query away, or where precise values are needed rather than order-of-magnitude"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "probabilistic"
+        ],
+        "mechanism": "decomposition and order-of-magnitude bounds",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "inversion": {
+      "id": "inversion",
+      "dir": "thinking-inversion",
+      "contract_path": "evals/contracts/thinking-inversion.json",
+      "primary_value_surface": "paired reasoning quality",
+      "primary_metric": "pairwise_win_rate_vs_placebo",
+      "secondary_metrics": [
+        "judge_agreement",
+        "format_length_controlled_win_rate",
+        "failure_mode_coverage",
+        "avoidance_actionability"
+      ],
+      "eval_family": "Conceptual reframes",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 80,
+      "min_sample_replication": 80,
+      "planned_comparison": "trigger",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
+        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Problems where failure modes are already well-known and mitigated; simple reversible tasks; situations where positive visualization is more effective; meta-questions about inversion",
+        "description": "Items where enumerating failure paths adds no value because risks are already managed or the task is too simple to fail meaningfully"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "pre-mortem"
+        ],
+        "mechanism": "failure-first reverse analysis",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "adequate",
+        "gaps": [],
+        "sources": [
+          {
+            "path": "evals/datasets/authored/inversion-failure-paths.jsonl",
+            "sha256": "0727f530cd678e4d9972883d24aad3534b4a26036c9448bb315f3c8c38308bb7"
+          },
+          {
+            "path": "evals/datasets/authored/challenging-inversion.jsonl",
+            "sha256": "248982e7c511180d8aee2224a6270453cf6e9386d4a515d4ead5ebe5c6f1d553"
+          }
+        ],
+        "row_counts": {
+          "n": 72,
+          "splits": {
+            "dev": 9,
+            "heldout": 30,
+            "replication": 33,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "leverage-points": {
+      "id": "leverage-points",
+      "dir": "thinking-leverage-points",
+      "contract_path": "evals/contracts/thinking-leverage-points.json",
+      "primary_value_surface": "paired reasoning quality",
+      "primary_metric": "pairwise_win_rate_vs_placebo",
+      "secondary_metrics": [
+        "judge_agreement",
+        "format_length_controlled_win_rate",
+        "intervention_ranking_quality",
+        "system_model_fidelity"
+      ],
+      "eval_family": "Systems/product/strategy pairwise",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 80,
+      "min_sample_replication": 80,
+      "planned_comparison": "trigger",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
+        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Simple linear systems; problems where the bottleneck is already obvious; situations where high-leverage interventions are already in place; meta-questions about leverage points",
+        "description": "Items where the system is too simple for leverage point analysis, or where the highest-leverage interventions are already being applied"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "systems"
+        ],
+        "mechanism": "intervention ranking by leverage and side effects",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "model-selection": {
+      "id": "model-selection",
+      "dir": "thinking-model-selection",
+      "contract_path": "evals/contracts/thinking-model-selection.json",
+      "primary_value_surface": "routing/discoverability",
+      "primary_metric": "routing_accuracy",
+      "secondary_metrics": [
+        "top_k_routing_accuracy",
+        "model_fit_justification_quality",
+        "fallback_appropriateness"
+      ],
+      "eval_family": "Routing/abstention",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 80,
+      "min_sample_replication": 80,
+      "planned_comparison": "placebo",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR model_fit_justification_quality < 0.60",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Problems with obvious single-model solutions; problems where model selection adds no value over direct invocation; meta-questions about model selection itself",
+        "description": "Items where the model choice is obvious or where selection overhead is unwarranted"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "model-router"
+        ],
+        "mechanism": "choice criteria and NONE/one-skill default",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    },
+    "occams-razor": {
+      "id": "occams-razor",
+      "dir": "thinking-occams-razor",
+      "contract_path": "evals/contracts/thinking-occams-razor.json",
+      "primary_value_surface": "paired reasoning quality",
+      "primary_metric": "explanation_selection_accuracy",
+      "secondary_metrics": [
+        "assumption_count_awareness",
+        "parsimony_justification",
+        "overfitting_avoidance",
+        "debugging_efficiency"
+      ],
+      "eval_family": "Debugging/fault-localization",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 60,
+      "min_sample_replication": 60,
+      "planned_comparison": "trigger",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR overfitting_avoidance < 0.50",
+        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Problems requiring complex multi-factor explanations; situations where simple explanations are known to be wrong; meta-questions about Occam's Razor",
+        "description": "Items where the simplest explanation is demonstrably incorrect or where complexity is genuinely required"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "scientific-method"
+        ],
+        "mechanism": "prefer the least-assumptive hypothesis that survives evidence",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "adequate",
+        "gaps": [],
+        "sources": [
+          {
+            "path": "evals/datasets/authored/occams-razor-competing-causes.jsonl",
+            "sha256": "08f867b12f9ff52ed55ce03bb15e3cf3a573cf97a0af7d3141b80bd555d86fe5"
+          }
+        ],
+        "row_counts": {
+          "n": 69,
+          "splits": {
+            "dev": 10,
+            "heldout": 30,
+            "replication": 29,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": [
+        "legacy-july-verdict-occams"
+      ]
+    },
+    "regret-minimization": {
+      "id": "regret-minimization",
+      "dir": "thinking-regret-minimization",
+      "contract_path": "evals/contracts/thinking-regret-minimization.json",
+      "primary_value_surface": "paired reasoning quality",
+      "primary_metric": "pairwise_win_rate_vs_placebo",
+      "secondary_metrics": [
+        "judge_agreement",
+        "format_length_controlled_win_rate",
+        "future_self_alignment",
+        "reversibility_assessment"
+      ],
+      "eval_family": "Conceptual reframes",
+      "calibration_range": [
+        0.4,
+        0.7
+      ],
+      "min_sample_primary": 80,
+      "min_sample_replication": 80,
+      "planned_comparison": "trigger",
+      "decision_gate_legacy": {
+        "elevate": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND replication_delta_pp >= 5 AND replication_paired_test_p < 0.05 AND replication_direction_matches_primary AND format_length_control_pass",
+        "directional_not_replicated": "primary_delta_pp >= 5 AND paired_test_p < 0.05 AND (replication_delta_pp < 5 OR replication_paired_test_p >= 0.05 OR replication_direction_opposite)",
+        "no_lift": "primary_delta_pp < 5 OR paired_test_p >= 0.05",
+        "quarantine_redirect": "primary_delta_pp < 0 OR format_length_bias_detected",
+        "trigger_only": "trigger_card_delta_pp >= full_guide_delta_pp AND trigger_paired_test_p < 0.05",
+        "ceiling_needs_harder_data": "placebo_baseline > 0.70"
+      },
+      "distractors": {
+        "off_target_set": "Low-stakes reversible decisions; decisions with no long-term consequences; purely technical choices without life/career impact",
+        "description": "Items where the decision is easily reversible or the stakes are too low for regret minimization to add value over simpler frameworks"
+      },
+      "disposition": {
+        "product": "delete_at_cutover",
+        "cutover": "delete",
+        "absorb_into": [
+          "reversibility",
+          "opportunity-cost"
+        ],
+        "mechanism": "asymmetric downside/recovery and future tradeoff",
+        "auto_invocation": false
+      },
+      "max_words": null,
+      "data": {
+        "status": "unknown",
+        "gaps": [
+          "no_declared_authored_dataset"
+        ],
+        "sources": [],
+        "row_counts": {
+          "n": 0,
+          "splits": {
+            "dev": 0,
+            "heldout": 0,
+            "replication": 0,
+            "other": 0
+          }
+        },
+        "required_heldout_min": 20,
+        "required_hard_negatives_min": 10,
+        "required_replication_min": 10
+      },
+      "study_ids": []
+    }
   }
 }

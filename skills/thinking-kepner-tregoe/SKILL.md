@@ -1,6 +1,7 @@
 ---
 name: thinking-kepner-tregoe
 description: Use when a defect is selective (some endpoints/regions/users/times affected, not all) and the cause is unclear — map what IS vs IS-NOT affected; the boundary contrast points at the root cause.
+disable-model-invocation: true
 ---
 
 # Kepner-Tregoe Problem Analysis
@@ -34,7 +35,7 @@ Defect is selective (not 100%)? → No → IS/IS-NOT has no signal; use direct d
 
 - **The failure is uniform** (affects 100% of requests/everything) — there is no IS-vs-IS-NOT boundary to contrast; PA gives no signal. Use `thinking-systems` or direct debugging.
 - **The cause is already obvious** from a stack trace, error message, or a single recent change — just fix it; IS/IS-NOT is overhead here.
-- **A quick hypothesis is cheaply testable** — test it (`thinking-occams-razor`) before building a full specification matrix.
+- **A quick hypothesis is cheaply testable** — test it (`thinking-scientific-method`) before building a full specification matrix.
 - **Pure decision-making with no deviation to diagnose** — use `thinking-opportunity-cost`, not KT's Decision Analysis.
 - **Risk assessment for a planned change** — use `thinking-pre-mortem`, not KT's Potential Problem Analysis.
 
@@ -152,3 +153,22 @@ A completed KT Problem Analysis produces:
 | **Skipping cause testing** | Pursuing the first plausible cause without testing against IS-NOT | Every cause must explain BOTH IS and IS-NOT |
 | **SA as mandatory preamble** | Running full Situation Analysis before every PA | Jump directly to PA when the problem is already clear |
 | **Ignoring the distinction** | Building the matrix but not extracting what's unique about IS | The distinction IS the signal; without it, the matrix is just a table |
+
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "selective_defect",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.

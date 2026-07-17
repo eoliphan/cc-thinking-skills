@@ -1,6 +1,7 @@
 ---
 name: thinking-systems
 description: Use when debugging across services/an incident where a fix in one place breaks another, or behavior is emergent and no single component explains it. Maps the system and traces causes.
+disable-model-invocation: true
 ---
 
 # Systems Thinking
@@ -16,6 +17,8 @@ Systems thinking views a problem as part of an interconnected whole rather than 
 - Behavior is emergent—no single component is at fault, but the whole misbehaves
 - Analyzing incidents and outages with non-obvious causes
 - Performance issues where the slow part isn't the actual cause
+- The same problem keeps recurring despite multiple fixes (match structure, not only symptoms)
+- Parameter/buffer tweaks keep not sticking—need to rank where to intervene by leverage
 
 ```
 Problem spans multiple components?        → yes → APPLY SYSTEMS THINKING
@@ -44,15 +47,17 @@ Draw components, connections, and data/control flows:
                └─────────┘
 ```
 
-### Step 2: Identify Feedback Loops
-For each loop, determine:
-- Is it reinforcing (amplifies change) or balancing (counteracts change)?
-- What's the delay in the loop?
-- What could make it unstable?
+### Step 2: Identify Feedback Loops and Delays
+For each candidate loop, run this check:
+1. **Classify the behavior:** growing/collapsing → reinforcing; oscillating → balancing with delay; stuck/resisting change → dominant balancing; settling cleanly → healthy balancing.
+2. **Trace the loop:** list variables that feed back into themselves; mark each link same-direction (+) or opposite (-). Even count of (-) = reinforcing; odd = balancing.
+3. **Name the delay:** where does cause lag effect (cache TTL, deploy pipeline, ramp-up, metric lag)? Long delays cause overshoot/oscillation—shorten the delay, reduce correction gain, or wait for feedback before acting again.
+4. **Find the leverage on the loop:** shorten a delay, change loop gain, add a balancing loop to a runaway reinforcing one, or weaken a balancing loop that blocks needed change.
 
 ```
 Retry Storm Loop (Reinforcing - Dangerous):
 Service slow → Clients retry → More load → Service slower → More retries
+Delay: retry backoff / client timeout; intervention: circuit breaker + shed load
 ```
 
 ### Step 3: Trace Upstream
@@ -76,6 +81,21 @@ What happens when components interact under stress?
 - What changed recently (deploys, config, traffic)?
 - Is it periodic? (Cron jobs, cache expiration, batch processes)
 - Is it growing or stabilizing?
+
+### Step 6: Match Recurring Structure (Archetypes)
+When the same problem keeps recurring despite fixes, match the structure before inventing a new diagnosis:
+
+| Archetype | Recognize | Structure check | Intervene by asking |
+|-----------|-----------|-----------------|---------------------|
+| Fixes That Fail | Fix returns worse later; needs larger doses | Quick fix + delayed side effect | What side effect will this fix create? |
+| Shifting the Burden | Permanent workaround; real fix starved | Symptomatic fix atrophies fundamental capability | What capability are we not building? |
+| Limits to Growth | Strong growth then plateau | Reinforcing growth hits a balancing constraint | What limits us at 10x? |
+| Tragedy of the Commons | Shared resource degrades under local optima | Individual gain, collective depletion | Who owns long-term health of this resource? |
+| Escalation | Arms race / mutual reaction spiral | Two reinforcing responses to each other | Can we change the game instead of playing harder? |
+| Success to the Successful | Winner takes investment; alternatives starve | Initial advantage compounds via resource allocation | Are we starving future options to feed the incumbent? |
+| Growth and Underinvestment | Reactive capacity only after crisis | Demand grows; capacity investment delayed | What fails if we grow 50% without capacity now? |
+
+If no archetype fits after a genuine look, keep the from-scratch map—do not force a pattern. One-off linear bugs need no archetype.
 
 ## Common System Patterns
 
@@ -110,11 +130,10 @@ Multiple processes → Same resource → Lock contention → Serialization
 ## Key Concepts
 
 ### 1. Feedback Loops
-
 **Reinforcing (Positive) Loops:** Amplify change
 ```
 Technical Debt Loop:
-Deadline pressure → Shortcuts → More bugs → More firefighting 
+Deadline pressure → Shortcuts → More bugs → More firefighting
                                            ↓
                             ← Less time for quality ←
 ```
@@ -128,9 +147,9 @@ Load increases → More instances spawn → Load per instance decreases
 ```
 
 **Questions to identify loops:**
-- Does this effect feed back into its cause?
-- Is this self-reinforcing or self-correcting?
-- What keeps this system in equilibrium?
+- Does this effect feed back into its cause? Classify reinforcing vs balancing (even/odd count of opposite links).
+- Where is the delay, and would acting before feedback arrives overcorrect?
+- What keeps this system in equilibrium—or what would make the loop unstable?
 
 ### 2. Stocks and Flows
 **Stocks:** Accumulated quantities (users, technical debt, cache size)
@@ -199,29 +218,32 @@ Behaviors that arise from interactions, not individual components:
 └──────────────────────────────────────────────────────────────┘
 ```
 
-## Leverage Points
-Once you've located where to intervene, pick the highest-leverage point you can actually move:
+## Rank Interventions by Leverage and Side Effects
+After mapping the system and loops, rank candidate interventions top-down. Prefer the highest-leverage point you can actually move; then check side effects before committing.
 
-| Leverage | Example | Impact |
-|----------|---------|--------|
-| Parameters | Timeout values | Low |
-| Buffer sizes | Queue limits | Low-Medium |
-| Feedback loops | Add monitoring | Medium |
-| Information flows | Make metrics visible | Medium-High |
-| Rules | Change retry policy | High |
-| Goals | Redefine SLOs | Very High |
-| Paradigm | Rethink architecture | Transformational |
+| Level (high→low) | Leverage class | Examples |
+|------------------|----------------|----------|
+| Goals / paradigm | Highest | Change what the system optimizes for; rethink architecture assumptions |
+| Rules / information | High | CI gates, contracts, policies; surface a missing metric/signal |
+| Loop structure | Medium–high | Add/strengthen balancing loops; weaken runaway reinforcing loops; shorten delays |
+| Stock/flow structure | Medium | Topology, schema, connection paths |
+| Buffers / parameters | Lowest | Queue sizes, timeouts, retry counts, instance counts |
 
-(See `thinking-leverage-points` for Meadows' full 12-level hierarchy.)
+**Ranking procedure:**
+1. List current and proposed interventions; map each to a level above.
+2. For every low-level move, ask for the higher version (more instances → fix the inefficient path; longer timeout → shorten the delay; patch each bug → make the class unrepresentable / gate it).
+3. Score feasibility: can you move this point now? Cost, resistance, blast radius.
+4. Pick the highest feasible leverage; if blocked, stage toward it (warn-only gate → enforce; observe metric → act on it).
+5. **Side-effect check before acting:** What feeds back into what after this change? What breaks elsewhere? What delayed effect could reverse the gain (Fixes That Fail)? Prefer interventions that strengthen needed balancing loops or cut harmful reinforcing gain without creating a new commons/escalation.
 
 ## Verification Checklist
-- [ ] Mapped system components and connections
-- [ ] Identified at least one feedback loop
+- [ ] Mapped system components, connections, stocks/flows
+- [ ] Classified reinforcing vs balancing loops and named delays
 - [ ] Traced symptom upstream to potential root causes
-- [ ] Considered time delays in the system
+- [ ] Checked for a recurring archetype when the problem keeps returning
 - [ ] Looked for emergent/interaction effects
-- [ ] Identified leverage points for intervention
-- [ ] Considered unintended consequences of fix
+- [ ] Ranked interventions by leverage; chose highest feasible
+- [ ] Side-effect check: delayed consequences, other components, new loops
 
 ## Key Questions
 - "What feeds back into what?"
@@ -230,7 +252,7 @@ Once you've located where to intervene, pick the highest-leverage point you can 
 - "What would an observer see vs. what's actually happening?"
 - "If I fix this here, what breaks over there?"
 - "What behavior emerges that no single component intends?"
-- "Where is the smallest change with the largest effect?"
+- "Where is the highest-leverage change I can actually make, and what side effects follow?"
 
 ## Meadows' Reminder
 "We can't control systems or figure them out. But we can dance with them."

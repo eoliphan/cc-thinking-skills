@@ -1,10 +1,10 @@
 # Agent Guidelines
 
-This repository packages 39 Claude Code thinking skills. Treat it as a plugin marketplace project first and an eval research project second.
+This repository packages 28 Claude Code thinking skills. Treat it as a plugin marketplace project first and an eval research project second.
 
 ## Default Workflow
 
-- Preserve the public skill count at 39 unless a change intentionally adds/removes a shipped skill and updates README, plugin metadata, routing cases, and eval docs together.
+- Preserve the public skill count at 28 unless a change intentionally adds/removes a shipped skill and updates README, plugin metadata, routing cases, and eval docs together.
 - Keep skill frontmatter descriptions situation-named and under 200 characters.
 - Prefer agent-native instructions over human facilitation language.
 - Add explicit "When NOT to Use" boundaries for every non-router skill.

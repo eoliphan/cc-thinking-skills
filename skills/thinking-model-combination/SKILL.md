@@ -1,6 +1,7 @@
 ---
 name: thinking-model-combination
 description: Combine multiple mental models for richer analysis. Use for complex problems requiring multiple lenses, high-stakes decisions, or when single models leave blind spots.
+disable-model-invocation: true
 ---
 
 # Model Combination
@@ -39,6 +40,15 @@ Analyzing a problem?
   → Are there important blind spots? → yes → ADD COMPLEMENTARY MODEL
   → Are stakes high enough to justify deeper analysis? → yes → USE MULTIPLE MODELS
 ```
+
+
+## When NOT to Use
+
+- **A single model already answers the question.** Use the single model and stop. Adding lenses creates noise, not rigor.
+- **The task is routine, local, or reversible.** Combination is for high-stakes or genuinely multi-domain problems; otherwise it causes analysis paralysis.
+- **You cannot name the distinct job of each model.** If every model is doing the same work, this is Model Soup. Drop the redundant lenses.
+- **Models conflict but no tiebreaker is defined.** Decide the synthesis rule before applying them, or use one model at a time.
+- **Time pressure prevents genuine synthesis.** Combining without integrating produces contradictory conclusions worse than a single honest model.
 
 ## Combination Patterns
 
@@ -124,11 +134,11 @@ Model A argues FOR → ← Model B argues AGAINST
 Example: Investment Decision
 - Optimistic lens (First Principles): "Here's why this could work"
 - Pessimistic lens (Pre-mortem): "Here's why this will fail"
-- Neutral lens (Bayesian): "Here's the actual probability"
+- Neutral lens (Probabilistic): "Here's the actual probability"
 
 Structure:
-| Aspect | First Principles | Pre-mortem | Bayesian Estimate |
-|--------|------------------|------------|-------------------|
+| Aspect | First Principles | Pre-mortem | Probabilistic Estimate |
+|--------|------------------|------------|------------------------|
 | Market | [Optimistic case] | [Failure mode] | [P(success)] |
 | Technology | [Optimistic case] | [Failure mode] | [P(success)] |
 | Team | [Optimistic case] | [Failure mode] | [P(success)] |
@@ -150,7 +160,7 @@ Future: Model C (project outcomes)
 Example: Career Decision
 - Past (5 Whys): "Why am I in this situation?"
 - Present (Circle of Competence): "What are my current advantages?"
-- Future (Regret Minimization): "What will 80-year-old me think?"
+- Future (Opportunity Cost): "What am I giving up by choosing this path?"
 
 Timeline:
 Past analysis → Present assessment → Future projection → Decision
@@ -192,7 +202,7 @@ the decision is: [Conclusion]
 ```markdown
 ## System Diagnosis Recipe
 
-Combine: Cynefin + Theory of Constraints + Feedback Loops + Leverage Points
+Combine: Cynefin + Theory of Constraints + Systems Thinking
 
 Step 1 - Cynefin:
 What domain is this? [Clear/Complicated/Complex/Chaotic]
@@ -202,13 +212,9 @@ Step 2 - Theory of Constraints:
 Where's the bottleneck?
 [Constraint identification]
 
-Step 3 - Feedback Loops:
-What reinforcing/balancing loops exist?
-[Loop mapping]
-
-Step 4 - Leverage Points:
-Where can small changes have big effects?
-[Intervention points]
+Step 3 - Systems Thinking:
+What reinforcing/balancing loops and delays exist? Where can small changes have big effects?
+[Loop mapping and leverage ranking]
 
 Synthesis:
 This is a [domain] problem. The constraint is [X].
@@ -249,24 +255,21 @@ the innovation path is: [Approach]
 ```markdown
 ## Argument Evaluation Recipe
 
-Combine: Steel-manning + Bayesian + Debiasing
+Combine: Steel-manning + Probabilistic
 
 Step 1 - Steel-manning:
 What's the strongest version of this argument?
 [Strengthened argument]
 
-Step 2 - Bayesian:
-What's my prior? What evidence would update it?
+Step 2 - Probabilistic:
+What's my prior (including base rates)? What evidence would update it?
 Prior: [X%]
 Evidence that would increase: [List]
 Evidence that would decrease: [List]
-
-Step 3 - Debiasing:
-What biases might affect my evaluation?
-[Bias checklist]
+Base-rate / alternative checks: [What rates or alternatives could distort the update?]
 
 Synthesis:
-The steel-manned argument is [X]. Given [evidence] and controlling for [biases],
+The steel-manned argument is [X]. Given [evidence] and base-rate checks,
 my updated probability is [Y%]. Conclusion: [Assessment]
 ```
 

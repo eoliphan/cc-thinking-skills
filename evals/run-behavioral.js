@@ -16,7 +16,7 @@
  *
  * Usage:
  *   EVAL_RUN=run1 node evals/run-behavioral.js                       # all skills, skill:placebo
- *   PAIRS="skill:placebo,skill:trigger" node evals/run-behavioral.js thinking-inversion
+ *   PAIRS="skill:placebo,skill:trigger" node evals/run-behavioral.js thinking-pre-mortem
  *   SOLVER_MODEL=claude-haiku-4-5-20251001 PAIRS="skill:placebo" EVAL_RUN=run1-haiku node evals/run-behavioral.js <subset>
  */
 

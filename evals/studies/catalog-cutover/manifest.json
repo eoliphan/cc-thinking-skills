@@ -36,17 +36,17 @@
     "scripts/quality-report.json"
   ],
   "counts": {
-    "total_artifacts": 390,
-    "unique_sha256": 369,
+    "total_artifacts": 391,
+    "unique_sha256": 370,
     "by_disposition": {
-      "preserve_in_place": 215,
+      "preserve_in_place": 216,
       "exact_duplicate": 21,
       "non_evidence_scratch": 99,
       "bundle": 55
     },
     "by_scope": {
       "evals/results": 203,
-      "analysis": 30,
+      "analysis": 31,
       "reviews": 46,
       "experiments": 14,
       "evals/db": 5,
@@ -510,6 +510,29 @@
       "judges": "not_applicable",
       "skill_version": "not_applicable",
       "raw_output_availability": "not_applicable"
+    },
+    {
+      "path": "analysis/evidence.json",
+      "bytes": 62595,
+      "sha256": "18c32d5fcfd3ce0aaa8e5fdea873e238eb9826e051c25aa4a0f9e8006d2000ca",
+      "git_state": "tracked_clean",
+      "mtime_iso": "2026-07-17T00:12:33.806Z",
+      "likely_producer": "JulyEvidenceBundles / Phase 0 evidence import authoring",
+      "likely_consumers": [
+        "analysis/AUDIT.md generation",
+        "public claim gates",
+        "README verdict tables"
+      ],
+      "disposition": "preserve_in_place",
+      "disposition_reason": "Machine-readable evidence authority for catalog cutover; preserve_in_place (no durable external archive yet); claim rows remain provisional until restore-tested raw archives",
+      "dataset": "multi_study_registry",
+      "split": "unknown",
+      "solver": "multi_solver",
+      "judges": "unknown",
+      "skill_version": "unknown",
+      "raw_output_availability": "references_only",
+      "evidence_validity": "provisional",
+      "cited_in_analysis": true
     },
     {
       "path": "analysis/FUTURE-CONSOLIDATION-PLAN.md",

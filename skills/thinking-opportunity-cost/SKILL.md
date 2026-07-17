@@ -1,6 +1,7 @@
 ---
 name: thinking-opportunity-cost
 description: Before committing scarce time/people/money to one thing, ask "what's the next-best use of these resources, and what does doing nothing cost?" — the real cost is the best option you skip.
+disable-model-invocation: true
 ---
 
 # Opportunity Cost Thinking
@@ -49,6 +50,7 @@ Before committing scarce time, people, or money to one thing:
 1. **Name the next-best alternative** — what would these resources do if not used here? Be specific.
 2. **Compare value** — what does the primary option deliver vs. the next-best? The real cost is what you give up.
 3. **Ask: "what does doing nothing cost?"** — sometimes the cheapest option is to wait. If delaying is free, consider it.
+4. **Future tradeoff / foregone option** — which path, if skipped now, permanently closes or decays later (window ends, optionality dies, path locks)? Weigh that permanent "what if" against temporary costs that fade after recovery. If the acting downside is recoverable and the missed path is not, do not let short-term fear alone kill the higher-value option.
 
 Skip if the work is mandatory (compliance, security fix, hard dependency) — there's no optional alternative. If the next-best option is clearly worse, don't manufacture alternatives to look rigorous.
 
@@ -112,6 +114,31 @@ Custom Auth True Cost:
              + Developer time not on revenue features
 
 Question: Is custom auth worth all of that?
+```
+
+### Step 6: Future Tradeoff and Permanent Foregone Options
+
+Beyond next-best value today, check which alternatives decay if delayed:
+
+```
+For each serious alternative (including "try the bold path"):
+  Temporary costs if chosen and wrong: [fade after recovery?]
+  Permanent costs if not chosen: [window closes / lock-in / unrecoverable learning?]
+  Does inaction create a lasting "what if" with no re-entry?
+
+Tradeoff rule:
+  Favor the choice that avoids the greater permanent loss when temporary costs are recoverable (and the acting downside is not catastrophic).
+  If both options permanently close something real, surface the value conflict — opportunity cost alone may not decide.
+  If the only permanent cost is missing a speculative upside with no evidence, do not invent permanence.
+```
+
+Example shape:
+
+```
+Choice: Ship the new market experiment this quarter vs. keep polishing the core product.
+Temporary cost of experiment: 6 eng-weeks, recoverable if it fails.
+Permanent cost of not experimenting: competitor owns the niche; re-entry cost multiplies.
+Decision pressure: do not treat recoverable eng-weeks as equal to a permanently closed market option.
 ```
 
 ## Opportunity Cost Patterns
@@ -299,10 +326,17 @@ What else could we do with these resources?
 Best foregone alternative: [Which one]
 Value of that alternative: [Quantified if possible]
 
+## Future Tradeoff / Permanent Foregone
+- Temporary costs if primary fails: [recoverable? how]
+- Permanent costs if primary is skipped: [window/option that closes]
+- Permanent costs if alternative is skipped: [if any]
+- Lasting "what if" risk: [which path, if any]
+
 ## True Cost of Primary Choice
 - Direct cost: [Resources consumed]
-- Opportunity cost: [Value of foregone alternative]
-- Total: [Sum]
+- Opportunity cost: [Value of best foregone alternative; classify temporary vs permanent components]
+- Permanent component of opportunity cost: [window/option that closes if delayed/declined — included above, do not add twice]
+- Total: [Direct cost + opportunity cost]
 
 ## Decision
 Is [primary choice] worth [total cost]?
@@ -336,6 +370,7 @@ Always include "change nothing" as an explicit alternative.
 - [ ] Listed at least 3 alternatives (including status quo)
 - [ ] Valued each alternative (even roughly)
 - [ ] Identified the best foregone alternative
+- [ ] Separated temporary recoverable costs from permanent foregone options
 - [ ] Calculated opportunity cost explicitly
 - [ ] Made decision accounting for full cost
 - [ ] Considered reversibility
@@ -346,6 +381,7 @@ Always include "change nothing" as an explicit alternative.
 - "Is the 'free' option actually free?"
 - "What would we do with these resources otherwise?"
 - "What's the value of our next-best alternative?"
+- "Which foregone option permanently closes if we wait or decline?"
 - "Is this worth more than everything we're giving up?"
 - "Have we included the status quo as an option?"
 

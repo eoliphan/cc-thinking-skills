@@ -21,7 +21,7 @@ const ROOT = lib.REPO_ROOT;
 const LADDER = (process.env.LADDER || 'claude-haiku-4-5-20251001,claude-sonnet-4-6,claude-opus-4-8').split(',');
 const tag = m => m.replace('claude-', '').replace('-4-8', '').replace('-4-5-20251001', '').replace('-4-6', '');
 const JUDGE = process.env.JUDGES || 'gemini-3.1-pro-preview'; // fixed across tiers
-const SKILLS = (process.env.SKILLS || 'thinking-second-order,thinking-inversion,thinking-opportunity-cost,thinking-theory-of-constraints,thinking-systems,thinking-pre-mortem,thinking-via-negativa,thinking-occams-razor,thinking-first-principles,thinking-debiasing').split(',');
+const SKILLS = (process.env.SKILLS || 'thinking-second-order,thinking-opportunity-cost,thinking-theory-of-constraints,thinking-systems,thinking-pre-mortem,thinking-via-negativa,thinking-scientific-method,thinking-first-principles,thinking-probabilistic').split(',');
 
 function runTier(model, idx) {
   const run = `indomain-${tag(model)}`;

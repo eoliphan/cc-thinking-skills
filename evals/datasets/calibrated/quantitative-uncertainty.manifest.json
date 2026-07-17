@@ -4,17 +4,14 @@
   "aggregate_governed": true,
   "aggregate_governed_rationale": "Binary/multiple-choice classification; per-item baselines are necessarily 0%/100%; powerability governed by aggregate baseline + paired McNemar (which ignores concordant both-correct ceiling pairs); aggregate ~93% = CEILING/no-power",
   "skills": [
-    "bayesian",
-    "debiasing",
-    "fermi-estimation",
-    "margin-of-safety",
-    "probabilistic"
+    "probabilistic",
+    "margin-of-safety"
   ],
   "value_surface": "objective correctness",
   "source": "Freshly authored harder items (post-cutoff forecasting, complex probability/statistical reasoning, multi-step Fermi estimation, hard debiasing, margin-of-safety trade-offs). Replaces the original pool of trivially-easy Bayes theorem items.",
   "leakage": "All items are freshly authored for this evaluation (June 2026) — zero external leakage risk from training data. Forecasting items reference post-cutoff events (2025-2026) that postdate claude-sonnet-4-6 training data. Probability/statistical reasoning items are constructed scenarios, not drawn from any published test set. Fermi estimation items use novel problem formulations. Debiasing items use original scenarios. Overall leakage risk: negligible — authored items only.",
   "label": {
-    "definition": "Objective correctness on quantitative reasoning, probability calibration, numerical estimation, and debiasing tasks. Items require genuine probabilistic judgment, not mechanical computation.",
+    "definition": "Objective correctness on quantitative reasoning, probability calibration, numerical estimation, and probabilistic tasks. Items require genuine probabilistic judgment, not mechanical computation.",
     "values": {
       "true": "Correct answer (matches answer_idx A-E)",
       "false": "Incorrect answer"

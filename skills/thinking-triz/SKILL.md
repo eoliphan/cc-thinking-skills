@@ -1,6 +1,7 @@
 ---
 name: thinking-triz
 description: Use when stuck between two architecture or API requirements that seem mutually exclusive — name the contradiction precisely, then separate the conflicting states in time, space, or condition.
+disable-model-invocation: true
 ---
 
 # TRIZ Thinking

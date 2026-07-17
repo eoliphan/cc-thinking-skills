@@ -1,6 +1,7 @@
 ---
 name: thinking-first-principles
 description: When a constraint is treated as fixed ("too expensive", "impossible", "always done this way"), ask whether it's physics or just convention, then rebuild from what's actually true.
+disable-model-invocation: true
 ---
 
 # First Principles Reasoning
@@ -29,7 +30,7 @@ Problem intractable? → yes → Are you reasoning from analogy? → yes → APP
 - The constraint is genuinely physics/cost/regulation, not convention — verify, then accept it and move on.
 - A well-trodden, working solution already exists; reinventing from scratch adds risk without lift. Use the convention.
 - Routine implementation where the "why" is settled — don't re-derive a standard library, protocol, or known-good pattern.
-- Time-critical incidents: act on the most likely cause first (occams-razor), reserve first-principles for the post-incident redesign.
+- Time-critical incidents: act on the most likely cause first (scientific-method), reserve first-principles for the post-incident redesign.
 
 ## Trigger Card
 
@@ -155,9 +156,8 @@ First Principles:
 - [ ] Identified minimum viable test to prove/disprove approach
 
 ## Combining with Other Models
-- **Inversion**: After first principles, ask "what would make this fail?"
+- **Pre-Mortem**: After first principles, assume the rebuild failed and reverse-analyze why; mitigate before committing
 - **Second-Order Thinking**: Consider downstream effects of your new approach
-- **Pre-Mortem**: Imagine your first-principles solution failed—why?
 
 ## Key Questions
 - "What do we know to be absolutely true?"

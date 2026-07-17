@@ -1,6 +1,7 @@
 ---
 name: thinking-steel-manning
 description: Use before rejecting a proposal or when you're inclined to just agree with the user. Build the strongest version of the opposing case first, then engage that — not a weak version.
+disable-model-invocation: true
 ---
 
 # Steel-Manning
@@ -50,6 +51,13 @@ Before rejecting a proposal or when you're inclined to just agree with the user:
 1. **State the opposing case in its strongest form** — not the version that's easy to knock down. What would its best advocate say?
 2. **Find what's actually true in it** — even if you reject the conclusion, what valid insight or concern does it surface?
 3. **Engage that strongest version** — respond to what was actually claimed, not a weak version. If your position still holds, great; if not, update.
+
+**Strongest-countercase check** (also when defending a path you already prefer):
+
+1. Name the decision or claim you are about to lock.
+2. Construct the strongest case *against* it (or for the best alternative) in good faith — evidence, incentives, and failure modes an informed critic would use.
+3. State one concrete observation that would prove your preferred path wrong, and whether you have looked for it.
+4. Only then accept, revise, or reject. Naming the countercase without changing (or explicitly reaffirming) the decision is incomplete.
 
 Skip for trivial or fully reversible choices where the cost of being wrong is near zero. In an emergency, steel-man the post-incident review, not the live fire.
 
@@ -300,6 +308,7 @@ Stated reasons: [Their explicit arguments]
 - [ ] Understood the original argument
 - [ ] Identified the core insight/concern
 - [ ] Constructed the strongest possible version
+- [ ] Ran the strongest-countercase check on the preferred path (including one falsifying observation)
 - [ ] Addressed the strong version, not a weak one
 - [ ] Found what's legitimate in the opposing view
 - [ ] Considered synthesis of positions
@@ -311,6 +320,7 @@ Stated reasons: [Their explicit arguments]
 - "What legitimate concern is behind this?"
 - "Could I argue this position convincingly?"
 - "What would make this position correct?"
+- "What single piece of evidence would prove my preferred path wrong — and have I looked for it?"
 - "Am I attacking the weakest or strongest form?"
 - "If I were advocating for this, what would I say?"
 

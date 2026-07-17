@@ -1,6 +1,7 @@
 ---
 name: thinking-theory-of-constraints
 description: Use when optimizing latency or throughput in a pipeline and one stage dominates—focus all effort on that single bottleneck, since speeding up the others changes nothing until it's fixed.
+disable-model-invocation: true
 ---
 
 # Theory of Constraints

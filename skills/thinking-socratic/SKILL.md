@@ -1,6 +1,7 @@
 ---
 name: thinking-socratic
 description: Use before building when a request is vague, assumption-laden, or "obvious." Ask the clarifying questions that surface hidden requirements and false premises instead of guessing.
+disable-model-invocation: true
 ---
 
 # Socratic Questioning
@@ -176,6 +177,25 @@ Meta: "Is the real question about event sourcing or auditability?"
 - **Follow the thread**: let each answer narrow the next question instead of working from a fixed script.
 - **Resolve what you can yourself**: only ask the user what you can't determine by reading the code, running a command, or checking the docs.
 - **Make the assumption explicit**: "This assumes X — is that right?" beats silently guessing X.
+
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "ask_clarifying",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.
 
 ## Verification Checklist
 - [ ] Used questions from at least 3 of the 6 categories

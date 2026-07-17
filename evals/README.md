@@ -15,8 +15,8 @@ provider keys configured and can drive Claude/GPT/Gemini/DeepSeek uniformly.
 |---|---|---|---|
 | 0 | `run-structural.js` | free | header/format conformance + a substance-aware re-score (shows where the strict lint under-counts content-rich skills) |
 | 1 | `run-rubric.js` | LLM | a judge grades each SKILL.md's content: fidelity / applicability / actionability / discrimination / discoverability (1–5) + a "would mislead an agent" flag |
-| 2 | `run-routing.js` | LLM | given a natural prompt + all 39 descriptions, does the right skill get picked, and correctly NOT fire on routine requests? Reports **lenient** (accept siblings) vs **strict/unique** accuracy |
-| 3 | `run-behavioral.js` | LLM | **headline.** Claude solves 108 jargon-free problems under controlled conditions; a cross-family judge does blind pairwise comparison. Reports per-skill win-rate + lift |
+| 2 | `run-routing.js` | LLM | given a natural prompt + all 28 descriptions, does the right skill get picked, and correctly NOT fire on routine requests? Reports **lenient** (accept siblings) vs **strict/unique** accuracy |
+| 3 | `run-behavioral.js` | LLM | legacy behavioral comparison over the current 26 leaf-skill datasets; reports per-skill win rate and lift, but is not confirmatory without a declared study |
 
 ## Tier 3 methodology (length-controlled)
 
@@ -35,9 +35,21 @@ dead weight. Solver = Claude (the real consumer); judge = a different family to
 limit self-preference. Pair ordering is assigned by problem-index parity
 (deterministic, position-bias-balanced).
 
-> **Sample-size caveat:** 3 problems/skill is statistically noisy. Trust the
-> cross-skill **aggregate**; treat per-skill verdicts as **directional**. Raise
-> coverage by adding problems to `datasets/behavioral/<skill>.json`.
+> **Evidence caveat:** legacy behavioral coverage is heterogeneous and was not
+> uniformly preregistered. Treat its per-skill results as provisional; use declared
+> heldout and untouched-replication studies for product dispositions.
+
+## Agentic workflow ablation
+
+`run-agentic-workflow.js` is a pilot for multi-step route-vs-node scoring. It
+separates control-flow route accuracy from per-node binary decision accuracy,
+typed I/O effects, validator/repair effects, and verifier effects. Do not cite
+it as powered proof until the dataset is enlarged and pre-registered.
+
+```bash
+EVAL_RUN=workflow-pilot CONC=3 SOLVER_MODEL=claude-sonnet-4-6 \
+  node evals/run-agentic-workflow.js
+```
 
 ## Running
 
@@ -74,10 +86,8 @@ Override per call with the `effort` option / `SOLVER_EFFORT` env.
 
 ## Datasets
 
-- `datasets/routing-cases.jsonl` — 71 cases (39 positive / 16 negative / 16 ambiguous).
-- `datasets/behavioral/<skill>.json` — 3 problems/skill (36 leaf skills; the 3 meta
-  routers are covered by Tier 2, not Tier 3). Prompts never name the framework and
-  each targets a specific failure mode a naive solver falls into.
+- `datasets/routing-cases.jsonl` — 71 cases (39 positive / 16 negative / 16 ambiguous) mapped to the 28-skill catalog.
+- `datasets/behavioral/<skill>.json` — 412 legacy problems across 26 leaf-skill datasets. Prompts never name the framework; these datasets remain provisional unless a declared study supplies eligible splits and provenance.
 
 ## Adversarial review (../reviews/)
 

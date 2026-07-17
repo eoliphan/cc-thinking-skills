@@ -46,6 +46,9 @@ function validateRegistry(registry) {
   if (registry.schema_version !== 1) errors.push('schema_version must equal 1');
   if (!registry.catalog || typeof registry.catalog !== 'object') errors.push('catalog is required');
   if (!registry.skills || typeof registry.skills !== 'object') errors.push('skills is required');
+  if (!registry.deleted_skills || typeof registry.deleted_skills !== 'object') {
+    errors.push('deleted_skills is required for cutover provenance');
+  }
   if (!registry.models || typeof registry.models !== 'object') errors.push('models is required');
   if (!registry.judge_panel || typeof registry.judge_panel !== 'object') errors.push('judge_panel is required');
   if (!registry.arms || typeof registry.arms !== 'object') errors.push('arms is required');
@@ -56,11 +59,19 @@ function validateRegistry(registry) {
   if (!Array.isArray(registry.declared_study_bundles)) errors.push('declared_study_bundles must be an array');
 
   const skills = registry.skills || {};
+  const deletedSkills = registry.deleted_skills || {};
   const skillIds = Object.keys(skills);
+  const deletedIds = Object.keys(deletedSkills);
   const catalog = registry.catalog || {};
-  const expectedCount = catalog.expected_count ?? catalog.baseline_count;
+  const expectedCount = catalog.expected_count ?? catalog.cutover_count;
+  const baselineCount = catalog.baseline_count;
   if (expectedCount != null && skillIds.length !== expectedCount) {
     errors.push(`skills count ${skillIds.length} != expected_count ${expectedCount}`);
+  }
+  if (baselineCount != null && skillIds.length + deletedIds.length !== baselineCount) {
+    errors.push(
+      `skills(${skillIds.length})+deleted_skills(${deletedIds.length}) != baseline_count ${baselineCount}`
+    );
   }
 
   const survivors = new Set(catalog.survivors || []);
@@ -70,58 +81,152 @@ function validateRegistry(registry) {
   for (const id of survivors) {
     if (!skills[id]) errors.push(`survivor missing from skills: ${id}`);
     else if (skills[id].disposition?.cutover !== 'survive') errors.push(`survivor ${id} cutover must be survive`);
+    if (deletedSkills[id]) errors.push(`survivor ${id} must not appear in deleted_skills`);
     if (budgets[id] == null) errors.push(`survivor budget missing for ${id}`);
   }
   for (const id of deletions) {
-    if (!skills[id]) errors.push(`deletion missing from skills: ${id}`);
-    else if (skills[id].disposition?.cutover !== 'delete') errors.push(`deletion ${id} cutover must be delete`);
+    if (!deletedSkills[id]) errors.push(`deletion missing from deleted_skills: ${id}`);
+    else if (deletedSkills[id].disposition?.cutover !== 'delete') {
+      errors.push(`deletion ${id} cutover must be delete`);
+    }
+    if (skills[id]) errors.push(`deletion ${id} must not appear in active skills`);
   }
-  if (survivors.size && deletions.size && survivors.size + deletions.size !== skillIds.length) {
-    errors.push(`survivors(${survivors.size})+deletions(${deletions.size}) != skills(${skillIds.length})`);
+  if (survivors.size && skillIds.length !== survivors.size) {
+    errors.push(`survivors(${survivors.size}) != skills(${skillIds.length})`);
   }
-
+  if (deletions.size && deletedIds.length !== deletions.size) {
+    errors.push(`deletions(${deletions.size}) != deleted_skills(${deletedIds.length})`);
+  }
+  const union = new Set([...skillIds, ...deletedIds]);
+  if (union.size !== skillIds.length + deletedIds.length) {
+    errors.push('skills and deleted_skills must be disjoint');
+  }
   let adequate = 0;
   let inadequate = 0;
   let unknown = 0;
   const inadequateIds = [];
   const unknownIds = [];
 
-  for (const [id, skill] of Object.entries(skills)) {
-    if (!isNonEmptyString(skill.id) || skill.id !== id) errors.push(`skill key/id mismatch for ${id}`);
-    if (!isNonEmptyString(skill.dir)) errors.push(`skill ${id} missing dir`);
-    if (!isNonEmptyString(skill.primary_metric)) errors.push(`skill ${id} missing primary_metric`);
+  function validateSkillRow(id, skill, { active }) {
+    const label = active ? 'skill' : 'deleted_skill';
+    if (!isNonEmptyString(skill.id) || skill.id !== id) errors.push(`${label} key/id mismatch for ${id}`);
+    if (!isNonEmptyString(skill.dir)) errors.push(`${label} ${id} missing dir`);
+    if (!isNonEmptyString(skill.primary_metric)) errors.push(`${label} ${id} missing primary_metric`);
     if (!skill.disposition || typeof skill.disposition !== 'object') {
-      errors.push(`skill ${id} missing disposition`);
+      errors.push(`${label} ${id} missing disposition`);
+      return;
+    }
+    if (active && skill.disposition.cutover !== 'survive') {
+      errors.push(`active skill ${id} cutover must be survive`);
+    }
+    if (!active && skill.disposition.cutover !== 'delete') {
+      errors.push(`deleted_skill ${id} cutover must be delete`);
+    }
+    if (!active) {
+      if (!isNonEmptyString(skill.contract_path)) {
+        errors.push(`deleted_skill ${id} missing contract_path`);
+      }
+      if (!Array.isArray(skill.study_ids)) {
+        errors.push(`deleted_skill ${id} study_ids must be an array`);
+      } else {
+        for (const sid of skill.study_ids) {
+          if (!isNonEmptyString(sid)) {
+            errors.push(`deleted_skill ${id} study_ids entries must be non-empty strings`);
+            break;
+          }
+        }
+      }
+      if (!Array.isArray(skill.disposition.absorb_into)) {
+        errors.push(`deleted_skill ${id} absorb_into must be an array`);
+      } else {
+        for (const target of skill.disposition.absorb_into) {
+          if (!isNonEmptyString(target)) {
+            errors.push(`deleted_skill ${id} absorb_into entries must be non-empty strings`);
+            break;
+          }
+          if (!skills[target] && !survivors.has(target)) {
+            errors.push(`deleted_skill ${id} absorb_into target missing from active skills: ${target}`);
+          }
+        }
+      }
+      if (!isNonEmptyString(skill.disposition.mechanism)) {
+        errors.push(`deleted_skill ${id} missing disposition.mechanism`);
+      }
     }
     if (!skill.data || typeof skill.data !== 'object') {
-      errors.push(`skill ${id} missing data block`);
-      continue;
+      errors.push(`${label} ${id} missing data block`);
+      return;
     }
     const status = skill.data.status;
     if (!['adequate', 'inadequate', 'unknown'].includes(status)) {
-      errors.push(`skill ${id} data.status must be adequate|inadequate|unknown (got ${status})`);
+      errors.push(`${label} ${id} data.status must be adequate|inadequate|unknown (got ${status})`);
     }
-    if (status === 'adequate') adequate++;
-    else if (status === 'inadequate') {
-      inadequate++;
-      inadequateIds.push(id);
-      if (!Array.isArray(skill.data.gaps) || skill.data.gaps.length === 0) {
-        errors.push(`skill ${id} inadequate without explicit gaps`);
+    if (active) {
+      if (status === 'adequate') adequate++;
+      else if (status === 'inadequate') {
+        inadequate++;
+        inadequateIds.push(id);
+        if (!Array.isArray(skill.data.gaps) || skill.data.gaps.length === 0) {
+          errors.push(`skill ${id} inadequate without explicit gaps`);
+        }
+      } else if (status === 'unknown') {
+        unknown++;
+        unknownIds.push(id);
+        if (!Array.isArray(skill.data.gaps) || skill.data.gaps.length === 0) {
+          errors.push(`skill ${id} unknown without explicit gaps`);
+        }
       }
-    } else if (status === 'unknown') {
-      unknown++;
-      unknownIds.push(id);
-      if (!Array.isArray(skill.data.gaps) || skill.data.gaps.length === 0) {
-        errors.push(`skill ${id} unknown without explicit gaps`);
+      const migration = skill.data.migration_coverage;
+      if (migration !== undefined) {
+        if (!migration || typeof migration !== 'object') {
+          errors.push(`skill ${id} data.migration_coverage must be an object`);
+        } else {
+          if (migration.status !== 'consumed_provisional') {
+            errors.push(`skill ${id} migration coverage must be consumed_provisional`);
+          }
+          if (migration.freshness_eligible !== false) {
+            errors.push(`skill ${id} migration coverage must set freshness_eligible=false`);
+          }
+          if (migration.excluded_from_confirmatory_counts !== true) {
+            errors.push(`skill ${id} migration coverage must be excluded from confirmatory counts`);
+          }
+          if (!Array.isArray(migration.sources) || migration.sources.length === 0) {
+            errors.push(`skill ${id} migration coverage sources must be a non-empty array`);
+          } else {
+            const confirmatoryPaths = new Set((skill.data.sources || []).map(source => source?.path));
+            for (const source of migration.sources) {
+              if (!isNonEmptyString(source?.path) ||
+                  !/^[a-f0-9]{64}$/.test(source?.sha256 || '') ||
+                  !Number.isInteger(source?.rows) ||
+                  source.rows <= 0) {
+                errors.push(`skill ${id} migration coverage source is incomplete`);
+                continue;
+              }
+              if (confirmatoryPaths.has(source.path)) {
+                errors.push(`skill ${id} migration source cannot be a confirmatory data source: ${source.path}`);
+              }
+            }
+          }
+        }
       }
-    }
-    if (survivors.has(id)) {
-      const maxWords = skill.max_words ?? skill.disposition?.max_words ?? budgets[id];
-      if (!isPositiveNumber(maxWords)) errors.push(`survivor ${id} missing positive max_words`);
+      if (survivors.has(id)) {
+        const maxWords = skill.max_words ?? skill.disposition?.max_words ?? budgets[id];
+        if (!isPositiveNumber(maxWords)) errors.push(`survivor ${id} missing positive max_words`);
+      }
+    } else if ((status === 'inadequate' || status === 'unknown') &&
+        (!Array.isArray(skill.data.gaps) || skill.data.gaps.length === 0)) {
+      errors.push(`deleted_skill ${id} ${status} without explicit gaps`);
     }
   }
 
-  // declared data_adequacy must match computed statuses (explicit, no silent filter)
+  for (const [id, skill] of Object.entries(skills)) {
+    validateSkillRow(id, skill, { active: true });
+  }
+  for (const [id, skill] of Object.entries(deletedSkills)) {
+    validateSkillRow(id, skill, { active: false });
+  }
+
+  // declared data_adequacy must match computed active statuses (explicit, no silent filter)
   if (registry.data_adequacy) {
     const declaredUnknown = new Set(registry.data_adequacy.unknown_skill_ids || []);
     const declaredInadequate = new Set(registry.data_adequacy.inadequate_skill_ids || []);
@@ -133,9 +238,46 @@ function validateRegistry(registry) {
     }
     for (const id of declaredUnknown) {
       if (!unknownIds.includes(id)) errors.push(`data_adequacy.unknown_skill_ids has stale ${id}`);
+      if (deletedSkills[id]) errors.push(`data_adequacy.unknown_skill_ids must not list deleted ${id}`);
     }
     for (const id of declaredInadequate) {
       if (!inadequateIds.includes(id)) errors.push(`data_adequacy.inadequate_skill_ids has stale ${id}`);
+      if (deletedSkills[id]) errors.push(`data_adequacy.inadequate_skill_ids must not list deleted ${id}`);
+    }
+
+    const prov = registry.data_adequacy.deleted_skills_provenance || {};
+    const provUnknown = new Set(prov.unknown_skill_ids || []);
+    const provInadequate = new Set(prov.inadequate_skill_ids || []);
+    const provAdequate = new Set(prov.adequate_skill_ids || []);
+    for (const [id, skill] of Object.entries(deletedSkills)) {
+      const status = skill?.data?.status;
+      if (status === 'unknown' && !provUnknown.has(id)) {
+        errors.push(`data_adequacy.deleted_skills_provenance.unknown_skill_ids missing ${id}`);
+      }
+      if (status === 'inadequate' && !provInadequate.has(id)) {
+        errors.push(`data_adequacy.deleted_skills_provenance.inadequate_skill_ids missing ${id}`);
+      }
+      if (status === 'adequate' && !provAdequate.has(id)) {
+        errors.push(`data_adequacy.deleted_skills_provenance.adequate_skill_ids missing ${id}`);
+      }
+    }
+    for (const id of provUnknown) {
+      if (!deletedSkills[id]) errors.push(`deleted provenance unknown has non-deleted ${id}`);
+      else if (deletedSkills[id].data?.status !== 'unknown') {
+        errors.push(`deleted provenance unknown stale for ${id}`);
+      }
+    }
+    for (const id of provInadequate) {
+      if (!deletedSkills[id]) errors.push(`deleted provenance inadequate has non-deleted ${id}`);
+      else if (deletedSkills[id].data?.status !== 'inadequate') {
+        errors.push(`deleted provenance inadequate stale for ${id}`);
+      }
+    }
+    for (const id of provAdequate) {
+      if (!deletedSkills[id]) errors.push(`deleted provenance adequate has non-deleted ${id}`);
+      else if (deletedSkills[id].data?.status !== 'adequate') {
+        errors.push(`deleted provenance adequate stale for ${id}`);
+      }
     }
   } else {
     errors.push('data_adequacy block required so unknown/inadequate are explicit');
@@ -201,7 +343,7 @@ function validateRegistry(registry) {
     errors.push('study_contracts required');
   }
 
-  // Family counts must exist and sum to skill count
+  // Family counts must exist and sum to active skill count
   if (!registry.family_counts || typeof registry.family_counts !== 'object') {
     errors.push('family_counts required');
   } else {
@@ -230,6 +372,31 @@ function validateRegistry(registry) {
     }
     if (registry.family_counts.deletions != null && registry.family_counts.deletions !== deletions.size) {
       errors.push('family_counts.deletions mismatch');
+    }
+    if (registry.family_counts.deleted_total_skills != null &&
+        registry.family_counts.deleted_total_skills !== deletedIds.length) {
+      errors.push('family_counts.deleted_total_skills mismatch');
+    }
+    if (registry.family_counts.baseline_total_skills != null &&
+        registry.family_counts.baseline_total_skills !== skillIds.length + deletedIds.length) {
+      errors.push('family_counts.baseline_total_skills mismatch');
+    }
+    if (registry.family_counts.deleted_by_eval_family) {
+      const deletedComputed = {};
+      for (const skill of Object.values(deletedSkills)) {
+        const fam = skill.eval_family || 'unknown';
+        deletedComputed[fam] = (deletedComputed[fam] || 0) + 1;
+      }
+      const deletedDeclared = registry.family_counts.deleted_by_eval_family;
+      const deletedSum = Object.values(deletedDeclared).reduce((a, b) => a + Number(b || 0), 0);
+      if (deletedSum !== deletedIds.length) {
+        errors.push(`family_counts.deleted_by_eval_family sum ${deletedSum} != deleted_skills ${deletedIds.length}`);
+      }
+      for (const [fam, n] of Object.entries(deletedComputed)) {
+        if (deletedDeclared[fam] !== n) {
+          errors.push(`family_counts.deleted_by_eval_family mismatch for ${fam}`);
+        }
+      }
     }
     if (registry.family_counts.efficacy_hypotheses != null && registry.family_counts.efficacy_hypotheses !== 84) {
       errors.push('family_counts.efficacy_hypotheses must equal 84');
@@ -261,6 +428,8 @@ function validateRegistry(registry) {
 
   const summary = {
     skill_count: skillIds.length,
+    deleted_skill_count: deletedIds.length,
+    baseline_skill_count: skillIds.length + deletedIds.length,
     survivors: survivors.size,
     deletions: deletions.size,
     data_adequate: adequate,

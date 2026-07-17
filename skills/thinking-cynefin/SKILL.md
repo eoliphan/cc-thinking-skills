@@ -1,6 +1,7 @@
 ---
 name: thinking-cynefin
 description: Use when unsure how to approach a problem—plan, analyze, experiment, or stabilize first. Classify it by cause-effect (clear/complicated/complex/chaotic) and match the approach to the domain.
+disable-model-invocation: true
 ---
 
 # Cynefin Framework
@@ -56,6 +57,25 @@ Before committing, test the classification:
 - Complicated? Can analysis predict the outcome? If not → probably Complex.
 - Complex? Can you run a safe-to-fail probe? If it's too turbulent to probe → Chaotic.
 - Re-check as the situation evolves; domains shift (chaos stabilizes into complex/complicated).
+
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "unordered_problem",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.
 
 ## Key Questions
 

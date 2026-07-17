@@ -1,15 +1,16 @@
 ---
 name: thinking-probabilistic
-description: Use when stating a forecast, estimate, or risk. Anchor on the base rate, give a confidence range instead of a point, and update the number when new evidence arrives.
+description: Use when forecasting, estimating, or sizing risk. Anchor on base rates, give a range, update prior→likelihood→posterior on new evidence, and decompose unknowns into order-of-magnitude bounds.
+disable-model-invocation: true
 ---
 
 # Probabilistic Thinking
 
 ## Overview
 
-Probabilistic thinking, informed by Philip Tetlock's "Superforecasting," treats a forecast as a probability and a range rather than a single confident number. Three moves do almost all the work: **anchor on the base rate**, **express the estimate as a range** (not a point), and **update the number** when new evidence arrives.
+Probabilistic thinking, informed by Philip Tetlock's "Superforecasting," treats a forecast as a probability and a range rather than a single confident number. Core moves: **anchor on the base rate**, **express the estimate as a range** (not a point), **update prior→likelihood→posterior** when evidence arrives, and **decompose unknowns** into order-of-magnitude factor bounds when you cannot measure or look up the number.
 
-**Core Principle:** Start from how often similar things happen, state your estimate as a range with a confidence level, and move the number — explicitly — when the evidence moves.
+**Core Principle:** Start from how often similar things happen, state your estimate as a range with a confidence level, move the number explicitly when evidence moves, and bound unmeasured quantities by factoring them rather than inventing precision.
 
 > **Stateless-agent note.** Across a single task you have no persistent prediction log, so there is no "track my calibration over months" step here. The leverage is in the *act* of estimating: base rate, range, update. Apply the calibration *attitude* (assume you're overconfident; widen the range) without pretending to keep a cross-session scorecard you don't have.
 
@@ -26,14 +27,15 @@ Decision flow:
 ```
 About to state a forecast/estimate/risk?
   → Outcome genuinely uncertain? → yes → BASE RATE, then a RANGE (not a point)
-  → New evidence since last estimate? → yes → UPDATE THE NUMBER
+  → New evidence since last estimate? → yes → PRIOR → LIKELIHOOD → POSTERIOR UPDATE
+  → Need a number you can't measure or look up? → yes → DECOMPOSE into factors; report order-of-magnitude bounds
   → Can you just look it up / measure it? → yes → DO THAT INSTEAD
 ```
 
 ## When NOT to Use
 
 - **The quantity is knowable.** If you can measure it, query it, or look it up, do that — don't dress a checkable fact as a probability.
-- **A single piece of evidence updates a single prior.** That's the narrower mechanics of `thinking-bayesian`; use it for the explicit prior × likelihood-ratio update.
+- **A single evidence update needs no range or base-rate work beyond prior × likelihood.** Still do the update here: state prior, likelihood ratio, posterior. Don't invent a full forecast ceremony if a point update is enough.
 - **The decision doesn't depend on the number.** If you'd act the same across the plausible range, skip the estimate and act.
 - **You'd be inventing the base rate.** If there's no real reference class, say the estimate is a guess rather than manufacturing false precision.
 
@@ -79,19 +81,24 @@ Estimate: ~60% probability of on-time launch
 
 ## The Probabilistic Process
 
-### Step 1: Express Initial Probability
+### Step 1: Express Initial Probability (Prior + Base Rate)
 
-State your belief as a number:
+State the prior as a number *before* new evidence. Prefer a reference-class base rate over gut feel.
 
 ```markdown
 ## Prediction: Will we hit Q2 revenue target?
 
-Initial estimate: 65%
+Prior (base rate first): 65%
 Reasoning:
 - Last 4 quarters: Hit 3/4 targets (75% base rate)
 - Current pipeline: Slightly below historical (-10%)
 - New product launching: Uncertain impact
 ```
+
+Base-rate / alternative check (run before locking the prior):
+1. What is the success rate for *similar* efforts in a real reference class?
+2. Name at least one credible alternative hypothesis or path and its base rate.
+3. If the prior is far from the base rate, write the concrete reason — or pull the prior back toward the base rate.
 
 ### Step 2: Identify Key Uncertainties
 
@@ -104,7 +111,7 @@ Key uncertainties:
 3. Will competitor launch disrupt? (-20% if aggressive)
 ```
 
-### Step 3: Create Probability Tree
+### Step 3: Create Probability Tree (or Fermi Bounds When Unmeasured)
 
 For complex predictions, branch scenarios:
 
@@ -121,20 +128,48 @@ Project success: ?
 P(Success) = 48% + 12.6% = 60.6% ≈ 60%
 ```
 
-### Step 4: Update with New Information
+When you need a **quantity** you cannot measure or look up and order-of-magnitude is enough:
 
-When new evidence arrives, update:
+1. **Decompose:** Quantity = Factor₁ × Factor₂ × … (component sum, rate×time, or population×fraction).
+2. **Bound each factor** with a range (not a point); use geometric mean for order-of-magnitude; one significant figure.
+3. **Multiply and sanity-check:** Does the order of magnitude make sense? Would a 10× error change the decision? Replace any factor that is actually lookup-able with the real value.
+4. **Report:** "~X, within 3–5×" — never false precision.
+
+```
+Storage ≈ users × events/user/day × bytes/event × days × overhead
+       ≈ 150k × 50 × 500 × 365 × 3 ≈ 4 TB (range ~1–15 TB)
+```
+
+Skip Fermi when the number is cheaply measurable/lookup-able, when the decision needs precision tighter than ~3–5×, or when every factor is pure invention with no anchor.
+
+### Step 4: Update Prior → Likelihood → Posterior
+
+When new evidence arrives, update explicitly:
+
+1. **Prior** — belief *before* this evidence (odds or probability).
+2. **Likelihood ratio** — always P(evidence | H) / P(evidence | ¬H). LR > 1 supports H; LR = 1 is noise; LR < 1 undermines H (e.g. 0.25 = 4× against). Strength bands for |log| distance from 1: weak ~1.5–3× (or 1/3–2/3), moderate 3–10× (or 0.1–1/3), strong 10–100× (or 0.01–0.1), definitive 100×+ (or ≤0.01).
+3. **Posterior odds = prior odds × LR** (multiply even when LR < 1 — that *lowers* the posterior); convert odds to probability as p = odds / (1 + odds).
+4. Yesterday's posterior becomes today's prior for the next piece of evidence.
+
+```markdown
+Prior: 30% feature succeeds → odds 0.30/0.70 = 0.43
+Evidence for: early lift 5% (p=0.08)
+  P(result | works) ≈ 0.60; P(result | doesn't) ≈ 0.15 → LR = 4×
+Posterior odds: 0.43 × 4 = 1.72 → posterior ≈ 63%
+
+Evidence against: week-2 lift vanishes
+  P(vanish | works) ≈ 0.20; P(vanish | doesn't) ≈ 0.80 → LR = 0.25
+Posterior odds: 1.72 × 0.25 = 0.43 → posterior ≈ 30%
+```
+
+Base-rate neglect guard: for rare events, start with the prior; a positive test on a rare condition is often still a false alarm. Do not jump from vivid evidence to near-certainty.
+
+Heuristic update (when formal LR is overkill):
 
 ```markdown
 Original estimate: 65% hit revenue target
-
-New information: Enterprise deal delayed to Q3
-Impact: -15% (was +15% if closed, now neutral)
-Updated estimate: 50%
-
-New information: Competitor launch was weak
-Impact: +10% (was -20% if aggressive)
-Updated estimate: 60%
+New information: Enterprise deal delayed to Q3 → −15% → 50%
+New information: Competitor launch was weak → +10% → 60%
 ```
 
 ### Step 5: State the Estimate So It Can Be Checked
@@ -260,10 +295,11 @@ Decision: High uncertainty suggests pilot first
 ## Prediction
 [Clear, falsifiable statement with timeframe]
 
-## Initial Probability
+## Initial Probability (Prior)
 Estimate: [X]%
 Base rate: [Similar events: Y%]
-Adjustment rationale: [Why different from base rate]
+Alternative hypothesis / path: [Name + base rate]
+Adjustment rationale: [Why different from base rate — or pull prior toward base rate]
 
 ## Confidence Interval
 - 50% CI: [Range]
@@ -276,10 +312,14 @@ Adjustment rationale: [Why different from base rate]
 | [Factor 1] | +X% | -Y% |
 | [Factor 2] | +X% | -Y% |
 
-## Updates (within this task)
-| New information | Old P | New P |
-|-----------------|-------|-------|
-| | | |
+## Fermi Bounds (if quantity unmeasured)
+Quantity = [Factor1] × [Factor2] × …
+Point / range: ~[X] within [N]×
+
+## Updates (prior → likelihood → posterior)
+| Evidence | Prior | LR (or heuristic Δ) | Posterior |
+|----------|-------|---------------------|-----------|
+| | | | |
 
 ## Checkable Outcome
 [The specific observation that will prove this forecast right or wrong]
@@ -287,10 +327,12 @@ Adjustment rationale: [Why different from base rate]
 
 ## Verification Checklist
 
-- [ ] Expressed prediction as specific probability
-- [ ] Checked base rate for similar events
+- [ ] Expressed prediction as specific probability (prior before new evidence)
+- [ ] Checked base rate and at least one alternative hypothesis/path
 - [ ] Created appropriate confidence intervals
 - [ ] Identified key uncertainties and their impacts
+- [ ] For unmeasured quantities: decomposed into factors and reported order-of-magnitude bounds
+- [ ] Updated with prior → likelihood ratio → posterior when evidence arrived
 - [ ] Stated the prediction so it's checkable (claim + timeframe + range)
 - [ ] Applied equivalent bet test for sanity check
 - [ ] Willing to update the number when new information arrives
@@ -298,7 +340,9 @@ Adjustment rationale: [Why different from base rate]
 ## Key Questions
 
 - "What probability would I assign to this?"
-- "What's the base rate for similar things?"
+- "What's the base rate for similar things — and what's the best alternative?"
+- "What was my prior, what's the likelihood ratio, and what's the posterior?"
+- "If I need a quantity I can't look up, what factors multiply to it?"
 - "What would change my estimate up or down?"
 - "Am I being overconfident? (Usually yes — widen the range)"
 - "Have I given a range, or am I hiding uncertainty behind a single number?"

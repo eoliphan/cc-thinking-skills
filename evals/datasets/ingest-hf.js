@@ -80,15 +80,15 @@ const SOURCES = {
     classOf: m => (m.answerable ? 'positive' : 'negative'),
     map: r => (r.question && typeof r.answerable === 'boolean') ? { prompt: r.question, answerable: r.answerable, skill_fit: ['circle-of-competence'] } : null,
   },
-  fermi: { // fermi-estimation: numeric order-of-magnitude ground truth
+  fermi: { // probabilistic: Fermi decomposition with numeric order-of-magnitude ground truth
     dataset: 'jeggers/fermi', config: 'real', split: 'test',
     mode: 'numeric', license: 'CC-BY-4.0',
     map: r => { const n = parseFloat(String(r.answer).replace(/[, ]/g, '')); return (r.question && isFinite(n) && n !== 0) ? {
       prompt: r.question + "\n\nEstimate the quantity. End with exactly: ANSWER: <a single number, scientific notation OK>",
-      answer_num: n, skill_fit: ['fermi-estimation'],
+      answer_num: n, skill_fit: ['probabilistic'],
     } : null; },
   },
-  forecasting: { // probabilistic/bayesian: binary resolved outcome (NOTE: 2023 items predate model cutoff → leakage; filter by date for a clean run)
+  forecasting: { // probabilistic: binary resolved outcome (NOTE: 2023 items predate model cutoff → leakage; filter by date for a clean run)
     dataset: 'YuehHanChen/forecasting', config: 'default', split: 'test',
     mode: 'binary-prob', license: 'Apache-2.0',
     map: r => (r.is_resolved === true && r.question_type === 'binary' && (r.resolution === 0 || r.resolution === 1)) ? {

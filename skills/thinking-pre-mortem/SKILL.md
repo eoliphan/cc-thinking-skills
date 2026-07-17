@@ -1,6 +1,7 @@
 ---
 name: thinking-pre-mortem
 description: Before committing to a plan or launch, assume it has already failed and reason backward through why — prospective hindsight surfaces risks that "what could go wrong?" misses.
+disable-model-invocation: true
 ---
 
 # Pre-Mortem Analysis
@@ -27,7 +28,7 @@ Starting significant work? → yes → Plan looks solid / on track? → yes → 
 
 ## When NOT to Use
 - The work is small, local, and reversible — failure is cheap to undo, so skip the ceremony.
-- You're mid-incident under time pressure — act on the likely cause now (ooda/occams-razor); pre-mortem belongs *before* execution, not during firefighting.
+- You're mid-incident under time pressure — act on the likely cause now (ooda/scientific-method); pre-mortem belongs *before* execution, not during firefighting.
 - You'd only generate generic risks ("requirements unclear", "scope creep") that don't bind to this specific plan — stop if nothing concrete surfaces.
 - The risks are already enforced by automated gates (CI, canary, rollback) — don't re-list what the system already catches.
 
@@ -80,11 +81,34 @@ Mitigation:
 Verification: integration smoke test passes before downstream work begins
 ```
 
-### Step 5: Update the Plan
-Incorporate mitigations into the plan:
+### Step 5: Failure-First Reverse Analysis
+For each top failure scenario, work backward from the failed outcome to the conditions that made it inevitable, then lock preventions as plan requirements:
+
+1. **State the failed outcome in past tense** — e.g., "Auth launch was rolled back after credential stuffing emptied accounts."
+2. **Trace necessary conditions** — list what had to be true for that failure (missing controls, false assumptions, absent checks). Ask: "What conditions made this failure possible or guaranteed?"
+3. **Invert each condition into a prevention requirement** — turn the condition into an explicit avoid/require rule with a verifiable criterion (not a vague intention).
+4. **Bind to the plan** — attach owner, verification checkpoint, and whether the requirement blocks ship or is staged.
+
+```
+Failed outcome: Credential stuffing emptied accounts after launch
+Necessary conditions:
+- No rate limiting on login
+- Passwords stored with weak hashing
+- No anomaly alerting on auth failures
+Prevention requirements:
+- Require rate limit + lockout on auth endpoints (verified by load/abuse test)
+- Require bcrypt cost ≥ 12 or an explicitly configured Argon2id policy (verified by config audit)
+- Require auth-failure anomaly alert before GA (verified by alert fire test)
+```
+
+Use this pass when a failure reason is still abstract ("security fails") or when optimism is hiding the concrete path. Prefer reverse analysis over forward brainstorming once the failure frame is set.
+
+### Step 6: Update the Plan
+Incorporate mitigations and reverse-analysis prevention requirements into the plan:
 - Add spike/investigation tasks ahead of dependent work
 - Build in contingency for the highest P×S risks
 - Add a concrete verification/checkpoint for each top risk
+- Encode inverted conditions as explicit ship/stage gates
 
 ## Pre-Mortem Template
 
@@ -153,18 +177,40 @@ It is [Future Date]. [Project] has failed.
 - **Interrogate the plan's own optimism** — what did the author most want to be true?
 - **Convert to action** — a pre-mortem with no plan change is wasted; each top risk needs a mitigation + verification.
 
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "pre_mortem_warranted",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.
+
 ## Verification Checklist
 - [ ] Run before significant work begins (not mid-incident)
 - [ ] Failure frame stated in past tense
 - [ ] 15+ distinct failure reasons generated before ranking
 - [ ] Risks prioritized by likelihood × impact
 - [ ] Top 3-5 risks have explicit mitigations
+- [ ] Top failures reverse-analyzed: necessary conditions → prevention requirements with verification
 - [ ] Each mitigation has a concrete verification/checkpoint
 - [ ] Plan updated to incorporate findings
 
 ## Key Questions
 - "The plan failed. Why?"
+- "What conditions had to be true for this failure to occur?"
 - "What was obvious in retrospect that the plan missed?"
 - "What warning signs would have shown up first?"
 - "Which load-bearing assumption turned out to be false?"
 - "What did the plan most need to be true that wasn't?"
+- "What prevention requirement would have made this failure path impossible?"

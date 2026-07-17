@@ -1,6 +1,7 @@
 ---
 name: thinking-red-team
 description: Use when reviewing code, auth, or APIs for security vulnerabilities — adopt an attacker mindset, enumerate the attack surface, report only findings with a concrete reproducible attack path.
+disable-model-invocation: true
 ---
 
 # Red Team Thinking
@@ -140,3 +141,22 @@ Findings without a complete attack path are excluded from the report. A report w
 | **Skipping the adversary model** | Attacking without defining who the attacker is and what access they have | Define the adversary profile first; attacks make sense only in context |
 | **Missing the attack path** | Reporting a vulnerability without showing how to reach it | Every finding needs: entry point → steps → impact |
 | **Scanner-as-substitute** | Running a SAST tool and reporting its output without adversarial thinking | The tool finds patterns; red-teaming finds exploitable paths |
+
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "vulnerability_present",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.

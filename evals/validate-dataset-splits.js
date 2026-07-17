@@ -26,6 +26,21 @@ const WORKFLOW_FILES = [
   'workflow-cases-replication.jsonl',
 ];
 
+const REGISTRY_PATH = path.join(__dirname, 'studies', 'registry.json');
+
+function legacyAuthoredBasenames(registryPath = REGISTRY_PATH) {
+  if (!fs.existsSync(registryPath)) return new Set();
+  const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+  const names = new Set();
+  for (const skill of Object.values(registry.deleted_skills || {})) {
+    for (const source of (skill.data && skill.data.sources) || []) {
+      const sourcePath = String(source.path || '').replace(/\\/g, '/');
+      if (sourcePath.startsWith('evals/datasets/authored/')) names.add(path.basename(sourcePath));
+    }
+  }
+  return names;
+}
+
 const SPLITS = ['dev', 'heldout', 'replication'];
 
 function loadJsonl(file) {
@@ -96,6 +111,17 @@ function validateAuthoredFile(filename, authoredDir = AUTHORED_DIR) {
     }
     if (row.split && !SPLITS.includes(row.split)) {
       errors.push(`${row.id || 'unknown'}: invalid split '${row.split}'`);
+    }
+    if (row.evidence_status === 'consumed_provisional' || row.freshness_eligible === false) {
+      if (row.evidence_status !== 'consumed_provisional') {
+        errors.push(`${row.id || 'unknown'}: non-fresh row must set evidence_status=consumed_provisional`);
+      }
+      if (row.freshness_eligible !== false) {
+        errors.push(`${row.id || 'unknown'}: consumed provisional row must set freshness_eligible=false`);
+      }
+      if (row.split !== 'dev') {
+        errors.push(`${row.id || 'unknown'}: consumed provisional row must use split=dev`);
+      }
     }
     if (row.split && row.cluster_id && splitClusters[row.split]) {
       splitClusters[row.split].add(row.cluster_id);
@@ -325,9 +351,12 @@ function validateDatasetSplits(opts = {}) {
   const authoredDir = opts.authoredDir || AUTHORED_DIR;
   const workflowDir = opts.workflowDir || WORKFLOW_DIR;
   const workflowFiles = opts.workflowFiles || WORKFLOW_FILES;
+  const excludedAuthored = opts.excludedAuthored || legacyAuthoredBasenames(opts.registryPath);
 
   const authoredFiles = fs.existsSync(authoredDir)
-    ? fs.readdirSync(authoredDir).filter(f => f.endsWith('.jsonl')).sort()
+    ? fs.readdirSync(authoredDir)
+      .filter(f => f.endsWith('.jsonl') && !excludedAuthored.has(f))
+      .sort()
     : [];
   const authoredResults = authoredFiles.map(f => validateAuthoredFile(f, authoredDir));
 
@@ -374,6 +403,7 @@ function validateDatasetSplits(opts = {}) {
       authored_heldout_clusters: authoredOut.reduce((a, r) => a + (r.splits?.heldout || 0), 0),
       authored_replication_clusters: authoredOut.reduce((a, r) => a + (r.splits?.replication || 0), 0),
       workflow_clusters: workflowOut.reduce((a, r) => a + (r.clusters || 0), 0),
+      excluded_authored_files: [...excludedAuthored].sort(),
       status: ok ? 'passed' : 'failed',
     },
     authored: authoredOut,

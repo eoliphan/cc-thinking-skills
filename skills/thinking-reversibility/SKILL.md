@@ -1,6 +1,7 @@
 ---
 name: thinking-reversibility
 description: Before deliberating over a decision, ask if it's a one-way door (costly to undo) or two-way (cheap to undo) — decide two-way doors fast, and look for moves that make one-way doors reversible.
+disable-model-invocation: true
 ---
 
 # Reversibility Thinking
@@ -43,6 +44,10 @@ Before deliberating over a decision:
 1. **Classify the door** — is it one-way (costly to undo) or two-way (cheap to undo)? If you're not sure, it's probably one-way.
 2. **Two-way door?** → Decide fast. The cost of delay exceeds the cost of a wrong choice you can reverse.
 3. **One-way door?** → Ask: can I make it more reversible? (Feature flag, canary, small rollout, decouple the irreversible part.) Then deliberate — but only on what's actually irreversible.
+4. **Asymmetric downside/recovery** — for high-stakes one-way choices, separate *acting* downside from *not acting* downside:
+   - Is the downside of acting recoverable (time, money, status that can be rebuilt)?
+   - Is the downside of not acting permanent (option closes, window ends, irreversible lock-out)?
+   - If acting downside is recoverable and not-acting downside is permanent, favor staged commitment over pure avoidance — unless the acting downside is catastrophic, ruinous, or harms others (asymmetry flips; do not "just try it").
 
 If the decision is forced by an external constraint with no optionality, reversibility doesn't change the available move. If an irreversible action is genuinely required and the upside justifies it, name it and proceed.
 
@@ -113,6 +118,27 @@ Reversibility Score:
 - Can undo in weeks with moderate cost: TYPE 2 with monitoring
 - Can undo in months with significant cost: TYPE 1.5 (evaluate carefully)
 - Cannot realistically undo: TYPE 1 (one-way door)
+```
+
+### Step 2b: Asymmetric Downside vs Recovery
+
+When the decision is Type 1 or Type 1.5, run this check before pure avoidance:
+
+```
+Acting path:
+  Downside if wrong: [what fails]
+  Recoverable? [Yes / Partially / No — ruinous or harms others]
+  Recovery cost/time: [how you reverse or rebuild]
+
+Not-acting path:
+  What is permanently foregone if you wait or decline?
+  Does the option close (window, exclusivity, path dependence)?
+  Permanent lock-out? [Yes / No]
+
+Asymmetry rule:
+  Recoverable acting downside + permanent not-acting downside → prefer pilot / staged commitment over indefinite delay
+  Catastrophic or third-party-harming acting downside → asymmetry flips; refuse or redesign before committing
+  Both sides temporary / both permanent → reversibility class alone does not decide; use full deliberation
 ```
 
 ### Step 3: Match Process to Type
@@ -278,6 +304,13 @@ Average: [X]
 
 ## Decision Type: [Type 1 / 1.5 / 2]
 
+## Asymmetric Downside / Recovery
+- Acting downside if wrong: [what fails]
+- Recoverable? [Yes / Partial / No]
+- Recovery path and cost: [how]
+- Not-acting permanent foregone: [option/window that closes]
+- Asymmetry favors: [staged try / deliberate refuse / standard process]
+
 ## Appropriate Process
 - Analysis depth: [Minimal / Moderate / Extensive]
 - Surface to human owner before committing? [No / Yes if high-stakes / Yes]
@@ -296,15 +329,36 @@ Average: [X]
 [How we would reverse if this proves wrong]
 ```
 
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "one_way_door",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.
+
 ## Verification Checklist
 
 - [ ] Assessed reversibility across multiple factors
 - [ ] Categorized as Type 1, 1.5, or 2
+- [ ] For Type 1/1.5, checked recoverable acting downside vs permanent not-acting downside
 - [ ] Matched decision process to decision type
 - [ ] Explored options to increase reversibility
 - [ ] Not over-analyzing Type 2 decisions
 - [ ] Not under-analyzing Type 1 decisions
 - [ ] Have a reversal plan for non-trivial decisions
+- [ ] Did not treat catastrophic/third-party harm as "recoverable try"
 
 ## Key Questions
 
@@ -312,7 +366,8 @@ Average: [X]
 - "Are we treating this like a one-way door when it's actually two-way?"
 - "Can we pilot this to make it more reversible?"
 - "What's the cost of being wrong vs. the cost of delay?"
-- "Who else would be affected if we reverse?"
+- "Is the acting downside recoverable while not-acting permanently closes an option?"
+- "Who else would be affected if we reverse — or if we never try?"
 - "Is this actually irreversible, or does it just feel that way?"
 
 ## Bezos' Wisdom

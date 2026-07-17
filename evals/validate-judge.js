@@ -387,6 +387,7 @@ Which answer is better? Respond with {"winner":"A"} or {"winner":"B"} and a brie
   // Write results if EVAL_RUN is set
   const runId = process.env.EVAL_RUN;
   if (runId) {
+    const path = require('path');
     const { runDir, writeJson } = require('./lib/io');
     const dir = runDir();
     const output = {
@@ -398,8 +399,10 @@ Which answer is better? Respond with {"winner":"A"} or {"winner":"B"} and a brie
       runId,
       timestamp: new Date().toISOString(),
     };
-    writeJson(dir, `judge-reliability-${runId}.json`, output);
-    console.log(`\nResults written to: ${dir}/judge-reliability-${runId}.json`);
+    // writeJson(file, obj) — single path argument (not dir, name, obj)
+    const outPath = path.join(dir, `judge-reliability-${runId}.json`);
+    writeJson(outPath, output);
+    console.log(`\nResults written to: ${outPath}`);
   }
 }
 

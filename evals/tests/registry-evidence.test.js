@@ -28,10 +28,17 @@ const {
   evaluateStudyClaim,
 } = require('../lib/claims');
 
-test('registry loads 39 skills with 28 survivors and 11 deletions', () => {
+test('registry loads 28 active skills with 11 deleted provenance rows', () => {
   const { registry, validation } = loadAndValidateRegistry();
   assert.equal(validation.ok, true, validation.errors.join('; '));
-  assert.equal(Object.keys(registry.skills).length, 39);
+  assert.equal(Object.keys(registry.skills).length, 28);
+  assert.equal(Object.keys(registry.deleted_skills).length, 11);
+  assert.equal(
+    new Set([...Object.keys(registry.skills), ...Object.keys(registry.deleted_skills)]).size,
+    39
+  );
+  assert.equal(registry.catalog.expected_count, 28);
+  assert.equal(registry.catalog.baseline_count, 39);
   assert.equal(registry.catalog.survivors.length, 28);
   assert.equal(registry.catalog.deletions.length, 11);
   assert.equal(registry.gates.utility_margin_pp, 5);
@@ -45,8 +52,9 @@ test('registry loads 39 skills with 28 survivors and 11 deletions', () => {
   assert.ok(registry.arms.all.includes('workflow'));
   assert.equal(getSkillBudget(registry, 'systems'), 950);
   assert.equal(getSkillBudget(registry, 'scientific-method'), 900);
-  assert.equal(registry.skills['dual-process'].disposition.cutover, 'delete');
+  assert.equal(registry.deleted_skills['dual-process'].disposition.cutover, 'delete');
   assert.equal(registry.skills.systems.disposition.cutover, 'survive');
+  assert.equal(registry.skills['dual-process'], undefined);
 });
 
 test('judge panel calibration is blocked_missing_human_labels and manual-only', () => {
@@ -103,6 +111,80 @@ test('registry validator errors on wrong gates and missing family_counts', () =>
   const f = validateRegistry(badFamily);
   assert.equal(f.ok, false);
   assert.ok(f.errors.some(e => /family_counts/.test(e)));
+});
+
+test('deleted_skills provenance fields are required and mutation-protected', () => {
+  const { registry, validation } = loadAndValidateRegistry();
+  assert.equal(validation.ok, true, validation.errors.join('; '));
+  assert.equal(Object.keys(registry.deleted_skills).length, 11);
+
+  for (const [id, row] of Object.entries(registry.deleted_skills)) {
+    assert.ok(typeof row.contract_path === 'string' && row.contract_path.length > 0, id);
+    assert.ok(Array.isArray(row.study_ids), id);
+    assert.ok(Array.isArray(row.disposition.absorb_into), id);
+    assert.ok(typeof row.disposition.mechanism === 'string' && row.disposition.mechanism.length > 0, id);
+  }
+
+  const base = JSON.parse(JSON.stringify(registry));
+  const sampleId = 'dual-process';
+  assert.ok(base.deleted_skills[sampleId]);
+
+  const dropContract = JSON.parse(JSON.stringify(base));
+  delete dropContract.deleted_skills[sampleId].contract_path;
+  const c = validateRegistry(dropContract);
+  assert.equal(c.ok, false);
+  assert.ok(c.errors.some(e => /deleted_skill dual-process missing contract_path/.test(e)));
+
+  const dropStudyIds = JSON.parse(JSON.stringify(base));
+  delete dropStudyIds.deleted_skills[sampleId].study_ids;
+  const s = validateRegistry(dropStudyIds);
+  assert.equal(s.ok, false);
+  assert.ok(s.errors.some(e => /deleted_skill dual-process study_ids must be an array/.test(e)));
+
+  const dropAbsorb = JSON.parse(JSON.stringify(base));
+  delete dropAbsorb.deleted_skills[sampleId].disposition.absorb_into;
+  const a = validateRegistry(dropAbsorb);
+  assert.equal(a.ok, false);
+  assert.ok(a.errors.some(e => /deleted_skill dual-process absorb_into must be an array/.test(e)));
+
+  const dropMechanism = JSON.parse(JSON.stringify(base));
+  delete dropMechanism.deleted_skills[sampleId].disposition.mechanism;
+  const m = validateRegistry(dropMechanism);
+  assert.equal(m.ok, false);
+  assert.ok(m.errors.some(e => /deleted_skill dual-process missing disposition\.mechanism/.test(e)));
+
+  // Empty arrays remain valid provenance (dual-process has no absorb targets; most study_ids are []).
+  const emptyArrays = JSON.parse(JSON.stringify(base));
+  emptyArrays.deleted_skills[sampleId].study_ids = [];
+  emptyArrays.deleted_skills[sampleId].disposition.absorb_into = [];
+  const okEmpty = validateRegistry(emptyArrays);
+  assert.equal(okEmpty.ok, true, okEmpty.errors.join('; '));
+});
+
+test('consumed migration coverage cannot count as fresh confirmatory data', () => {
+  const { registry, validation } = loadAndValidateRegistry();
+  assert.equal(validation.ok, true, validation.errors.join('; '));
+  const migration = registry.skills['pre-mortem'].data.migration_coverage;
+  assert.equal(migration.status, 'consumed_provisional');
+  assert.equal(migration.freshness_eligible, false);
+  assert.equal(migration.excluded_from_confirmatory_counts, true);
+  assert.ok(migration.sources.length > 0);
+
+  const falselyFresh = JSON.parse(JSON.stringify(registry));
+  falselyFresh.skills['pre-mortem'].data.migration_coverage.freshness_eligible = true;
+  const freshValidation = validateRegistry(falselyFresh);
+  assert.equal(freshValidation.ok, false);
+  assert.ok(freshValidation.errors.some(error => /freshness_eligible=false/.test(error)));
+
+  const doubleCounted = JSON.parse(JSON.stringify(registry));
+  const consumed = doubleCounted.skills['pre-mortem'].data.migration_coverage.sources[0];
+  doubleCounted.skills['pre-mortem'].data.sources.push({
+    path: consumed.path,
+    sha256: consumed.sha256,
+  });
+  const countValidation = validateRegistry(doubleCounted);
+  assert.equal(countValidation.ok, false);
+  assert.ok(countValidation.errors.some(error => /cannot be a confirmatory data source/.test(error)));
 });
 
 test('verifyExactHashes fails closed without path/payload verification targets', () => {
@@ -172,10 +254,21 @@ test('registry makes unknown and inadequate data explicit', () => {
   for (const id of registry.data_adequacy.unknown_skill_ids) {
     assert.equal(registry.skills[id].data.status, 'unknown');
     assert.ok(registry.skills[id].data.gaps.length > 0);
+    assert.equal(registry.deleted_skills[id], undefined);
   }
   for (const id of registry.data_adequacy.inadequate_skill_ids) {
     assert.equal(registry.skills[id].data.status, 'inadequate');
     assert.ok(registry.skills[id].data.gaps.length > 0);
+    assert.equal(registry.deleted_skills[id], undefined);
+  }
+  const prov = registry.data_adequacy.deleted_skills_provenance;
+  assert.ok(prov);
+  for (const id of prov.unknown_skill_ids || []) {
+    assert.equal(registry.deleted_skills[id].data.status, 'unknown');
+    assert.ok(registry.deleted_skills[id].data.gaps.length > 0);
+  }
+  for (const id of prov.adequate_skill_ids || []) {
+    assert.equal(registry.deleted_skills[id].data.status, 'adequate');
   }
 });
 

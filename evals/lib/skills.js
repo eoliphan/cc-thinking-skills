@@ -42,7 +42,7 @@ function loadAllSkills() {
 
 /** All skills minus the meta routers/selectors (leaf models only). */
 function leafSkills() {
-  const meta = new Set(['thinking-model-router', 'thinking-model-selection', 'thinking-model-combination']);
+  const meta = new Set(['thinking-model-router', 'thinking-model-combination']);
   return loadAllSkills().filter(s => !meta.has(s.name));
 }
 

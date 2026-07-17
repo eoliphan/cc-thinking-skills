@@ -1,6 +1,7 @@
 ---
 name: thinking-margin-of-safety
 description: Use when provisioning capacity, setting a timeout/limit, or committing to an estimate under uncertainty. Size a buffer to the cost of being wrong instead of optimizing to the edge.
+disable-model-invocation: true
 ---
 
 # Margin of Safety
@@ -295,6 +296,25 @@ How will you know if margin is adequate/excessive?
 - [Threshold for concern]
 - [Review cadence]
 ```
+
+## Decision Output
+
+When this skill is used as a workflow gate, produce:
+
+```json
+{
+  "decision_key": "adequate_margin",
+  "answer": true,
+  "rationale": "one concise sentence"
+}
+```
+
+## Escalate to Full Skill When
+
+- The answer depends on scenario generation, not binary classification.
+- The first pass surfaces multiple plausible branches.
+- The task is novel enough that the checklist may be stale.
+- The consequence of misrouting is high.
 
 ## Verification Checklist
 

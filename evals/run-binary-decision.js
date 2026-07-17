@@ -6,7 +6,7 @@
  * Reads decisive split items (mode=binary-decision), runs paired skill+placebo,
  * scores against the ground-truth label (true=YES, false=NO).
  *
- * Usage: EVAL_RUN=m5-primary FORCE_SKILL=archetypes CONC=4 node evals/run-binary-decision.js
+ * Usage: EVAL_RUN=m5-primary FORCE_SKILL=systems CONC=4 node evals/run-binary-decision.js
  */
 
 const fs = require('fs');

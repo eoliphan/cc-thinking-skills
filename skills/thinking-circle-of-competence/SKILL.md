@@ -1,6 +1,7 @@
 ---
 name: thinking-circle-of-competence
 description: Use when you're unsure whether you actually know the answer. If you lack the evidence or context to answer reliably, abstain, ask, or fetch it — don't confabulate a confident reply.
+disable-model-invocation: true
 ---
 
 # Circle of Competence

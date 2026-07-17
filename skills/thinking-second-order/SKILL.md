@@ -1,6 +1,7 @@
 ---
 name: thinking-second-order
 description: When a change has effects past the immediate fix (incentives, scale, feedback loops), ask "and then what?" across horizons before committing — the obvious fix often backfires downstream.
+disable-model-invocation: true
 ---
 
 # Second-Order Thinking

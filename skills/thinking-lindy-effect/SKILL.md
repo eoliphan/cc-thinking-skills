@@ -1,6 +1,7 @@
 ---
 name: thinking-lindy-effect
 description: Choosing a technology/framework/dependency and longevity matters. Use the heuristic that for non-perishable things, expected remaining life is proportional to current age — favor the proven.
+disable-model-invocation: true
 ---
 
 # The Lindy Effect

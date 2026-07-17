@@ -1,6 +1,7 @@
 ---
 name: thinking-jobs-to-be-done
 description: Deciding what to build or why a feature isn't adopted. Reframe from features to the "job" users hire the product for — the progress they seek — to prioritize and position.
+disable-model-invocation: true
 ---
 
 # Jobs to Be Done

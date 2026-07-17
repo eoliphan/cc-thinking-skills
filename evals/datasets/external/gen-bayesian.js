@@ -76,7 +76,7 @@ function build(spec) {
     mode: 'correctness',
     prompt,
     answer_idx,
-    skill_fit: ['bayesian'],
+    skill_fit: ['probabilistic'],
     posterior: +posterior.toFixed(4),
   };
 }
