@@ -1,0 +1,1698 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-07-16T00:00:00.000Z",
+  "phase": 0,
+  "title": "Initial evidence registry — July legacy imports + 39-skill provisional inventory",
+  "authority": "analysis/evidence.json",
+  "policy": {
+    "confirmatory_requires": [
+      "matching_preregistration",
+      "eligible_split",
+      "exact_hashes",
+      "target_n_and_power",
+      "complete_health",
+      "successful_replication",
+      "restore_tested_raw_archive_or_preserved_source_with_provisional_flag"
+    ],
+    "no_public_claim_without_machine_linked_confirmatory_artifact": true,
+    "elevate_count": 0,
+    "notes": [
+      "Historical July estimates and scorecard rows remain explicitly provisional.",
+      "A statistically significant row cannot silently become an ELEVATE product verdict.",
+      "Zero skills currently meet AUTO-RETAIN / ELEVATE gates.",
+      "skills object contains exactly the 39 legacy skill IDs; workflow_form is a separate non-skill entity."
+    ]
+  },
+  "summary": {
+    "elevate_count": 0,
+    "robust_elevate_count": 0,
+    "skill_count": 39,
+    "skill_ids_source": "evals/studies/catalog-cutover/legacy-skills.json",
+    "july_imported_skill_count": 3,
+    "scorecard_cited_skill_count": 16,
+    "unmeasured_skill_count": 20,
+    "directional_only_count": 2,
+    "no_lift_or_null_count": 10,
+    "workflow_inconclusive_count": 3,
+    "workflow_behavioral_pilot_count": 1,
+    "product_disposition_counts": {
+      "manual_only_quarantine_redirect_candidate": 9,
+      "manual_only_quarantine": 15,
+      "manual_only_quarantine_no_lift": 8,
+      "manual_only_quarantine_ceiling": 4,
+      "manual_only_directional_not_elevate": 2,
+      "manual_only_quarantine_negative": 1
+    },
+    "statistical_status_counts": {
+      "null_or_no_lift": 8,
+      "ceiling_or_near_ceiling": 6,
+      "unmeasured": 20,
+      "null_not_significant": 2,
+      "directional_not_significant": 1,
+      "significant_below_utility_margin": 1,
+      "negative_or_adverse": 1
+    },
+    "evidence_validity": "provisional",
+    "product_disposition_global": "no_automatic_elevation"
+  },
+  "studies": [
+    {
+      "study_id": "legacy-july-sci-method-larger-n",
+      "bundle_dir": "evals/studies/legacy-july-sci-method-larger-n",
+      "manifest_path": "evals/studies/legacy-july-sci-method-larger-n/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-sci-method-larger-n/aggregate.json",
+      "items_path": "evals/studies/legacy-july-sci-method-larger-n/items.jsonl",
+      "source_path": "evals/results/sci-method-larger-n/swe-scientific-method.json",
+      "source_sha256": "7ca6ebedc7594925e347a05403ad1adb1f2144f8810db4f0fc1a283f73267471",
+      "measured_result": {
+        "metric": "fault_localization_accuracy",
+        "acc_skill": 0.925,
+        "acc_skill_ci": [
+          0.896,
+          0.946
+        ],
+        "acc_placebo": 0.885,
+        "acc_placebo_ci": [
+          0.851,
+          0.912
+        ],
+        "delta_pp": 4,
+        "discordant_total": 21,
+        "discordant": {
+          "skill_only": 19,
+          "placebo_only": 2,
+          "both_correct": 375,
+          "both_incorrect": 30
+        },
+        "mcnemar_p_artifact": 0,
+        "mcnemar_p_continuity_corrected_approx": 0.000480341,
+        "significant_artifact": true
+      },
+      "statistical_status": "significant_below_utility_margin",
+      "replication_status": "historical_directional_signal_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_directional_not_elevate",
+      "defects": [
+        "permissive_filename_matching",
+        "active_placebo_control",
+        "missing_raw_response_archive",
+        "missing_parsed_answer_fields",
+        "incomplete_usage_fields",
+        "source_artifact_untracked_in_git",
+        "mcnemar_p_rounded_to_zero_in_source_artifact",
+        "incomplete_scoring_denominator"
+      ],
+      "counts": {
+        "source_items": 427,
+        "bundled_items": 427,
+        "scored": 426,
+        "unscored": 1
+      }
+    },
+    {
+      "study_id": "legacy-july-verdict-five-whys",
+      "bundle_dir": "evals/studies/legacy-july-verdict-five-whys",
+      "manifest_path": "evals/studies/legacy-july-verdict-five-whys/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-verdict-five-whys/aggregate.json",
+      "items_path": "evals/studies/legacy-july-verdict-five-whys/items.jsonl",
+      "source_path": "evals/results/verdict-five-whys/swe-five-whys-plus.json",
+      "source_sha256": "6294dd990f8fd2d50ac97a23963cb1d14c60069b5cb0a8477e614fc04b31b697",
+      "measured_result": {
+        "metric": "fault_localization_accuracy",
+        "acc_skill": 0.899,
+        "acc_skill_ci": [
+          0.85,
+          0.934
+        ],
+        "acc_placebo": 0.884,
+        "acc_placebo_ci": [
+          0.833,
+          0.922
+        ],
+        "delta_pp": 1.5,
+        "discordant_total": 11,
+        "discordant": {
+          "skill_only": 7,
+          "placebo_only": 4,
+          "both_correct": 172,
+          "both_incorrect": 16
+        },
+        "mcnemar_p_artifact": 0.546,
+        "mcnemar_p_continuity_corrected_approx": 0.546494,
+        "significant_artifact": false
+      },
+      "statistical_status": "null_not_significant",
+      "replication_status": "historical_null_result_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "defects": [
+        "permissive_filename_matching",
+        "active_placebo_control",
+        "missing_raw_response_archive",
+        "missing_parsed_answer_fields",
+        "incomplete_usage_fields",
+        "source_artifact_untracked_in_git",
+        "incomplete_scoring_denominator"
+      ],
+      "counts": {
+        "source_items": 200,
+        "bundled_items": 200,
+        "scored": 199,
+        "unscored": 1
+      }
+    },
+    {
+      "study_id": "legacy-july-verdict-occams",
+      "bundle_dir": "evals/studies/legacy-july-verdict-occams",
+      "manifest_path": "evals/studies/legacy-july-verdict-occams/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-verdict-occams/aggregate.json",
+      "items_path": "evals/studies/legacy-july-verdict-occams/items.jsonl",
+      "source_path": "evals/results/verdict-occams/swe-occams-razor.json",
+      "source_sha256": "eab1b50a29ec59f25ffb9052c9dad69c20f6c54511d001d8425f73c0c0e91d6b",
+      "measured_result": {
+        "metric": "fault_localization_accuracy",
+        "acc_skill": 0.879,
+        "acc_skill_ci": [
+          0.827,
+          0.918
+        ],
+        "acc_placebo": 0.874,
+        "acc_placebo_ci": [
+          0.821,
+          0.913
+        ],
+        "delta_pp": 0.5,
+        "discordant_total": 13,
+        "discordant": {
+          "skill_only": 7,
+          "placebo_only": 6,
+          "both_correct": 168,
+          "both_incorrect": 18
+        },
+        "mcnemar_p_artifact": 1,
+        "mcnemar_p_continuity_corrected_approx": 1,
+        "significant_artifact": false
+      },
+      "statistical_status": "null_not_significant",
+      "replication_status": "historical_null_result_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "defects": [
+        "permissive_filename_matching",
+        "active_placebo_control",
+        "missing_raw_response_archive",
+        "missing_parsed_answer_fields",
+        "incomplete_usage_fields",
+        "source_artifact_untracked_in_git",
+        "incomplete_scoring_denominator"
+      ],
+      "counts": {
+        "source_items": 200,
+        "bundled_items": 200,
+        "scored": 199,
+        "unscored": 1
+      }
+    },
+    {
+      "study_id": "legacy-july-wf-confirm-haiku",
+      "bundle_dir": "evals/studies/legacy-july-wf-confirm-haiku",
+      "manifest_path": "evals/studies/legacy-july-wf-confirm-haiku/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-wf-confirm-haiku/aggregate.json",
+      "items_path": "evals/studies/legacy-july-wf-confirm-haiku/items.jsonl",
+      "source_path": "evals/results/wf-confirm-haiku/workflow-objective.json",
+      "source_sha256": "9734cdc37a9751fc0d4e183f94bbbd400b817b698b938a367dc581b7caf19974",
+      "measured_result": {
+        "metric": "case_success_accuracy",
+        "n": 364,
+        "clusters": 363,
+        "by_arm": {
+          "workflow_validated": {
+            "n": 364,
+            "correct": 342,
+            "case_success": 342,
+            "acc": 0.94,
+            "case_success_rate": 0.94,
+            "acc_ci": [
+              0.91,
+              0.96
+            ],
+            "case_success_ci": [
+              0.91,
+              0.96
+            ],
+            "tp": 161,
+            "fp": 16,
+            "tn": 181,
+            "fn": 6,
+            "fpr": 0.081,
+            "fnr": 0.036,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          },
+          "full_skill_typed_verified": {
+            "n": 364,
+            "correct": 344,
+            "case_success": 344,
+            "acc": 0.945,
+            "case_success_rate": 0.945,
+            "acc_ci": [
+              0.917,
+              0.964
+            ],
+            "case_success_ci": [
+              0.917,
+              0.964
+            ],
+            "tp": 156,
+            "fp": 9,
+            "tn": 188,
+            "fn": 11,
+            "fpr": 0.046,
+            "fnr": 0.066,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          }
+        },
+        "primary_contrast": {
+          "delta_pp": -0.5,
+          "mcnemar_p": 0.845,
+          "discordant": 26,
+          "left_wins": 12,
+          "right_wins": 14
+        },
+        "claim_status_source": "inconclusive"
+      },
+      "statistical_status": "inconclusive_null",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "defects": [
+        "padded_workflow_arms_not_unpadded",
+        "self_checked_arms_misnamed_as_validated_or_verified",
+        "missing_no_skill_primary_control",
+        "missing_raw_response_archive",
+        "source_artifact_untracked_in_git",
+        "claim_status_not_eligible"
+      ],
+      "counts": {
+        "source_items": 364,
+        "bundled_items": 364,
+        "n_skills": 12,
+        "skill_item_counts": {
+          "thinking-socratic": 35,
+          "thinking-cynefin": 30,
+          "thinking-reversibility": 30,
+          "thinking-margin-of-safety": 30,
+          "thinking-map-territory": 30,
+          "thinking-pre-mortem": 30,
+          "thinking-inversion": 30,
+          "thinking-red-team": 30,
+          "thinking-scientific-method": 30,
+          "thinking-kepner-tregoe": 30,
+          "thinking-five-whys-plus": 29,
+          "thinking-occams-razor": 30
+        }
+      }
+    },
+    {
+      "study_id": "legacy-july-wf-confirm-sonnet",
+      "bundle_dir": "evals/studies/legacy-july-wf-confirm-sonnet",
+      "manifest_path": "evals/studies/legacy-july-wf-confirm-sonnet/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-wf-confirm-sonnet/aggregate.json",
+      "items_path": "evals/studies/legacy-july-wf-confirm-sonnet/items.jsonl",
+      "source_path": "evals/results/wf-confirm-sonnet/workflow-objective.json",
+      "source_sha256": "b33e52f9481f59024ae539a694c1d096decf46b50f684724c9f8f484ac90cf05",
+      "measured_result": {
+        "metric": "case_success_accuracy",
+        "n": 364,
+        "clusters": 363,
+        "by_arm": {
+          "workflow_validated": {
+            "n": 364,
+            "correct": 362,
+            "case_success": 362,
+            "acc": 0.995,
+            "case_success_rate": 0.995,
+            "acc_ci": [
+              0.98,
+              0.998
+            ],
+            "case_success_ci": [
+              0.98,
+              0.998
+            ],
+            "tp": 166,
+            "fp": 1,
+            "tn": 196,
+            "fn": 1,
+            "fpr": 0.005,
+            "fnr": 0.006,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          },
+          "full_skill_typed_verified": {
+            "n": 364,
+            "correct": 361,
+            "case_success": 361,
+            "acc": 0.992,
+            "case_success_rate": 0.992,
+            "acc_ci": [
+              0.976,
+              0.997
+            ],
+            "case_success_ci": [
+              0.976,
+              0.997
+            ],
+            "tp": 164,
+            "fp": 0,
+            "tn": 197,
+            "fn": 3,
+            "fpr": 0,
+            "fnr": 0.018,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          }
+        },
+        "primary_contrast": {
+          "delta_pp": 0.3,
+          "mcnemar_p": 1,
+          "discordant": 3,
+          "left_wins": 2,
+          "right_wins": 1
+        },
+        "claim_status_source": "inconclusive"
+      },
+      "statistical_status": "inconclusive_null",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "defects": [
+        "padded_workflow_arms_not_unpadded",
+        "self_checked_arms_misnamed_as_validated_or_verified",
+        "missing_no_skill_primary_control",
+        "missing_raw_response_archive",
+        "source_artifact_untracked_in_git",
+        "claim_status_not_eligible"
+      ],
+      "counts": {
+        "source_items": 364,
+        "bundled_items": 364,
+        "n_skills": 12,
+        "skill_item_counts": {
+          "thinking-socratic": 35,
+          "thinking-cynefin": 30,
+          "thinking-reversibility": 30,
+          "thinking-margin-of-safety": 30,
+          "thinking-map-territory": 30,
+          "thinking-pre-mortem": 30,
+          "thinking-inversion": 30,
+          "thinking-red-team": 30,
+          "thinking-scientific-method": 30,
+          "thinking-kepner-tregoe": 30,
+          "thinking-five-whys-plus": 29,
+          "thinking-occams-razor": 30
+        }
+      }
+    },
+    {
+      "study_id": "legacy-july-wf-confirm-opus",
+      "bundle_dir": "evals/studies/legacy-july-wf-confirm-opus",
+      "manifest_path": "evals/studies/legacy-july-wf-confirm-opus/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-wf-confirm-opus/aggregate.json",
+      "items_path": "evals/studies/legacy-july-wf-confirm-opus/items.jsonl",
+      "source_path": "evals/results/wf-confirm-opus/workflow-objective.json",
+      "source_sha256": "cfa637a3d7f7fe0129703d94957dc837ed7fa8b10b16781649376d37a6087528",
+      "measured_result": {
+        "metric": "case_success_accuracy",
+        "n": 364,
+        "clusters": 363,
+        "by_arm": {
+          "workflow_validated": {
+            "n": 364,
+            "correct": 360,
+            "case_success": 360,
+            "acc": 0.989,
+            "case_success_rate": 0.989,
+            "acc_ci": [
+              0.972,
+              0.996
+            ],
+            "case_success_ci": [
+              0.972,
+              0.996
+            ],
+            "tp": 164,
+            "fp": 1,
+            "tn": 196,
+            "fn": 3,
+            "fpr": 0.005,
+            "fnr": 0.018,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          },
+          "full_skill_typed_verified": {
+            "n": 364,
+            "correct": 359,
+            "case_success": 359,
+            "acc": 0.986,
+            "case_success_rate": 0.986,
+            "acc_ci": [
+              0.968,
+              0.994
+            ],
+            "case_success_ci": [
+              0.968,
+              0.994
+            ],
+            "tp": 162,
+            "fp": 0,
+            "tn": 197,
+            "fn": 5,
+            "fpr": 0,
+            "fnr": 0.03,
+            "parse_ok": 364,
+            "parse_ok_rate": 1,
+            "parse_fail": 0,
+            "solver_failures": 0
+          }
+        },
+        "primary_contrast": {
+          "delta_pp": 0.3,
+          "mcnemar_p": 1,
+          "discordant": 3,
+          "left_wins": 2,
+          "right_wins": 1
+        },
+        "claim_status_source": "inconclusive"
+      },
+      "statistical_status": "inconclusive_null",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "defects": [
+        "padded_workflow_arms_not_unpadded",
+        "self_checked_arms_misnamed_as_validated_or_verified",
+        "missing_no_skill_primary_control",
+        "missing_raw_response_archive",
+        "source_artifact_untracked_in_git",
+        "claim_status_not_eligible"
+      ],
+      "counts": {
+        "source_items": 364,
+        "bundled_items": 364,
+        "n_skills": 12,
+        "skill_item_counts": {
+          "thinking-socratic": 35,
+          "thinking-cynefin": 30,
+          "thinking-reversibility": 30,
+          "thinking-margin-of-safety": 30,
+          "thinking-map-territory": 30,
+          "thinking-pre-mortem": 30,
+          "thinking-inversion": 30,
+          "thinking-red-team": 30,
+          "thinking-scientific-method": 30,
+          "thinking-kepner-tregoe": 30,
+          "thinking-five-whys-plus": 29,
+          "thinking-occams-razor": 30
+        }
+      }
+    },
+    {
+      "study_id": "legacy-july-wf-confirm-behavioral",
+      "bundle_dir": "evals/studies/legacy-july-wf-confirm-behavioral",
+      "manifest_path": "evals/studies/legacy-july-wf-confirm-behavioral/manifest.json",
+      "aggregate_path": "evals/studies/legacy-july-wf-confirm-behavioral/aggregate.json",
+      "items_path": "evals/studies/legacy-july-wf-confirm-behavioral/items.jsonl",
+      "source_path": "evals/results/wf-confirm-behavioral/workflow-vs-skill.json",
+      "source_sha256": "b4fcc8a743c4ce6b3d8c8cb2624b1686020b5c86f24e3e5cba7b509b78e1d454",
+      "measured_result": {
+        "metric": "blind_pairwise_left_win_rate",
+        "left_arm": "workflow_validated",
+        "right_arm": "full_skill_typed_verified",
+        "left_wins": 66,
+        "right_wins": 70,
+        "ties": 4,
+        "left_win_rate": 0.486,
+        "lift_pp": -4,
+        "ci95": [
+          0.403,
+          0.569
+        ],
+        "p_value": 0.797,
+        "significant": false,
+        "claim_status_source": "pilot_only"
+      },
+      "statistical_status": "pilot_null",
+      "replication_status": "pilot_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "defects": [
+        "judged_pilot_not_objective",
+        "missing_raw_solver_and_judge_archive",
+        "source_artifact_untracked_in_git",
+        "small_per_skill_n",
+        "source_claim_status_pilot_only"
+      ],
+      "counts": {
+        "source_problems": 140,
+        "bundled_items": 140,
+        "n_skills": 12,
+        "skill_problem_counts": {
+          "thinking-map-territory": 9,
+          "thinking-cynefin": 9,
+          "thinking-margin-of-safety": 9,
+          "thinking-socratic": 9,
+          "thinking-inversion": 9,
+          "thinking-kepner-tregoe": 9,
+          "thinking-scientific-method": 9,
+          "thinking-reversibility": 25,
+          "thinking-five-whys-plus": 9,
+          "thinking-occams-razor": 9,
+          "thinking-red-team": 9,
+          "thinking-pre-mortem": 25
+        }
+      }
+    }
+  ],
+  "skills": {
+    "thinking-archetypes": {
+      "skill": "thinking-archetypes",
+      "bare_skill": "archetypes",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "binary_decision_accuracy",
+        "dataset": "Systems/product/strategy pairwise decisive split (117 items: 42 target bottleneck/margin-of-safety, 29 near-miss, 46 distractor)",
+        "n": 117,
+        "placebo": 0.72,
+        "treatment": 0.73,
+        "delta_pp": 0.9,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "NO-LIFT",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/m5-primary/binary-archetypes.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-bayesian": {
+      "skill": "thinking-bayesian",
+      "bare_skill": "bayesian",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored base-rate MCQ",
+        "n": 40,
+        "placebo": 0.975,
+        "treatment": 1,
+        "delta_pp": 2.5,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/run1/correctness-bayesian.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-bounded-rationality": {
+      "skill": "thinking-bounded-rationality",
+      "bare_skill": "bounded-rationality",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-circle-of-competence": {
+      "skill": "thinking-circle-of-competence",
+      "bare_skill": "circle-of-competence",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "abstention_accuracy",
+        "dataset": "SelfAware balanced",
+        "n": 70,
+        "placebo": 0.7,
+        "treatment": 0.7,
+        "delta_pp": 0,
+        "p": 0.773,
+        "significant": false,
+        "source_verdict": "no calibration benefit",
+        "provenance": "routing/abstention-null",
+        "source": "evals/results/wavec/abstention-circle-of-competence.json",
+        "scorecard_skill_verdict": "no calibration benefit",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no calibration benefit",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-cynefin": {
+      "skill": "thinking-cynefin",
+      "bare_skill": "cynefin",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored classify",
+        "n": 30,
+        "placebo": 0.967,
+        "treatment": 1,
+        "delta_pp": 3.3,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/wavec/routing-cynefin.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_ceiling",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-debiasing": {
+      "skill": "thinking-debiasing",
+      "bare_skill": "debiasing",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored bias MCQ",
+        "n": 40,
+        "placebo": 1,
+        "treatment": 0.975,
+        "delta_pp": -2.5,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/run1/correctness-debiasing.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-dual-process": {
+      "skill": "thinking-dual-process",
+      "bare_skill": "dual-process",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-effectuation": {
+      "skill": "thinking-effectuation",
+      "bare_skill": "effectuation",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-feedback-loops": {
+      "skill": "thinking-feedback-loops",
+      "bare_skill": "feedback-loops",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-fermi-estimation": {
+      "skill": "thinking-fermi-estimation",
+      "bare_skill": "fermi-estimation",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "jeggers/fermi",
+        "n": 150,
+        "placebo": 0.407,
+        "treatment": 0.413,
+        "delta_pp": 0.7,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "flat",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/confirm/numeric-fermi-n150.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-first-principles": {
+      "skill": "thinking-first-principles",
+      "bare_skill": "first-principles",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored constraint",
+        "n": 30,
+        "placebo": 0.933,
+        "treatment": 1,
+        "delta_pp": 6.7,
+        "p": 0.479,
+        "significant": false,
+        "source_verdict": "near-ceiling, ns",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/rerun/first-principles-constraint.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_ceiling",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-five-whys-plus": {
+      "skill": "thinking-five-whys-plus",
+      "bare_skill": "five-whys-plus",
+      "measured_result": {
+        "status": "july_bundle_imported",
+        "primary_study_id": "legacy-july-verdict-five-whys",
+        "metric": "fault_localization_accuracy",
+        "n_scored": 199,
+        "acc_skill": 0.899,
+        "acc_placebo": 0.884,
+        "delta_pp": 1.5,
+        "mcnemar_p": 0.546,
+        "significant": false,
+        "source": "evals/results/verdict-five-whys/swe-five-whys-plus.json",
+        "bundle": "evals/studies/legacy-july-verdict-five-whys"
+      },
+      "statistical_status": "null_not_significant",
+      "replication_status": "historical_null_result_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "elevate": false,
+      "notes": [
+        "July measured result is NO-LIFT under source verdict rule.",
+        "Not replication-qualified under current gates; evidence remains provisional."
+      ],
+      "study_ids": [
+        "legacy-july-verdict-five-whys"
+      ]
+    },
+    "thinking-inversion": {
+      "skill": "thinking-inversion",
+      "bare_skill": "inversion",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-jobs-to-be-done": {
+      "skill": "thinking-jobs-to-be-done",
+      "bare_skill": "jobs-to-be-done",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-kepner-tregoe": {
+      "skill": "thinking-kepner-tregoe",
+      "bare_skill": "kepner-tregoe",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "fault_localization_accuracy",
+        "dataset": "debugging-fault-localization-decisive (224-item frozen calibrated split)",
+        "n": 224,
+        "placebo": 0.563,
+        "treatment": 0.545,
+        "delta_pp": -1.8,
+        "p": 0.289,
+        "significant": false,
+        "source_verdict": "NO-LIFT",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/m5-primary-decisive/swe-kepner-tregoe.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-leverage-points": {
+      "skill": "thinking-leverage-points",
+      "bare_skill": "leverage-points",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-lindy-effect": {
+      "skill": "thinking-lindy-effect",
+      "bare_skill": "lindy-effect",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-map-territory": {
+      "skill": "thinking-map-territory",
+      "bare_skill": "map-territory",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "fault_localization_accuracy",
+        "dataset": "debugging-fault-localization-decisive (224-item frozen calibrated split)",
+        "n": 224,
+        "placebo": 0.549,
+        "treatment": 0.571,
+        "delta_pp": 2.2,
+        "p": 0.074,
+        "significant": false,
+        "source_verdict": "NO-LIFT",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/m5-primary-decisive/swe-map-territory.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-margin-of-safety": {
+      "skill": "thinking-margin-of-safety",
+      "bare_skill": "margin-of-safety",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored provision",
+        "n": 30,
+        "placebo": 0.867,
+        "treatment": 0.767,
+        "delta_pp": -10,
+        "p": 0.248,
+        "significant": false,
+        "source_verdict": "headroom, no benefit",
+        "provenance": "OBJ-small-negative",
+        "source": "evals/results/rerun/margin-of-safety-provision.json",
+        "scorecard_skill_verdict": "headroom, no benefit",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "headroom, no benefit",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-model-combination": {
+      "skill": "thinking-model-combination",
+      "bare_skill": "model-combination",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-model-router": {
+      "skill": "thinking-model-router",
+      "bare_skill": "model-router",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-model-selection": {
+      "skill": "thinking-model-selection",
+      "bare_skill": "model-selection",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-occams-razor": {
+      "skill": "thinking-occams-razor",
+      "bare_skill": "occams-razor",
+      "measured_result": {
+        "status": "july_bundle_imported",
+        "primary_study_id": "legacy-july-verdict-occams",
+        "metric": "fault_localization_accuracy",
+        "n_scored": 199,
+        "acc_skill": 0.879,
+        "acc_placebo": 0.874,
+        "delta_pp": 0.5,
+        "mcnemar_p": 1,
+        "significant": false,
+        "source": "evals/results/verdict-occams/swe-occams-razor.json",
+        "bundle": "evals/studies/legacy-july-verdict-occams"
+      },
+      "statistical_status": "null_not_significant",
+      "replication_status": "historical_null_result_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "elevate": false,
+      "notes": [
+        "July measured result is NO-LIFT under source verdict rule.",
+        "Not replication-qualified under current gates; evidence remains provisional."
+      ],
+      "study_ids": [
+        "legacy-july-verdict-occams"
+      ]
+    },
+    "thinking-ooda": {
+      "skill": "thinking-ooda",
+      "bare_skill": "ooda",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-opportunity-cost": {
+      "skill": "thinking-opportunity-cost",
+      "bare_skill": "opportunity-cost",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-pre-mortem": {
+      "skill": "thinking-pre-mortem",
+      "bare_skill": "pre-mortem",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-probabilistic": {
+      "skill": "thinking-probabilistic",
+      "bare_skill": "probabilistic",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-red-team": {
+      "skill": "thinking-red-team",
+      "bare_skill": "red-team",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "DiverseVul balanced",
+        "n": 200,
+        "placebo": 0.59,
+        "treatment": 0.64,
+        "delta_pp": 5,
+        "p": 0.1,
+        "significant": false,
+        "source_verdict": "directional, not significant",
+        "provenance": "OBJ-powered-directional",
+        "source": "evals/results/confirm/redteam-diversevul-balanced-n200.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "directional_not_significant",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_directional_not_elevate",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-regret-minimization": {
+      "skill": "thinking-regret-minimization",
+      "bare_skill": "regret-minimization",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_redirect_candidate",
+      "elevate": false,
+      "scorecard_disposition": "QUARANTINE-REDIRECT",
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-reversibility": {
+      "skill": "thinking-reversibility",
+      "bare_skill": "reversibility",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored doors",
+        "n": 30,
+        "placebo": 1,
+        "treatment": 1,
+        "delta_pp": 0,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/rerun/reversibility-doors.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_ceiling",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-scientific-method": {
+      "skill": "thinking-scientific-method",
+      "bare_skill": "scientific-method",
+      "measured_result": {
+        "status": "july_bundle_imported",
+        "primary_study_id": "legacy-july-sci-method-larger-n",
+        "metric": "fault_localization_accuracy",
+        "n_scored": 426,
+        "acc_skill": 0.925,
+        "acc_placebo": 0.885,
+        "delta_pp": 4,
+        "discordant": {
+          "skill_only": 19,
+          "placebo_only": 2
+        },
+        "mcnemar_p_artifact": 0,
+        "mcnemar_p_approx": 0.000482,
+        "source": "evals/results/sci-method-larger-n/swe-scientific-method.json",
+        "bundle": "evals/studies/legacy-july-sci-method-larger-n"
+      },
+      "statistical_status": "significant_below_utility_margin",
+      "replication_status": "historical_directional_signal_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_directional_not_elevate",
+      "elevate": false,
+      "notes": [
+        "p<0.05 and delta 4.0pp < preregistered +5pp utility margin → DIRECTIONAL-ONLY.",
+        "Does not clear AUTO-RETAIN LEAN / ELEVATE product gate.",
+        "Historical same-direction signals are not treated as replication-qualified."
+      ],
+      "study_ids": [
+        "legacy-july-sci-method-larger-n"
+      ]
+    },
+    "thinking-second-order": {
+      "skill": "thinking-second-order",
+      "bare_skill": "second-order",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "StrategyQA",
+        "n": 40,
+        "placebo": 0.85,
+        "treatment": 0.85,
+        "delta_pp": 0,
+        "p": 0.479,
+        "significant": false,
+        "source_verdict": "no effect",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/rerun/strategyqa-second-order.json",
+        "scorecard_skill_verdict": "no effect",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no effect",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-socratic": {
+      "skill": "thinking-socratic",
+      "bare_skill": "socratic",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored clarify",
+        "n": 29,
+        "placebo": 1,
+        "treatment": 0.931,
+        "delta_pp": -6.9,
+        "p": 0.479,
+        "significant": false,
+        "source_verdict": "negative",
+        "provenance": "OBJ-small-negative",
+        "source": "evals/results/wavec/routing-socratic.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "negative_or_adverse",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_negative",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-steel-manning": {
+      "skill": "thinking-steel-manning",
+      "bare_skill": "steel-manning",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-systems": {
+      "skill": "thinking-systems",
+      "bare_skill": "systems",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "fault_localization_accuracy",
+        "dataset": "SWE-bench",
+        "n": 150,
+        "placebo": 0.84,
+        "treatment": 0.827,
+        "delta_pp": -1.3,
+        "p": 0.683,
+        "significant": false,
+        "source_verdict": "no robust effect",
+        "provenance": "OBJ-powered-null",
+        "source": "evals/results/wavec/swe-systems-restored.json",
+        "scorecard_skill_verdict": "no-lift",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "null_or_no_lift",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_no_lift",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "no-lift",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-theory-of-constraints": {
+      "skill": "thinking-theory-of-constraints",
+      "bare_skill": "theory-of-constraints",
+      "measured_result": {
+        "status": "historical_scorecard_cited",
+        "metric": "accuracy",
+        "dataset": "authored bottleneck",
+        "n": 30,
+        "placebo": 0.967,
+        "treatment": 0.967,
+        "delta_pp": 0,
+        "p": 1,
+        "significant": false,
+        "source_verdict": "ceiling",
+        "provenance": "OBJ-small-ceiling",
+        "source": "evals/results/rerun/theory-of-constraints-bottleneck.json",
+        "scorecard_skill_verdict": "ceiling",
+        "note": "Conservative citation from analysis/ELEVATE-OR-KILL-SCORECARD.json; not a confirmatory Phase-0 elevation claim."
+      },
+      "statistical_status": "ceiling_or_near_ceiling",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_ceiling",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "ceiling",
+      "notes": [
+        "Scorecard-cited historical row only; provisional and non-confirmatory.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-thought-experiment": {
+      "skill": "thinking-thought-experiment",
+      "bare_skill": "thought-experiment",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-triz": {
+      "skill": "thinking-triz",
+      "bare_skill": "triz",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    },
+    "thinking-via-negativa": {
+      "skill": "thinking-via-negativa",
+      "bare_skill": "via-negativa",
+      "measured_result": {
+        "status": "unmeasured",
+        "source": null,
+        "note": "No non-superseded objective evidence row in analysis/ELEVATE-OR-KILL-SCORECARD.json."
+      },
+      "statistical_status": "unmeasured",
+      "replication_status": "not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine",
+      "elevate": false,
+      "scorecard_disposition": null,
+      "scorecard_verdict": "unmeasured",
+      "notes": [
+        "No non-superseded objective evidence; default unmeasured provisional quarantine.",
+        "No ELEVATE / automatic invocation claim."
+      ],
+      "study_ids": []
+    }
+  },
+  "defects_global": [
+    "permissive_swe_filename_matching",
+    "active_placebo_control",
+    "missing_raw_response_archives",
+    "source_result_artifacts_untracked",
+    "workflow_arms_padded_and_self_checked",
+    "no_skill_control_missing_from_july_workflow_confirmations"
+  ],
+  "provenance": {
+    "head_at_bundle_time": "a59144cc28dedaf62e4547339561dbe9d585435e",
+    "branch": "main",
+    "importer": "phase0-july-evidence-bundles",
+    "source_results_git_tracked": false,
+    "raw_archive_policy": "absent_archive_means_preserve_source_and_mark_provisional"
+  },
+  "non_skill_entities": {
+    "workflow_form": {
+      "skill": "workflow_form",
+      "measured_result": {
+        "studies": [
+          "legacy-july-wf-confirm-haiku",
+          "legacy-july-wf-confirm-sonnet",
+          "legacy-july-wf-confirm-opus",
+          "legacy-july-wf-confirm-behavioral"
+        ],
+        "objective_primary_contrasts": {
+          "haiku": {
+            "delta_pp": -0.5,
+            "mcnemar_p": 0.845,
+            "discordant": 26,
+            "left_wins": 12,
+            "right_wins": 14
+          },
+          "sonnet": {
+            "delta_pp": 0.3,
+            "mcnemar_p": 1,
+            "discordant": 3,
+            "left_wins": 2,
+            "right_wins": 1
+          },
+          "opus": {
+            "delta_pp": 0.3,
+            "mcnemar_p": 1,
+            "discordant": 3,
+            "left_wins": 2,
+            "right_wins": 1
+          }
+        },
+        "behavioral_aggregate": {
+          "metric": "blind_pairwise_left_win_rate",
+          "left_arm": "workflow_validated",
+          "right_arm": "full_skill_typed_verified",
+          "left_wins": 66,
+          "right_wins": 70,
+          "ties": 4,
+          "left_win_rate": 0.486,
+          "lift_pp": -4,
+          "ci95": [
+            0.403,
+            0.569
+          ],
+          "p_value": 0.797,
+          "significant": false,
+          "claim_status_source": "pilot_only"
+        }
+      },
+      "statistical_status": "inconclusive_or_pilot_null",
+      "replication_status": "phase5_gate_pending_not_replication_qualified",
+      "evidence_validity": "provisional",
+      "product_disposition": "manual_only_quarantine_workflow_gate_pending",
+      "elevate": false,
+      "notes": [
+        "Three-model objective workflow vs full-skill typed self-check contrasts are null/inconclusive.",
+        "Behavioral pairwise is pilot_only and non-significant.",
+        "Not treated as a Phase 5 workflow retention pass from this provisional import alone."
+      ],
+      "study_ids": [
+        "legacy-july-wf-confirm-haiku",
+        "legacy-july-wf-confirm-sonnet",
+        "legacy-july-wf-confirm-opus",
+        "legacy-july-wf-confirm-behavioral"
+      ]
+    }
+  }
+}
