@@ -1,0 +1,418 @@
+'use strict';
+
+/**
+ * Study/catalog registry loader and validator.
+ * Source of truth: evals/studies/registry.json
+ */
+
+const fs = require('fs');
+const path = require('path');
+const crypto = require('crypto');
+
+const REPO_ROOT = path.join(__dirname, '..', '..');
+const DEFAULT_REGISTRY_PATH = path.join(REPO_ROOT, 'evals', 'studies', 'registry.json');
+
+function loadRegistry(registryPath = DEFAULT_REGISTRY_PATH) {
+  const resolved = path.resolve(registryPath);
+  if (!fs.existsSync(resolved)) {
+    const err = new Error(`registry not found: ${resolved}`);
+    err.code = 'REGISTRY_MISSING';
+    throw err;
+  }
+  const raw = fs.readFileSync(resolved, 'utf8');
+  const registry = JSON.parse(raw);
+  return { path: resolved, registry };
+}
+
+function isNonEmptyString(value) {
+  return typeof value === 'string' && value.length > 0;
+}
+
+function isPositiveNumber(value) {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0;
+}
+
+/**
+ * Validate registry shape and make unknown/inadequate data explicit.
+ * @returns {{ok:boolean, errors:string[], warnings:string[], summary:object}}
+ */
+function validateRegistry(registry) {
+  const errors = [];
+  const warnings = [];
+
+  if (!registry || typeof registry !== 'object') {
+    return { ok: false, errors: ['registry must be an object'], warnings, summary: {} };
+  }
+  if (registry.schema_version !== 1) errors.push('schema_version must equal 1');
+  if (!registry.catalog || typeof registry.catalog !== 'object') errors.push('catalog is required');
+  if (!registry.skills || typeof registry.skills !== 'object') errors.push('skills is required');
+  if (!registry.models || typeof registry.models !== 'object') errors.push('models is required');
+  if (!registry.judge_panel || typeof registry.judge_panel !== 'object') errors.push('judge_panel is required');
+  if (!registry.arms || typeof registry.arms !== 'object') errors.push('arms is required');
+  if (!registry.gates || typeof registry.gates !== 'object') errors.push('gates is required');
+  if (!Array.isArray(registry.required_skill_sections) || registry.required_skill_sections.length === 0) {
+    errors.push('required_skill_sections must be a non-empty array');
+  }
+  if (!Array.isArray(registry.declared_study_bundles)) errors.push('declared_study_bundles must be an array');
+
+  const skills = registry.skills || {};
+  const skillIds = Object.keys(skills);
+  const catalog = registry.catalog || {};
+  const expectedCount = catalog.expected_count ?? catalog.baseline_count;
+  if (expectedCount != null && skillIds.length !== expectedCount) {
+    errors.push(`skills count ${skillIds.length} != expected_count ${expectedCount}`);
+  }
+
+  const survivors = new Set(catalog.survivors || []);
+  const deletions = new Set(catalog.deletions || []);
+  const budgets = catalog.survivor_budgets || {};
+
+  for (const id of survivors) {
+    if (!skills[id]) errors.push(`survivor missing from skills: ${id}`);
+    else if (skills[id].disposition?.cutover !== 'survive') errors.push(`survivor ${id} cutover must be survive`);
+    if (budgets[id] == null) errors.push(`survivor budget missing for ${id}`);
+  }
+  for (const id of deletions) {
+    if (!skills[id]) errors.push(`deletion missing from skills: ${id}`);
+    else if (skills[id].disposition?.cutover !== 'delete') errors.push(`deletion ${id} cutover must be delete`);
+  }
+  if (survivors.size && deletions.size && survivors.size + deletions.size !== skillIds.length) {
+    errors.push(`survivors(${survivors.size})+deletions(${deletions.size}) != skills(${skillIds.length})`);
+  }
+
+  let adequate = 0;
+  let inadequate = 0;
+  let unknown = 0;
+  const inadequateIds = [];
+  const unknownIds = [];
+
+  for (const [id, skill] of Object.entries(skills)) {
+    if (!isNonEmptyString(skill.id) || skill.id !== id) errors.push(`skill key/id mismatch for ${id}`);
+    if (!isNonEmptyString(skill.dir)) errors.push(`skill ${id} missing dir`);
+    if (!isNonEmptyString(skill.primary_metric)) errors.push(`skill ${id} missing primary_metric`);
+    if (!skill.disposition || typeof skill.disposition !== 'object') {
+      errors.push(`skill ${id} missing disposition`);
+    }
+    if (!skill.data || typeof skill.data !== 'object') {
+      errors.push(`skill ${id} missing data block`);
+      continue;
+    }
+    const status = skill.data.status;
+    if (!['adequate', 'inadequate', 'unknown'].includes(status)) {
+      errors.push(`skill ${id} data.status must be adequate|inadequate|unknown (got ${status})`);
+    }
+    if (status === 'adequate') adequate++;
+    else if (status === 'inadequate') {
+      inadequate++;
+      inadequateIds.push(id);
+      if (!Array.isArray(skill.data.gaps) || skill.data.gaps.length === 0) {
+        errors.push(`skill ${id} inadequate without explicit gaps`);
+      }
+    } else if (status === 'unknown') {
+      unknown++;
+      unknownIds.push(id);
+      if (!Array.isArray(skill.data.gaps) || skill.data.gaps.length === 0) {
+        errors.push(`skill ${id} unknown without explicit gaps`);
+      }
+    }
+    if (survivors.has(id)) {
+      const maxWords = skill.max_words ?? skill.disposition?.max_words ?? budgets[id];
+      if (!isPositiveNumber(maxWords)) errors.push(`survivor ${id} missing positive max_words`);
+    }
+  }
+
+  // declared data_adequacy must match computed statuses (explicit, no silent filter)
+  if (registry.data_adequacy) {
+    const declaredUnknown = new Set(registry.data_adequacy.unknown_skill_ids || []);
+    const declaredInadequate = new Set(registry.data_adequacy.inadequate_skill_ids || []);
+    for (const id of unknownIds) {
+      if (!declaredUnknown.has(id)) errors.push(`data_adequacy.unknown_skill_ids missing ${id}`);
+    }
+    for (const id of inadequateIds) {
+      if (!declaredInadequate.has(id)) errors.push(`data_adequacy.inadequate_skill_ids missing ${id}`);
+    }
+    for (const id of declaredUnknown) {
+      if (!unknownIds.includes(id)) errors.push(`data_adequacy.unknown_skill_ids has stale ${id}`);
+    }
+    for (const id of declaredInadequate) {
+      if (!inadequateIds.includes(id)) errors.push(`data_adequacy.inadequate_skill_ids has stale ${id}`);
+    }
+  } else {
+    errors.push('data_adequacy block required so unknown/inadequate are explicit');
+  }
+
+  const gates = registry.gates || {};
+  for (const field of ['utility_margin_pp', 'noninferiority_margin_pp', 'harm_margin_pp', 'efficacy_hypotheses', 'power_target']) {
+    if (gates[field] == null) errors.push(`gates.${field} required`);
+  }
+  if (gates.utility_margin_pp !== 5) errors.push('gates.utility_margin_pp must equal 5');
+  if (gates.noninferiority_margin_pp !== 3) errors.push('gates.noninferiority_margin_pp must equal 3');
+  if (gates.harm_margin_pp !== 2) errors.push('gates.harm_margin_pp must equal 2');
+  if (gates.efficacy_hypotheses !== 84) errors.push('gates.efficacy_hypotheses must equal 84');
+
+  const panel = registry.judge_panel || {};
+  if (!Array.isArray(panel.models) || panel.models.length < 2) {
+    errors.push('judge_panel.models must list at least 2 judges');
+  }
+  const panelSize = panel.panel_size ?? (Array.isArray(panel.models) ? panel.models.length : 0);
+  const votesPerJudge = panel.votes_per_judge ?? panel.votes_per_item ?? 1;
+  const maxVotes = panel.max_votes_per_item ?? (panelSize * votesPerJudge);
+  const minValid = panel.min_valid_votes_to_decide;
+  if (!Number.isInteger(minValid) || minValid < 2) {
+    errors.push('judge_panel.min_valid_votes_to_decide must be an integer >= 2');
+  }
+  if (!Number.isInteger(maxVotes) || maxVotes < 1) {
+    errors.push('judge_panel.max_votes_per_item must be a positive integer');
+  } else if (Number.isInteger(minValid) && maxVotes < minValid) {
+    errors.push(
+      `judge_panel max_votes_per_item (${maxVotes}) must be >= min_valid_votes_to_decide (${minValid})`
+    );
+  }
+  if (panel.votes_per_item != null && panel.min_valid_votes_to_decide != null &&
+      panel.votes_per_item < panel.min_valid_votes_to_decide) {
+    errors.push('judge_panel.votes_per_item must be >= min_valid_votes_to_decide');
+  }
+  if (!panel.calibration || typeof panel.calibration !== 'object') {
+    errors.push('judge_panel.calibration thresholds required');
+  } else if (panel.calibration.min_pairs !== 30) {
+    errors.push('judge_panel.calibration.min_pairs must equal 30');
+  }
+  if (panel.calibration_status !== 'blocked_missing_human_labels' && panel.decision_eligible === true) {
+    // calibrated path must still declare study
+  }
+  if (panel.calibration_status === 'blocked_missing_human_labels') {
+    if (panel.decision_eligible !== false) {
+      errors.push('judge_panel.decision_eligible must be false while calibration is blocked');
+    }
+    if (panel.judged_studies_policy_while_blocked !== 'manual_only') {
+      errors.push('judge_panel.judged_studies_policy_while_blocked must be manual_only while blocked');
+    }
+  }
+  if (!isNonEmptyString(panel.calibration_status)) {
+    errors.push('judge_panel.calibration_status required');
+  }
+
+  const arms = registry.arms || {};
+  if (!Array.isArray(arms.all) || !arms.all.includes('none') || !arms.all.includes('lean')) {
+    errors.push('arms.all must include none and lean');
+  }
+
+  if (!registry.study_contracts || typeof registry.study_contracts !== 'object') {
+    errors.push('study_contracts required');
+  }
+
+  // Family counts must exist and sum to skill count
+  if (!registry.family_counts || typeof registry.family_counts !== 'object') {
+    errors.push('family_counts required');
+  } else {
+    const byFamily = registry.family_counts.by_eval_family || {};
+    const computed = {};
+    for (const skill of Object.values(skills)) {
+      const fam = skill.eval_family || 'unknown';
+      computed[fam] = (computed[fam] || 0) + 1;
+    }
+    const declaredTotal = registry.family_counts.total_skills;
+    const sumFamilies = Object.values(byFamily).reduce((a, b) => a + Number(b || 0), 0);
+    if (declaredTotal !== skillIds.length) {
+      errors.push(`family_counts.total_skills ${declaredTotal} != skills ${skillIds.length}`);
+    }
+    if (sumFamilies !== skillIds.length) {
+      errors.push(`family_counts.by_eval_family sum ${sumFamilies} != skills ${skillIds.length}`);
+    }
+    for (const [fam, n] of Object.entries(computed)) {
+      if (byFamily[fam] !== n) errors.push(`family_counts mismatch for ${fam}: declared ${byFamily[fam]} computed ${n}`);
+    }
+    for (const fam of Object.keys(byFamily)) {
+      if (computed[fam] == null) errors.push(`family_counts has unknown family ${fam}`);
+    }
+    if (registry.family_counts.survivors != null && registry.family_counts.survivors !== survivors.size) {
+      errors.push('family_counts.survivors mismatch');
+    }
+    if (registry.family_counts.deletions != null && registry.family_counts.deletions !== deletions.size) {
+      errors.push('family_counts.deletions mismatch');
+    }
+    if (registry.family_counts.efficacy_hypotheses != null && registry.family_counts.efficacy_hypotheses !== 84) {
+      errors.push('family_counts.efficacy_hypotheses must equal 84');
+    }
+  }
+
+  // Declared calibration study required (inline registry declaration is enough)
+  const bundles = registry.declared_study_bundles || [];
+  const calib = bundles.find(b => b.study_id === 'judge-panel-calibration' || b.kind === 'judge_panel_calibration');
+  const calibContract = registry.study_contracts?.judge_panel_calibration;
+  if (!calib && !calibContract) {
+    errors.push('judge-panel-calibration must be declared in study_contracts or declared_study_bundles');
+  } else {
+    const status = calib?.status || calibContract?.status;
+    const decisionEligible = calib?.decision_eligible ?? calibContract?.decision_eligible;
+    const policy = calib?.judged_studies_policy || calibContract?.rule?.judged_studies_while_blocked;
+    if (panel.calibration_status === 'blocked_missing_human_labels') {
+      if (status !== 'blocked_missing_human_labels') {
+        errors.push('judge-panel-calibration status must be blocked_missing_human_labels while panel blocked');
+      }
+      if (decisionEligible !== false) {
+        errors.push('judge-panel-calibration decision_eligible must be false until calibrated');
+      }
+      if (policy !== 'manual_only') {
+        errors.push('judge-panel-calibration judged studies policy must be manual_only while blocked');
+      }
+    }
+  }
+
+  const summary = {
+    skill_count: skillIds.length,
+    survivors: survivors.size,
+    deletions: deletions.size,
+    data_adequate: adequate,
+    data_inadequate: inadequate,
+    data_unknown: unknown,
+    inadequate_skill_ids: inadequateIds.sort(),
+    unknown_skill_ids: unknownIds.sort(),
+    declared_study_bundles: bundles.length,
+    judge_panel_calibration_status: panel.calibration_status || null,
+    judge_panel_decision_eligible: panel.decision_eligible,
+  };
+
+  return { ok: errors.length === 0, errors, warnings, summary };
+}
+
+function countJsonlSplits(filePath) {
+  const splits = { dev: 0, heldout: 0, replication: 0, other: 0 };
+  let n = 0;
+  if (!fs.existsSync(filePath)) return { n, splits, exists: false };
+  for (const line of fs.readFileSync(filePath, 'utf8').split('\n')) {
+    if (!line.trim()) continue;
+    n++;
+    try {
+      const row = JSON.parse(line);
+      if (row.split && splits[row.split] !== undefined) splits[row.split]++;
+      else splits.other++;
+    } catch (_) {
+      splits.other++;
+    }
+  }
+  return { n, splits, exists: true };
+}
+
+/**
+ * File-aware source integrity: path exists, sha matches, split counts match registry.
+ */
+function validateRegistrySources(registry, repoRoot = REPO_ROOT) {
+  const errors = [];
+  const warnings = [];
+  const skills = registry.skills || {};
+  for (const [id, skill] of Object.entries(skills)) {
+    const data = skill.data || {};
+    const sources = Array.isArray(data.sources) ? data.sources : [];
+    const declared = data.row_counts || {};
+    let totalN = 0;
+    const observedSplits = { dev: 0, heldout: 0, replication: 0, other: 0 };
+
+    for (const src of sources) {
+      if (!src || !isNonEmptyString(src.path)) {
+        errors.push(`skill ${id}: source missing path`);
+        continue;
+      }
+      const abs = path.isAbsolute(src.path) ? src.path : path.join(repoRoot, src.path);
+      if (!fs.existsSync(abs)) {
+        errors.push(`skill ${id}: source path missing ${src.path}`);
+        continue;
+      }
+      const actualSha = crypto.createHash('sha256').update(fs.readFileSync(abs)).digest('hex');
+      if (src.sha256 && src.sha256 !== actualSha) {
+        errors.push(`skill ${id}: source sha mismatch for ${src.path}`);
+      } else if (!src.sha256) {
+        errors.push(`skill ${id}: source missing sha256 for ${src.path}`);
+      }
+      const counts = countJsonlSplits(abs);
+      totalN += counts.n;
+      for (const k of Object.keys(observedSplits)) observedSplits[k] += counts.splits[k] || 0;
+    }
+
+    if (sources.length === 0) {
+      if (data.status !== 'unknown') {
+        errors.push(`skill ${id}: no sources but data.status=${data.status}`);
+      }
+      continue;
+    }
+
+    if (declared.n != null && declared.n !== totalN) {
+      errors.push(`skill ${id}: row_counts.n ${declared.n} != observed ${totalN}`);
+    }
+    if (declared.splits) {
+      for (const k of ['dev', 'heldout', 'replication']) {
+        if (declared.splits[k] != null && declared.splits[k] !== observedSplits[k]) {
+          errors.push(`skill ${id}: row_counts.splits.${k} ${declared.splits[k]} != observed ${observedSplits[k]}`);
+        }
+      }
+    }
+  }
+
+  // Inline calibration contract integrity (no external manifest required in this phase)
+  const calib = (registry.declared_study_bundles || []).find(b => b.study_id === 'judge-panel-calibration');
+  const contract = registry.study_contracts?.judge_panel_calibration;
+  if (calib || contract) {
+    const status = calib?.status || contract?.status;
+    const decisionEligible = calib?.decision_eligible ?? contract?.decision_eligible;
+    const policy = calib?.judged_studies_policy || contract?.rule?.judged_studies_while_blocked;
+    if (status !== 'blocked_missing_human_labels') {
+      errors.push('judge-panel-calibration status must be blocked_missing_human_labels');
+    }
+    if (decisionEligible !== false) {
+      errors.push('judge-panel-calibration decision_eligible must be false');
+    }
+    if (policy !== 'manual_only') {
+      errors.push('judge-panel-calibration judged studies policy must be manual_only');
+    }
+    if ((contract?.human_labeled_pairs?.count ?? registry.judge_panel?.human_labeled_pairs?.count ?? 0) !== 0) {
+      // non-zero without calibrated status is inconsistent for blocked state
+      if (registry.judge_panel?.calibration_status === 'blocked_missing_human_labels') {
+        errors.push('blocked calibration cannot claim non-zero human_labeled_pairs');
+      }
+    }
+  }
+
+  return { ok: errors.length === 0, errors, warnings };
+}
+
+function getSkillBudget(registry, skillId) {
+  const skill = registry.skills?.[skillId];
+  if (!skill) return null;
+  return skill.max_words ?? skill.disposition?.max_words ?? registry.catalog?.survivor_budgets?.[skillId] ?? null;
+}
+
+function listSkillEntries(registry) {
+  return Object.values(registry.skills || {}).slice().sort((a, b) => a.id.localeCompare(b.id));
+}
+
+function getDeclaredStudyBundle(registry, studyId) {
+  return (registry.declared_study_bundles || []).find(b => b.study_id === studyId) || null;
+}
+
+function loadAndValidateRegistry(registryPath = DEFAULT_REGISTRY_PATH, opts = {}) {
+  const { path: resolved, registry } = loadRegistry(registryPath);
+  const validation = validateRegistry(registry);
+  const checkSources = opts.checkSources !== false &&
+    (registry.source_integrity?.validate_on_load !== false);
+  if (checkSources) {
+    const sourceValidation = validateRegistrySources(registry, opts.repoRoot || REPO_ROOT);
+    validation.source_validation = sourceValidation;
+    if (!sourceValidation.ok) {
+      validation.ok = false;
+      validation.errors = validation.errors.concat(sourceValidation.errors.map(e => `source: ${e}`));
+    }
+  }
+  return { path: resolved, registry, validation };
+}
+
+module.exports = {
+  REPO_ROOT,
+  DEFAULT_REGISTRY_PATH,
+  loadRegistry,
+  validateRegistry,
+  validateRegistrySources,
+  loadAndValidateRegistry,
+  getSkillBudget,
+  listSkillEntries,
+  getDeclaredStudyBundle,
+};
