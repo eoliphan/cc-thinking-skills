@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "registry_version": "phase5-workflow-v1",
-  "generated_note": "Executable registry for the 28-skill manual-only catalog. portfolio-v1 made zero eligible calls; workflow-v1 failed its pre-run power gate and requires deletion of workflow-only machinery while preserving the no-run evidence.",
+  "registry_version": "phase6-cleanup-v1",
+  "generated_note": "Executable registry for the 28-skill manual-only catalog after cleanup. portfolio-v1 and workflow-v1 made zero eligible calls; workflow-only machinery was removed after its pre-run power failure, while the no-run study bundle remains declared.",
   "catalog": {
     "baseline_count": 39,
     "cutover_count": 28,
-    "current_phase": "workflow_evidence",
+    "current_phase": "repository_cleanup",
     "expected_count": 28,
     "expected_dirs": [
       "thinking-bounded-rationality",
@@ -2451,28 +2451,11 @@
     }
   ],
   "workflow": {
-    "datasets": {
-      "base": {
-        "path": "evals/datasets/workflow-cases.jsonl",
-        "sha256": "b39aa13901326ae1262bdb8db25fa41c38dea84a88a89b2287c1d1d00714a102",
-        "exists": true
-      },
-      "expanded": {
-        "path": "evals/datasets/workflow-cases-expanded.jsonl",
-        "sha256": "19e4e10b07583962efb6cb866be940303cd6ace0dd905450c0f4c550be345474",
-        "exists": true
-      },
-      "replication": {
-        "path": "evals/datasets/workflow-cases-replication.jsonl",
-        "sha256": "3108849eae5636b7748cf800d49b25a9c5d9aaac78bd6986559ea5e2aaa7b0ef",
-        "exists": true
-      }
-    },
-    "retain_only_if_gate_passes": true,
-    "engine_path_conditional": "evals/run-agentic.js",
     "study_id": "workflow-v1",
+    "run_status": "no_run",
     "decision_eligible": false,
-    "product_disposition": "delete_workflow_machinery"
+    "product_disposition": "delete_workflow_machinery",
+    "live_machinery_retained": false
   },
   "evidence_confirmation_requirements": [
     "matching_preregistration_sha256",
@@ -2485,11 +2468,7 @@
   ],
   "split_validation": {
     "authored_dir": "evals/datasets/authored",
-    "workflow_files": [
-      "evals/datasets/workflow-cases.jsonl",
-      "evals/datasets/workflow-cases-expanded.jsonl",
-      "evals/datasets/workflow-cases-replication.jsonl"
-    ],
+    "workflow_files": [],
     "splits": [
       "dev",
       "heldout",

@@ -9,10 +9,12 @@ const { execFileSync } = require('child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const EVIDENCE_PATH = path.join(REPO_ROOT, 'analysis', 'evidence.json');
+const AUDIT_PATH = path.join(REPO_ROOT, 'analysis', 'AUDIT.md');
 const REGISTRY_PATH = path.join(REPO_ROOT, 'evals', 'studies', 'registry.json');
 const WORKFLOW_AGGREGATE_PATH = path.join(REPO_ROOT, 'evals', 'studies', 'workflow-v1', 'aggregate.json');
 const AGGREGATE_PATH = path.join(REPO_ROOT, 'evals', 'studies', 'portfolio-v1', 'aggregate.json');
-const GENERATOR_PATH = path.join(REPO_ROOT, 'evals', 'generate-evidence-registry.js');
+const EVIDENCE_CLI_PATH = path.join(REPO_ROOT, 'evals', 'evidence.js');
+const RECOVERY_LEDGER_PATH = path.join(REPO_ROOT, 'evals', 'studies', 'catalog-cutover', 'recovery-ledger.json');
 
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -24,9 +26,46 @@ function sha256(bytes) {
 
 test('canonical evidence generation is byte-idempotent', () => {
   const before = fs.readFileSync(EVIDENCE_PATH);
-  execFileSync(process.execPath, [GENERATOR_PATH], { cwd: REPO_ROOT, stdio: 'pipe' });
+  execFileSync(process.execPath, [EVIDENCE_CLI_PATH, 'generate'], { cwd: REPO_ROOT, stdio: 'pipe' });
   const after = fs.readFileSync(EVIDENCE_PATH);
   assert.deepEqual(after, before);
+});
+
+test('audit narrative pins the current evidence and registry bytes', () => {
+  const audit = fs.readFileSync(AUDIT_PATH, 'utf8');
+  const evidence = readJson(EVIDENCE_PATH);
+  const evidenceHash = sha256(fs.readFileSync(EVIDENCE_PATH));
+  const registryHash = sha256(fs.readFileSync(REGISTRY_PATH));
+
+  assert.equal(evidence.registry_ref.sha256, registryHash);
+  assert.match(audit, new RegExp(`Evidence SHA-256 \\| \`${evidenceHash}\``));
+  assert.match(audit, new RegExp(`Evidence \`registry_ref\` \\| .*${evidence.registry_ref.registry_version}.*${registryHash}`));
+});
+
+test('historical artifact loss is machine-linked and barred from confirmatory claims', () => {
+  const audit = fs.readFileSync(AUDIT_PATH, 'utf8');
+  const evidence = readJson(EVIDENCE_PATH);
+  const recoveryLedger = readJson(RECOVERY_LEDGER_PATH);
+  const recoveryHash = sha256(fs.readFileSync(RECOVERY_LEDGER_PATH));
+
+  assert.equal(recoveryLedger.lost_artifacts.length, 14);
+  assert.equal(evidence.historical_artifact_loss.status, 'unrecoverable_local_deletion');
+  assert.equal(evidence.historical_artifact_loss.lost_artifact_count, 14);
+  assert.equal(evidence.historical_artifact_loss.current_claim_registry_directly_references_lost_paths, false);
+  assert.equal(evidence.historical_artifact_loss.ledger_ref.sha256, recoveryHash);
+  assert.match(audit, new RegExp(`Recovery-ledger SHA-256 \`${recoveryHash}\``));
+});
+
+test('evidence CLI lists only canonical declared studies', () => {
+  const output = execFileSync(process.execPath, [EVIDENCE_CLI_PATH, 'list'], {
+    cwd: REPO_ROOT,
+    encoding: 'utf8',
+  });
+  const rows = JSON.parse(output);
+  assert.equal(rows.length, 9);
+  assert.ok(rows.every(row => row.declared));
+  assert.ok(rows.some(row => row.study_id === 'portfolio-v1'));
+  assert.ok(rows.some(row => row.study_id === 'workflow-v1'));
 });
 
 test('canonical evidence separates 28 active and 11 deleted skills', () => {
@@ -107,5 +146,10 @@ test('workflow power failure is preserved as a zero-call deletion disposition', 
     { cwd: REPO_ROOT }
   );
   assert.equal(sha256(frozenRegistry), workflow.input_registry_ref.sha256);
-  assert.equal(sha256(fs.readFileSync(REGISTRY_PATH)), workflow.current_registry_ref.sha256);
+  const postGateRegistry = execFileSync(
+    'git',
+    ['show', `${workflow.current_registry_ref.git_commit}:${workflow.current_registry_ref.path}`],
+    { cwd: REPO_ROOT }
+  );
+  assert.equal(sha256(postGateRegistry), workflow.current_registry_ref.sha256);
 });

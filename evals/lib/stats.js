@@ -200,6 +200,19 @@ function scoreDistractor(items) {
   };
 }
 
+/**
+ * Balanced accuracy for binary labels with nullable predictions.
+ * Null predictions are always incorrect — never true negatives/positives.
+ * `who` is a prediction field such as 'skill_yes' | 'placebo_yes' (true/false/null).
+ */
+function balancedAcc(rows, who) {
+  const pos = (rows || []).filter((r) => r.label);
+  const neg = (rows || []).filter((r) => !r.label);
+  const tpr = pos.length ? pos.filter((r) => r[who] === true).length / pos.length : 0;
+  const tnr = neg.length ? neg.filter((r) => r[who] === false).length / neg.length : 0;
+  return +(((tpr + tnr) / 2)).toFixed(3);
+}
+
 /** Clamp probability to [0, 1]. Non-finite → null. */
 function clampProbability(p) {
   if (p == null || typeof p !== 'number' || !Number.isFinite(p)) return null;
@@ -630,6 +643,7 @@ module.exports = {
   pairedDiff,
   summarize,
   scoreDistractor,
+  balancedAcc,
   clampProbability,
   mulberry32,
   hashSeed,

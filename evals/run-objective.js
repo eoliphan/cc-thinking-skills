@@ -4,12 +4,13 @@
 /**
  * Generic paired objective engine.
  *
- * Supports fixture/no-model mode and dataset/scorer registry-style inputs.
- * Legacy specialized runners remain until Phase 6 parity cleanup.
+ * Supports deterministic fixture mode, authenticated live study files, and
+ * dataset/scorer registry-style inputs.
  *
  * Usage:
  *   node evals/run-objective.js --fixture path/to/fixture.json
- *   FIXTURE=1 node evals/run-objective.js --dataset path.jsonl --scorer boolean --arms none,skill
+ *   node evals/run-objective.js --study path/to/study.json
+ *   FIXTURE=1 node evals/run-objective.js --dataset path.jsonl --scorer boolean --arms none
  *
  * Fixture JSON shape:
  *   {
@@ -33,12 +34,13 @@ const { normalizeCondition } = require('./lib/conditions');
 function usage(code = 0) {
   const msg = `Usage:
   node evals/run-objective.js --fixture <file.json>
-  node evals/run-objective.js --dataset <file.jsonl> --scorer <name> [--arms none,skill] [--out file]
+  node evals/run-objective.js --study <file.json>
+  node evals/run-objective.js --dataset <file.jsonl> --scorer <name> [--arms none] [--out file]
 
 Environment:
   FIXTURE=1          require fixture_responses; never call a model
-  SOLVER_MODEL       recorded solver model id (default fixture-model)
-  SOLVER_EFFORT      recorded effort
+  SOLVER_MODEL       solver model id
+  SOLVER_EFFORT      solver effort
   LIMIT              max dataset items
   OUTFILE / --out    write envelope JSON
 `;
@@ -48,11 +50,12 @@ Environment:
 }
 
 function parseArgs(argv) {
-  const out = { arms: null, dataset: null, fixture: null, scorer: null, out: null, trials: 1 };
+  const out = { arms: null, dataset: null, fixture: null, study: null, scorer: null, out: null, trials: 1 };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--help' || a === '-h') usage(0);
     else if (a === '--fixture') out.fixture = argv[++i];
+    else if (a === '--study') out.study = argv[++i];
     else if (a === '--dataset') out.dataset = argv[++i];
     else if (a === '--scorer') out.scorer = argv[++i];
     else if (a === '--arms') out.arms = argv[++i];
@@ -89,6 +92,8 @@ async function main() {
   let study;
   if (args.fixture) {
     study = loadJson(path.resolve(args.fixture));
+  } else if (args.study) {
+    study = loadJson(path.resolve(args.study));
   } else if (args.dataset) {
     const datasetPath = path.resolve(args.dataset);
     let items = loadJsonl(datasetPath);

@@ -15,6 +15,7 @@ const {
 } = require('../lib/conditions');
 const {
   SCORERS,
+  parseBooleanAnswer,
   scoreBoolean,
   scoreMultipleChoice,
   scoreAbstention,
@@ -24,9 +25,11 @@ const {
   scoreFileLocalization,
   scoreWithAdapter,
   runObjectiveItems,
+  extractYesNo,
+  pairedContrast,
 } = require('../lib/objective');
 const { validateResultEnvelope } = require('../lib/result');
-const { balancedAcc } = require('../run-routing-data');
+const { balancedAcc } = require('../lib/stats');
 
 // --- conditions: primary none control + inert padding ---
 
@@ -81,6 +84,38 @@ test('boolean scorer parses ANSWER and rejects missing parse', () => {
   const miss = scoreBoolean('I think maybe.', true);
   assert.equal(miss.scored, false);
   assert.equal(miss.failure.type, 'parse');
+});
+
+test('parseBooleanAnswer and extractYesNo share pure parser', () => {
+  assert.equal(parseBooleanAnswer('Reasoning.\nANSWER: Yes'), true);
+  assert.equal(extractYesNo('{ "answer": true, "rationale": "needed" }'), true);
+  assert.equal(extractYesNo('{ "answer": false, "rationale": "not needed" }'), false);
+  assert.equal(extractYesNo('Return { "answer": true | false, "rationale": "..." }'), null);
+  // Prefer last valid JSON object when multiple appear
+  assert.equal(
+    extractYesNo('draft { "answer": true }\nfinal { "answer": false, "rationale": "no" }'),
+    false
+  );
+  assert.equal(scoreBoolean('{ "answer": true }', true).correct, true);
+  assert.equal(scoreBoolean('{ "answer": true }', false).correct, false);
+});
+
+test('pairedContrast uses case_success and returns null when arm missing', () => {
+  assert.equal(
+    pairedContrast([{ by_arm: { left: { case_success: true } } }], 'left', 'right'),
+    null
+  );
+  const contrast = pairedContrast(
+    [
+      { by_arm: { left: { case_success: false }, right: { case_success: false } } },
+      { by_arm: { left: { case_success: true }, right: { case_success: false } } },
+    ],
+    'left',
+    'right'
+  );
+  assert.equal(contrast.left_wins, 1);
+  assert.equal(contrast.right_wins, 0);
+  assert.equal(contrast.discordant, 1);
 });
 
 test('multiple choice requires letter and scores exact gold', () => {

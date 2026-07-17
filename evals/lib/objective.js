@@ -40,13 +40,42 @@ function lastAnswerMatch(text, pattern) {
   return last;
 }
 
+/**
+ * Pure boolean answer extraction. No gold/scoring.
+ * Accepts terminal ANSWER lines, trailing yes/no, and typed JSON { "answer": bool }.
+ * Schema literals such as `{ "answer": true | false }` do not parse.
+ */
+function parseBooleanAnswer(text) {
+  const s = String(text || '');
+  if (!s.trim()) return null;
+
+  // Prefer the last complete JSON object with a boolean answer field.
+  const objectMatches = s.match(/\{[\s\S]*?\}/g);
+  if (objectMatches) {
+    for (let i = objectMatches.length - 1; i >= 0; i--) {
+      try {
+        const obj = JSON.parse(objectMatches[i]);
+        if (typeof obj.answer === 'boolean') return obj.answer;
+      } catch (_) {
+        // malformed / schema literal — keep scanning earlier objects
+      }
+    }
+  }
+
+  const m = lastAnswerMatch(s, /ANSWER:\s*(yes|no|true|false)\b/i)
+    || s.match(/"answer"\s*:\s*(true|false)\s*(?:[,}])/i)
+    || s.match(/\b(yes|no|true|false)\b\s*\.?\s*$/i);
+  if (!m) return null;
+  const token = m[1].toLowerCase();
+  return token === 'yes' || token === 'true';
+}
+
 /** Boolean / yes-no gold. Accepts boolean gold or yes/no/true/false strings. */
 function scoreBoolean(text, gold, options = {}) {
-  const m = lastAnswerMatch(text, /ANSWER:\s*(yes|no|true|false)\b/i)
-    || String(text || '').match(/\b(yes|no|true|false)\b\s*\.?\s*$/i);
-  if (!m) return failScore({ type: 'parse', message: 'no boolean ANSWER found' });
-  const token = m[1].toLowerCase();
-  const parsed = token === 'yes' || token === 'true';
+  void options;
+  const parsed = parseBooleanAnswer(text);
+  if (parsed == null) return failScore({ type: 'parse', message: 'no boolean ANSWER found' });
+
   let expected;
   if (typeof gold === 'boolean') expected = gold;
   else if (gold == null) return failScore({ type: 'scoring', message: 'missing boolean gold', parsed, value: parsed });
@@ -902,8 +931,88 @@ async function runObjectiveItems(spec) {
   });
 }
 
+/**
+ * Summarize a two-arm objective envelope into skill-vs-control paired stats.
+ * Uses ITT: unscored/failed arms count as incorrect. Denominator is paired items
+ * that have both arms attempted (any completion state).
+ */
+function summarizePairedArms(envelope, leftArm = 'skill', rightArm = 'placebo') {
+  const { mcnemar, wilson } = require('./stats');
+  const rows = Array.isArray(envelope && envelope.items) ? envelope.items : [];
+  const byItem = new Map();
+  for (const row of rows) {
+    const key = `${row.item_id}::${row.trial || 1}`;
+    if (!byItem.has(key)) byItem.set(key, { id: row.item_id, trial: row.trial || 1 });
+    const slot = byItem.get(key);
+    if (row.arm_id === leftArm) slot.left = row;
+    if (row.arm_id === rightArm) slot.right = row;
+  }
+  const pairs = [...byItem.values()].filter((p) => p.left && p.right);
+  const n = pairs.length;
+  const leftCorrect = pairs.filter((p) => p.left.correct === true).length;
+  const rightCorrect = pairs.filter((p) => p.right.correct === true).length;
+  const b = pairs.filter((p) => p.left.correct === true && p.right.correct !== true).length;
+  const c = pairs.filter((p) => p.left.correct !== true && p.right.correct === true).length;
+  const mcn = mcnemar(b, c);
+  return {
+    n,
+    acc_with_skill: n ? +(leftCorrect / n).toFixed(3) : 0,
+    acc_with_skill_ci: wilson(leftCorrect, n || 1).map((x) => +x.toFixed(3)),
+    acc_placebo: n ? +(rightCorrect / n).toFixed(3) : 0,
+    acc_placebo_ci: wilson(rightCorrect, n || 1).map((x) => +x.toFixed(3)),
+    delta_pp: n ? +(((leftCorrect - rightCorrect) / n) * 100).toFixed(1) : 0,
+    mcnemar_p: +mcn.toFixed(3),
+    significant: mcn < 0.05,
+    discordant: b + c,
+    left_wins: b,
+    right_wins: c,
+    left_arm: leftArm,
+    right_arm: rightArm,
+  };
+}
+
+/**
+ * Extract a boolean answer from free text or typed JSON.
+ * Schema literals such as `{ "answer": true | false }` do not parse.
+ */
+function extractYesNo(text) {
+  return parseBooleanAnswer(text);
+}
+
+/**
+ * Paired arm contrast on case_success (or correct) fields.
+ * Returns null when any item is missing either arm.
+ */
+function pairedContrast(items, left, right, opts = {}) {
+  const metric = opts.metric || 'case_success';
+  if (!items || !items.length) {
+    return {
+      delta_pp: 0,
+      mcnemar_p: 1,
+      discordant: 0,
+      left_wins: 0,
+      right_wins: 0,
+    };
+  }
+  if (!items.every((i) => i.by_arm && i.by_arm[left] && i.by_arm[right])) return null;
+  const leftOnly = items.filter((i) => i.by_arm[left][metric] && !i.by_arm[right][metric]).length;
+  const rightOnly = items.filter((i) => !i.by_arm[left][metric] && i.by_arm[right][metric]).length;
+  const leftAcc = items.filter((i) => i.by_arm[left][metric]).length / items.length;
+  const rightAcc = items.filter((i) => i.by_arm[right][metric]).length / items.length;
+  // Lazy require to avoid circular dependency with stats at load time if any.
+  const { mcnemar } = require('./stats');
+  return {
+    delta_pp: +((leftAcc - rightAcc) * 100).toFixed(1),
+    mcnemar_p: +mcnemar(leftOnly, rightOnly).toFixed(3),
+    discordant: leftOnly + rightOnly,
+    left_wins: leftOnly,
+    right_wins: rightOnly,
+  };
+}
+
 module.exports = {
   SCORERS,
+  parseBooleanAnswer,
   scoreBoolean,
   scoreMultipleChoice,
   scoreAbstention,
@@ -919,4 +1028,7 @@ module.exports = {
   goldForItem,
   normalizeRepoPath,
   normalizeSolveUsage,
+  extractYesNo,
+  pairedContrast,
+  summarizePairedArms,
 };

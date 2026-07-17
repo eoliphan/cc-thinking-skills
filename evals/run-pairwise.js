@@ -4,11 +4,11 @@
 /**
  * Generic blind pairwise engine CLI.
  *
- * Foundation phase: fixture / no-model mode only.
+ * Supports deterministic fixture mode and authenticated live studies.
  *
  * Usage:
  *   node evals/run-pairwise.js --fixture path/to/fixture.json
- *   FIXTURE=1 node evals/run-pairwise.js --fixture path/to/fixture.json --out out.json
+ *   node evals/run-pairwise.js --study path/to/study.json
  *
  * Fixture JSON shape:
  *   {
@@ -32,14 +32,15 @@ const fs = require('fs');
 const path = require('path');
 const { sha256, validateResultEnvelope } = require('./lib/result');
 const { runPairwiseItems } = require('./lib/pairwise');
-const { panelModels } = require('./lib/judge');
+const { panelModels, panelJudge } = require('./lib/judge');
+const { executeDroid, usageSummary } = require('./lib/droid');
 
 function usage(code = 0) {
   const msg = `Usage:
   node evals/run-pairwise.js --fixture <fixture.json> [--out file.json]
-  FIXTURE=1 node evals/run-pairwise.js --fixture <fixture.json>
+  node evals/run-pairwise.js --study <study.json> [--out file.json]
 
-No live model calls in foundation phase. Provide fixture_responses per arm.
+Fixture mode requires fixture_responses per arm. Live mode uses the authenticated droid transport.
 `;
   if (code) console.error(msg);
   else console.log(msg);
@@ -47,11 +48,12 @@ No live model calls in foundation phase. Provide fixture_responses per arm.
 }
 
 function parseArgs(argv) {
-  const out = { fixture: null, out: null, trials: null, seed: null };
+  const out = { fixture: null, study: null, out: null, trials: null, seed: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--help' || a === '-h') usage(0);
     else if (a === '--fixture' && argv[i + 1]) out.fixture = argv[++i];
+    else if (a === '--study' && argv[i + 1]) out.study = argv[++i];
     else if (a === '--out' && argv[i + 1]) out.out = argv[++i];
     else if (a === '--trials' && argv[i + 1]) out.trials = parseInt(argv[++i], 10);
     else if (a === '--seed' && argv[i + 1]) out.seed = argv[++i];
@@ -92,6 +94,29 @@ function fixtureSolve(study) {
       failure: entry.failure || null,
       durationMs: entry.durationMs || 0,
       attempts: entry.attempts != null ? entry.attempts : 1,
+    };
+  };
+}
+
+function liveSolve(study) {
+  return async function solve({ prompt }) {
+    const model = (study.solver && study.solver.model) || process.env.SOLVER_MODEL;
+    const result = await executeDroid({
+      model,
+      effort: (study.solver && study.solver.effort) || process.env.SOLVER_EFFORT,
+      prompt,
+      timeoutMs: parseInt(process.env.DROID_TIMEOUT_MS || '180000', 10),
+      attempts: parseInt(process.env.DROID_ATTEMPTS || '3', 10),
+    });
+    const normalized = usageSummary(result.usage, model);
+    return {
+      ...result,
+      usage: {
+        ...normalized,
+        calls: result.attempts,
+        latency_ms: result.durationMs || 0,
+        estimated_cost_usd: normalized.est_cost_usd,
+      },
     };
   };
 }
@@ -239,58 +264,59 @@ function makeItemAwareJudge(study, baseJudge) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const fixtureMode = process.env.FIXTURE === '1' || Boolean(args.fixture) || process.env.PAIRWISE_FIXTURE === '1';
+  if (Boolean(args.fixture) === Boolean(args.study)) usage(1);
 
-  if (!args.fixture) usage(1);
-  const study = loadJson(path.resolve(args.fixture));
-
-  if (!fixtureMode) {
-    console.error('run-pairwise: foundation phase requires fixture mode (--fixture / FIXTURE=1)');
-    process.exit(1);
-  }
-
+  const fixtureMode = Boolean(args.fixture);
+  const studyPath = args.fixture || args.study;
+  const study = loadJson(path.resolve(studyPath));
   const items = study.items || [];
-  const missing = items.some(it => !it.fixture_responses && !it.responses);
-  if (missing) {
-    console.error('run-pairwise: each item needs fixture_responses for both arms');
+
+  if (fixtureMode && items.some(it => !it.fixture_responses && !it.responses)) {
+    console.error('run-pairwise: each fixture item needs fixture_responses for both arms');
     process.exit(1);
   }
 
   const arms = (study.arms || []).map(a => ({
+    ...a,
     id: a.id,
     prompt_sha256: a.prompt_sha256 || sha256(a.id),
     skill_sha256: a.skill_sha256 != null ? a.skill_sha256 : null,
   }));
   if (arms.length < 2) {
-    console.error('run-pairwise: fixture needs at least two arms');
+    console.error('run-pairwise: study needs at least two arms');
     process.exit(1);
   }
 
   const pair = study.pair || { left: arms[0].id, right: arms[1].id };
   const judges = study.judges || panelModels();
-  const baseJudge = fixtureJudge(study);
-  const judge = makeItemAwareJudge(study, baseJudge);
-
-  const envelope = await runPairwiseItems({
+  const armById = new Map(arms.map(arm => [arm.id, arm]));
+  const runOptions = {
     studyId: study.study_id || study.studyId,
     studyVersion: study.study_version || study.studyVersion || '1',
     preregistrationSha256: study.preregistration_sha256 || study.preregistrationSha256 || sha256('adhoc'),
     dataset: study.dataset || {
-      source: 'fixture',
+      source: fixtureMode ? 'fixture' : studyPath,
       version: '0',
-      split: 'fixture',
-      sha256: sha256((items).map(it => it.id || it.item_id)),
+      split: fixtureMode ? 'fixture' : 'adhoc',
+      sha256: sha256(items.map(it => it.id || it.item_id)),
     },
     arms,
     pair,
-    solver: study.solver || { model: 'fixture-model', effort: null },
+    solver: study.solver || { model: fixtureMode ? 'fixture-model' : process.env.SOLVER_MODEL, effort: null },
     judges,
     items,
     trials: args.trials || study.trials || 1,
     seed: args.seed != null ? args.seed : (study.seed != null ? study.seed : 0),
-    solve: fixtureSolve(study),
-    judge,
-    buildJudgePrompt: ({ item, responseA, responseB }) => {
+    solve: fixtureMode ? fixtureSolve(study) : liveSolve(study),
+    judge: fixtureMode
+      ? makeItemAwareJudge(study, fixtureJudge(study))
+      : panelJudge,
+    createdAt: study.created_at,
+    retainResponseText: study.retain_response_text === true,
+  };
+
+  if (fixtureMode) {
+    runOptions.buildJudgePrompt = ({ item, responseA, responseB }) => {
       const problem = item.prompt || item.problem || item.text || '';
       const id = item.id || item.item_id || '';
       return [
@@ -307,11 +333,21 @@ async function main() {
         '',
         '=== END ===',
       ].join('\n');
-    },
-    createdAt: study.created_at,
-    retainResponseText: study.retain_response_text === true,
-  });
+    };
+  } else {
+    runOptions.buildPrompt = ({ item, armId }) => {
+      const problem = item.prompt || item.problem || item.text || '';
+      const arm = armById.get(armId);
+      const guide = arm && (arm.skillContent || arm.skill_content || arm.instruction || arm.prompt);
+      if (armId === 'none') {
+        return `Answer the problem directly without using a named thinking-skill guide.\n\n${problem}`;
+      }
+      if (!guide) throw new Error(`live arm ${armId} is missing skillContent/instruction`);
+      return `Use the following reasoning guide to answer the problem. Apply it substantively without naming the guide.\n\n=== GUIDE ===\n${guide}\n=== END GUIDE ===\n\n${problem}`;
+    };
+  }
 
+  const envelope = await runPairwiseItems(runOptions);
   const validation = validateResultEnvelope(envelope);
   if (!validation.ok) {
     console.error('run-pairwise: envelope validation failed:\n' + validation.errors.join('\n'));

@@ -263,7 +263,7 @@ test('verifyExactHashes requires prereg verification target not mere presence', 
   const { verifyExactHashes } = require('../lib/evidence');
   const presenceOnly = verifyExactHashes({
     preregistration_sha256: 'a'.repeat(64),
-    dataset: { path: 'evals/datasets/workflow-cases.jsonl', sha256: 'b'.repeat(64) },
+    dataset: { path: 'evals/datasets/authored/challenging-cynefin.jsonl', sha256: 'b'.repeat(64) },
     solver: { model: 'm', config: { x: 1 }, config_sha256: require('../lib/result').sha256({ x: 1 }) },
     arms: [{
       id: 'none',
@@ -278,7 +278,7 @@ test('verifyExactHashes requires prereg verification target not mere presence', 
 
   const withCurrent = verifyExactHashes({
     preregistration_sha256: 'a'.repeat(64),
-    dataset: { path: 'evals/datasets/workflow-cases.jsonl', sha256: require('../lib/evidence').fileSha256(require('path').join(__dirname, '..', 'datasets', 'workflow-cases.jsonl')) },
+    dataset: { path: 'evals/datasets/authored/challenging-cynefin.jsonl', sha256: require('../lib/evidence').fileSha256(require('path').join(__dirname, '..', 'datasets', 'authored', 'challenging-cynefin.jsonl')) },
     solver: { model: 'm', config: { x: 1 }, config_sha256: require('../lib/result').sha256({ x: 1 }) },
     arms: [{
       id: 'none',

@@ -16,6 +16,7 @@
   },
   "current_registry_ref": {
     "path": "evals/studies/registry.json",
+    "git_commit": "1d63b0d0fe2f3272d98ea84370e55444ef560405",
     "registry_version": "phase5-workflow-v1",
     "sha256": "39eb7264b5e1f516aa5e67e4c7ab06d968c72453d5de8e5396aee69b665f039d",
     "role": "post-gate output; not a preregistration input"

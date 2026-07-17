@@ -191,7 +191,7 @@ function aggregateJsonlRows(results) {
  * Parse a result file, accepting both pretty-JSON (objective-runner schema
  * with delta_pp / mcnemar_p / significant) and JSONL (one object per line).
  *
- * Pretty-JSON schema (objective runners like run-swe.js):
+ * Pretty-JSON schema (legacy objective runners / generic envelope aggregates):
  *   { delta_pp, mcnemar_p, significant, n, ... }
  *
  * JSONL schema (paired experiment runners):

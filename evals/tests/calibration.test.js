@@ -12,6 +12,8 @@ const {
   serializeRate,
   loadPartialProgress,
   normalizeTrialResult,
+  buildCalibrationPrompt,
+  judgePrediction,
 } = require('../run-calibration.js');
 
 test('serializeRate: preserves zero instead of null', () => {
@@ -20,6 +22,18 @@ test('serializeRate: preserves zero instead of null', () => {
   assert.strictEqual(serializeRate(null), null);
   assert.strictEqual(serializeRate(undefined), null);
   assert.strictEqual(serializeRate(0.5), 0.5);
+});
+
+test('buildCalibrationPrompt supports labeled rows without decision_instruction', () => {
+  const prompt = buildCalibrationPrompt('Is the observation causal?');
+  assert.match(prompt, /Answer the problem/);
+  assert.match(prompt, /Is the observation causal/);
+  assert.match(prompt, /Return ONLY valid JSON/);
+});
+
+test('judgePrediction accepts ANSWER-prefixed JSON string values', () => {
+  const parsed = { value: 'ANSWER: Yes', type: 'string', ok: true };
+  assert.strictEqual(judgePrediction(parsed, { raw: true, type: 'boolean' }), true);
 });
 
 test('aggregatePerItem: failures are attempted-scored; wrong answers stay in denominator', () => {

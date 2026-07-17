@@ -128,10 +128,14 @@ function parsePrediction(json, rawText) {
 function judgePrediction(predParsed, normLabel) {
   if (!predParsed.ok || !normLabel) return null;
 
+  const normalizedString = predParsed.type === 'string'
+    ? predParsed.value.replace(/^ANSWER\s*:\s*/i, '').trim()
+    : null;
+
   if (normLabel.type === 'boolean') {
     if (predParsed.type === 'boolean') return predParsed.value === normLabel.raw;
-    if (predParsed.type === 'string') {
-      const s = predParsed.value.toLowerCase();
+    if (normalizedString !== null) {
+      const s = normalizedString.toLowerCase();
       if (s === 'yes' || s === 'true') return normLabel.raw === true;
       if (s === 'no' || s === 'false') return normLabel.raw === false;
       return null;
@@ -141,16 +145,16 @@ function judgePrediction(predParsed, normLabel) {
 
   if (normLabel.type === 'yesno') {
     const predBool = predParsed.type === 'boolean' ? predParsed.value :
-      (typeof predParsed.value === 'string' && predParsed.value.toLowerCase() === 'yes' ? true :
-       typeof predParsed.value === 'string' && predParsed.value.toLowerCase() === 'no' ? false : null);
+      (normalizedString && normalizedString.toLowerCase() === 'yes' ? true :
+       normalizedString && normalizedString.toLowerCase() === 'no' ? false : null);
     if (predBool === null) return null;
     const labelBool = normLabel.raw.toLowerCase() === 'yes';
     return predBool === labelBool;
   }
 
   if (normLabel.type === 'choice') {
-    if (predParsed.type === 'string') {
-      return predParsed.value.toUpperCase() === normLabel.raw.toUpperCase();
+    if (normalizedString !== null) {
+      return normalizedString.toUpperCase() === normLabel.raw.toUpperCase();
     }
     if (predParsed.type === 'boolean' && normLabel.raw.toUpperCase() === 'A') {
       return null;
@@ -162,7 +166,7 @@ function judgePrediction(predParsed, normLabel) {
     const goldFiles = Array.isArray(normLabel.raw) ? normLabel.raw : [normLabel.raw];
     if (predParsed.type === 'string') {
       return goldFiles.some(gf => {
-        const normPred = predParsed.value.replace(/^\/+/, '').replace(/\\/g, '/');
+        const normPred = normalizedString.replace(/^\/+/, '').replace(/\\/g, '/');
         const normGold = String(gf).replace(/^\/+/, '').replace(/\\/g, '/');
         return normPred === normGold || normPred.endsWith(normGold) || normGold.endsWith(normPred);
       });
@@ -197,10 +201,10 @@ function truncatePrompt(prompt, maxLen = MAX_PROMPT_LEN) {
 }
 
 function buildCalibrationPrompt(problemText, decisionInstruction) {
-  let cleanProblem = problemText;
+  let cleanProblem = String(problemText || '');
   cleanProblem = cleanProblem.replace(/\n*\s*End\s+with\s+exactly\s*:\s*ANSWER\s*:.+\s*$/im, '');
 
-  let instruction = decisionInstruction;
+  let instruction = String(decisionInstruction || 'Answer the problem.');
   const answerMatch = instruction.match(/End\s+with\s+exactly\s*:\s*ANSWER\s*:\s*(.+)/i);
   if (answerMatch) {
     instruction = instruction.replace(/\s*End\s+with\s+exactly\s*:\s*ANSWER\s*:.+\s*$/i, '');

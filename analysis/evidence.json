@@ -5,11 +5,11 @@
   "phase": 5,
   "title": "Canonical evidence registry — 28 manual-only skills; workflow machinery rejected",
   "authority": "analysis/evidence.json",
-  "generated_by": "node evals/generate-evidence-registry.js",
+  "generated_by": "node evals/evidence.js generate",
   "registry_ref": {
     "path": "evals/studies/registry.json",
-    "registry_version": "phase5-workflow-v1",
-    "sha256": "39eb7264b5e1f516aa5e67e4c7ab06d968c72453d5de8e5396aee69b665f039d"
+    "registry_version": "phase6-cleanup-v1",
+    "sha256": "a03a0f38d833e1e26062ca60c8c5a34d8cbe243a7be6b330ffdfe899f237aaf7"
   },
   "policy": {
     "confirmatory_requires": [
@@ -28,7 +28,8 @@
       "A statistically significant row cannot silently become an ELEVATE product verdict.",
       "portfolio-v1 was preregistered, but zero solver calls were eligible under its frozen power and budget constraints.",
       "All 28 active skills remain manual-only; 11 removed skills are preserved separately with absorption provenance.",
-      "workflow-v1 made zero solver calls after its frozen 24-case design failed the pre-run power gate; workflow-only machinery is marked for deletion."
+      "workflow-v1 made zero solver calls after its frozen 24-case design failed the pre-run power gate; workflow-only machinery is marked for deletion.",
+      "Fourteen frozen historical result artifacts were accidentally deleted during cleanup; their hashes and recovery attempts are pinned in the catalog-cutover recovery ledger and they cannot support confirmatory claims."
     ],
     "auto_retain_count": 0
   },
@@ -61,6 +62,16 @@
     },
     "evidence_validity": "provisional",
     "product_disposition_global": "no_automatic_elevation"
+  },
+  "historical_artifact_loss": {
+    "status": "unrecoverable_local_deletion",
+    "lost_artifact_count": 14,
+    "current_claim_registry_directly_references_lost_paths": false,
+    "evidence_effect": "Historical workflow evidence at these paths is no longer inspectable. Their frozen path, byte count, SHA-256, and original disposition remain in the source manifest. They cannot support a confirmatory or public claim unless exact bytes are restored from an external source.",
+    "ledger_ref": {
+      "path": "evals/studies/catalog-cutover/recovery-ledger.json",
+      "sha256": "58775aec27b06e5145a5155de7cff1fbc5786b0ede2b6977634ebdba28077d65"
+    }
   },
   "studies": [
     {
@@ -652,7 +663,7 @@
       "aggregate_path": "evals/studies/workflow-v1/aggregate.json",
       "items_path": "evals/studies/workflow-v1/items.jsonl",
       "prereg_sha256": "0f8dfba5b4c816b27a39e38dbb0aef344184415f1a349fc55cb5d21dffda1834",
-      "manifest_sha256": "e87b2d7c76695bc4077ff7a67b070b8b5ff2e228e67310be9036cffc30991181",
+      "manifest_sha256": "de711950f67f4af314599775963a9c95ff535d86c3ab507334c196c8ee5c29df",
       "input_registry_ref": {
         "path": "evals/studies/registry.json",
         "git_commit": "3d1f67de41495a2fa979b196a76fc5a3e66235e0",
@@ -661,6 +672,7 @@
       },
       "current_registry_ref": {
         "path": "evals/studies/registry.json",
+        "git_commit": "1d63b0d0fe2f3272d98ea84370e55444ef560405",
         "registry_version": "phase5-workflow-v1",
         "sha256": "39eb7264b5e1f516aa5e67e4c7ab06d968c72453d5de8e5396aee69b665f039d",
         "role": "post-gate output; not a preregistration input"

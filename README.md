@@ -172,32 +172,31 @@ All 28 shipped skills, grouped by domain. The meta-skill `thinking-model-router`
 
 Honesty about evidence is a core feature of this project, so the evaluation results are reported plainly.
 
-- **The pipeline:** All 39 legacy skills were run through an "Elevate-or-Kill" process — a length-controlled, replication-gated evaluation that compares skill-guided runs against placebo prompts and demands that any apparent win survive an independent replication.
-- **The headline result:** **Zero skills currently hold a robust, replicated ELEVATE verdict.** No skill in this collection is proven to improve Claude's accuracy.
-- **The closest candidate:** `thinking-scientific-method` (hypothesis-differential debugging). Its M5 fresh primary run scored **+5.3pp (p=0.061, n=150)** — directional, but it fails the p<0.05 significance gate. A separate replication was significant at **+8.0pp (p=0.001)**. Because a significant replication cannot rescue a primary run that fails the gate, its final verdict is **DIRECTIONAL-NOT-REPLICATED**. A pre-registered, larger-N study is recommended as future work.
-- **What that means for you:** Treat these skills as well-grounded structured-reasoning scaffolds, not as a guaranteed accuracy boost. The frameworks are real and useful; the empirical proof of a model-accuracy lift is not yet there, and we say so.
+- **The evidence base:** Historical coverage is heterogeneous and remains provisional. The corrected `portfolio-v1` gate made zero model calls because power, dataset, and judge-calibration requirements were not met.
+- **The headline result:** **Zero skills currently hold a robust, replicated ELEVATE verdict.** All 28 shipped skills are manual-only; none is proven to improve model accuracy.
+- **The closest historical candidate:** `thinking-scientific-method` recorded a provisional **+4.0pp** fault-localization lift in its larger-N July artifact. Although its recomputed McNemar result was significant, the effect is below the predeclared +5pp utility margin and the study has scoring, control, denominator, and raw-archive defects. It is directional evidence only, not ELEVATE.
+- **What that means for you:** Treat these skills as structured-reasoning scaffolds, not guaranteed accuracy improvements. The audit preserves the useful frameworks while keeping unsupported performance claims out of the product.
 
 Read the evidence yourself:
 
-- [Elevate-or-Kill Scorecard](analysis/ELEVATE-OR-KILL-SCORECARD.md) — historical evidence for the 39-skill legacy catalog.
-- [Executive Synthesis](analysis/ELEVATE-OR-KILL-SYNTHESIS.md) — the full executive summary of the mission.
-- [Future Consolidation Plan](analysis/FUTURE-CONSOLIDATION-PLAN.md) — a proposed (unexecuted) plan for consolidating skills.
+- [Decision-ready audit](analysis/AUDIT.md) — catalog dispositions, study citations, and explicit evidence gaps.
+- [Canonical evidence registry](analysis/evidence.json) — machine-readable authority for counts, claims, and product dispositions.
 
 The shipped catalog now contains 28 skills. Eleven unsupported or overlapping skills were removed at the evidence-backed cutover; their unique mechanisms were absorbed into surviving skills and their historical evidence remains preserved.
 
 ## Quality Assurance Tools
 
-This collection includes scripts to maintain and improve skill quality.
+This collection includes a small, outcome-focused harness:
 
 ### Outcome Evals
 
-The `evals/` and `experiments/` directories contain the current outcome-based harness:
+The `evals/` directory contains the current harness:
 
-- **Structural lint** for frontmatter and format checks
+- **Structural validation** for frontmatter, catalog metadata, and format checks
 - **Routing evals** for skill discoverability and false-positive control
-- **Length-controlled behavioral evals** using skill-vs-placebo prompts
-- **Objective SWE-bench localization evals** for debugging skills
-- **SQLite dashboard** for reviewing eval and experiment results
+- **Generic objective evals** with exact, boolean, abstention, numeric, probability, and strict file-localization scorers
+- **Generic blind pairwise evals** for rubric-based comparisons
+- **Evidence registry checks** that fail closed when provenance or confirmatory gates are incomplete
 
 ### Validate Skills
 
@@ -213,27 +212,6 @@ Outputs a report showing:
 - Overall score per skill
 - Skills needing attention
 
-### Generate Enhancement Suggestions
-
-Get specific improvement suggestions for a skill:
-
-```bash
-# Single skill
-node scripts/enhance-skill.js thinking-first-principles
-
-# All skills summary
-node scripts/enhance-skill.js
-```
-
-### Generate AI Improvement Prompts
-
-Create prompts for Claude to enhance skills:
-
-```bash
-node scripts/generate-improvement-prompt.js thinking-probabilistic
-```
-
-This generates a detailed prompt you can use with Claude Code to systematically improve any skill.
 
 ## Detailed Skill Descriptions
 
