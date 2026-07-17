@@ -28,6 +28,7 @@
   },
   "current_registry_ref": {
     "path": "evals/studies/registry.json",
+    "git_commit": "3d1f67de41495a2fa979b196a76fc5a3e66235e0",
     "registry_version": "phase4-portfolio-v1",
     "sha256": "7bf021d6dd4c34cd5bd91c74874114f98e1dc952ebb279021add62af8416c91e",
     "role": "post-gate output; not a preregistration input"

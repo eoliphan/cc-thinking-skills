@@ -2,14 +2,14 @@
   "schema_version": 2,
   "created_at": "2026-07-16T00:00:00.000Z",
   "updated_at": "2026-07-16T00:00:00.000Z",
-  "phase": 4,
-  "title": "Canonical evidence registry — 28-skill manual-only portfolio",
+  "phase": 5,
+  "title": "Canonical evidence registry — 28 manual-only skills; workflow machinery rejected",
   "authority": "analysis/evidence.json",
   "generated_by": "node evals/generate-evidence-registry.js",
   "registry_ref": {
     "path": "evals/studies/registry.json",
-    "registry_version": "phase4-portfolio-v1",
-    "sha256": "7bf021d6dd4c34cd5bd91c74874114f98e1dc952ebb279021add62af8416c91e"
+    "registry_version": "phase5-workflow-v1",
+    "sha256": "39eb7264b5e1f516aa5e67e4c7ab06d968c72453d5de8e5396aee69b665f039d"
   },
   "policy": {
     "confirmatory_requires": [
@@ -27,14 +27,15 @@
       "Historical estimates remain provisional unless their declared study bundle independently passes every confirmation gate.",
       "A statistically significant row cannot silently become an ELEVATE product verdict.",
       "portfolio-v1 was preregistered, but zero solver calls were eligible under its frozen power and budget constraints.",
-      "All 28 active skills remain manual-only; 11 removed skills are preserved separately with absorption provenance."
+      "All 28 active skills remain manual-only; 11 removed skills are preserved separately with absorption provenance.",
+      "workflow-v1 made zero solver calls after its frozen 24-case design failed the pre-run power gate; workflow-only machinery is marked for deletion."
     ],
     "auto_retain_count": 0
   },
   "summary": {
     "active_skill_count": 28,
     "deleted_skill_count": 11,
-    "study_count": 8,
+    "study_count": 9,
     "elevate_count": 0,
     "robust_elevate_count": 0,
     "auto_retain_count": 0,
@@ -42,6 +43,10 @@
     "portfolio_run_status": "no_run",
     "portfolio_model_calls": 0,
     "portfolio_decision_eligible_count": 0,
+    "workflow_run_status": "no_run",
+    "workflow_model_calls": 0,
+    "workflow_decision_eligible": false,
+    "workflow_product_disposition": "delete_workflow_machinery",
     "historical_statistical_status_counts_active": {
       "ceiling_or_near_ceiling": 4,
       "directional_not_significant": 1,
@@ -595,7 +600,7 @@
       "aggregate_path": "evals/studies/portfolio-v1/aggregate.json",
       "items_path": "evals/studies/portfolio-v1/items.jsonl",
       "prereg_sha256": "f38cc1c34f7c1e185e687d6b8c2cb0d78c84cc91a501d40a934c56cd150a12c7",
-      "manifest_sha256": "c7a460e5a241585344ecdc42a99cbae7090c971636a39b9a61328e695842e313",
+      "manifest_sha256": "c1b257932dbee6ee40b254782dd258ef75f3512e5653aa51eb5d679037f266e9",
       "input_registry_ref": {
         "path": "evals/studies/registry.json",
         "git_commit": "c2e4a73a6aded6c53d419f1f3d2a011fea91946f",
@@ -604,6 +609,7 @@
       },
       "current_registry_ref": {
         "path": "evals/studies/registry.json",
+        "git_commit": "3d1f67de41495a2fa979b196a76fc5a3e66235e0",
         "registry_version": "phase4-portfolio-v1",
         "sha256": "7bf021d6dd4c34cd5bd91c74874114f98e1dc952ebb279021add62af8416c91e",
         "role": "post-gate output; not a preregistration input"
@@ -636,6 +642,81 @@
         "replication": 325,
         "hard_negatives": 353
       }
+    },
+    {
+      "study_id": "workflow-v1",
+      "bundle_dir": "evals/studies/workflow-v1",
+      "prereg_path": "evals/studies/workflow-v1/prereg.md",
+      "manifest_path": "evals/studies/workflow-v1/manifest.json",
+      "cases_path": "evals/studies/workflow-v1/cases.json",
+      "aggregate_path": "evals/studies/workflow-v1/aggregate.json",
+      "items_path": "evals/studies/workflow-v1/items.jsonl",
+      "prereg_sha256": "0f8dfba5b4c816b27a39e38dbb0aef344184415f1a349fc55cb5d21dffda1834",
+      "manifest_sha256": "e87b2d7c76695bc4077ff7a67b070b8b5ff2e228e67310be9036cffc30991181",
+      "input_registry_ref": {
+        "path": "evals/studies/registry.json",
+        "git_commit": "3d1f67de41495a2fa979b196a76fc5a3e66235e0",
+        "registry_version": "phase4-portfolio-v1",
+        "sha256": "7bf021d6dd4c34cd5bd91c74874114f98e1dc952ebb279021add62af8416c91e"
+      },
+      "current_registry_ref": {
+        "path": "evals/studies/registry.json",
+        "registry_version": "phase5-workflow-v1",
+        "sha256": "39eb7264b5e1f516aa5e67e4c7ab06d968c72453d5de8e5396aee69b665f039d",
+        "role": "post-gate output; not a preregistration input"
+      },
+      "frozen_artifacts": {
+        "runner": {
+          "path": "evals/run-agentic.js",
+          "sha256": "4b8aeaa3c83ea000a15d66ae05c4cd4ff2d8fc1dabec1a13d9ab82230e410cda"
+        },
+        "pure_evaluator": {
+          "path": "evals/lib/agentic.js",
+          "sha256": "cef02f317cf9749824b550e6bb893a23b0f3d577e91832ee402bf781aafabf58"
+        },
+        "dataset": {
+          "path": "evals/datasets/workflow-cases-replication.jsonl",
+          "sha256": "3108849eae5636b7748cf800d49b25a9c5d9aaac78bd6986559ea5e2aaa7b0ef",
+          "split": "replication",
+          "n_cases": 24,
+          "n_candidate_nodes": 42,
+          "n_gold_nodes": 30
+        },
+        "cases": {
+          "path": "evals/studies/workflow-v1/cases.json",
+          "sha256": "54638d7dbf74b350a5d1041bb2d141ce0c2818231ef9b3c05d715482564c6c1a"
+        }
+      },
+      "candidate": "workflow_typed",
+      "comparators": [
+        "dynamic_typed",
+        "workflow_none_typed"
+      ],
+      "models": [
+        "claude-haiku-4-5-20251001",
+        "claude-sonnet-4-6",
+        "claude-opus-4-6"
+      ],
+      "run_status": "no_run",
+      "measured_result": null,
+      "statistical_status": "unmeasured_preregistered_power_blocked",
+      "replication_status": "not_run",
+      "evidence_validity": "preregistered_blocked",
+      "product_disposition": "delete_workflow_machinery",
+      "decision_eligible": false,
+      "model_calls": 0,
+      "retention_gates": {
+        "quality": "not_eligible",
+        "efficiency": "not_eligible"
+      },
+      "blockers": [
+        "available_replication_case_clusters_below_power_requirement",
+        "quality_gate_not_estimable_at_declared_precision",
+        "efficiency_noninferiority_gate_not_estimable_at_declared_precision",
+        "no_solver_calls_permitted_after_pre_run_power_failure",
+        "neither_retention_gate_passed"
+      ],
+      "frozen_case_count": 24
     }
   ],
   "skills": {
@@ -2435,5 +2516,31 @@
       "absorbed_mechanisms": [],
       "deletion_reason": null
     }
+  },
+  "workflow_form": {
+    "study_id": "workflow-v1",
+    "measured_result": null,
+    "statistical_status": "unmeasured_preregistered_power_blocked",
+    "replication_status": "not_run",
+    "evidence_validity": "preregistered_blocked",
+    "product_disposition": "delete_workflow_machinery",
+    "decision_eligible": false,
+    "model_calls": 0,
+    "candidate": "workflow_typed",
+    "comparators": [
+      "dynamic_typed",
+      "workflow_none_typed"
+    ],
+    "retention_gates": {
+      "quality": "not_eligible",
+      "efficiency": "not_eligible"
+    },
+    "blockers": [
+      "available_replication_case_clusters_below_power_requirement",
+      "quality_gate_not_estimable_at_declared_precision",
+      "efficiency_noninferiority_gate_not_estimable_at_declared_precision",
+      "no_solver_calls_permitted_after_pre_run_power_failure",
+      "neither_retention_gate_passed"
+    ]
   }
 }

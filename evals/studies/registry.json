@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "registry_version": "phase4-portfolio-v1",
-  "generated_note": "Executable registry for the 28-skill catalog and portfolio-v1 evidence gate. The portfolio was preregistered but no solver calls were eligible: all survivors remain manual-only, with zero automatic elevations.",
+  "registry_version": "phase5-workflow-v1",
+  "generated_note": "Executable registry for the 28-skill manual-only catalog. portfolio-v1 made zero eligible calls; workflow-v1 failed its pre-run power gate and requires deletion of workflow-only machinery while preserving the no-run evidence.",
   "catalog": {
     "baseline_count": 39,
     "cutover_count": 28,
-    "current_phase": "portfolio_evidence",
+    "current_phase": "workflow_evidence",
     "expected_count": 28,
     "expected_dirs": [
       "thinking-bounded-rationality",
@@ -2438,6 +2438,16 @@
       "decision_eligible": false,
       "status": "preregistered_blocked",
       "product_disposition": "manual_only_quarantine"
+    },
+    {
+      "study_id": "workflow-v1",
+      "path": "evals/studies/workflow-v1",
+      "kind": "workflow_value_gate_no_run",
+      "skill_id": null,
+      "confirmatory_eligible_by_default": false,
+      "decision_eligible": false,
+      "status": "preregistered_power_blocked",
+      "product_disposition": "delete_workflow_machinery"
     }
   ],
   "workflow": {
@@ -2454,12 +2464,15 @@
       },
       "replication": {
         "path": "evals/datasets/workflow-cases-replication.jsonl",
-        "sha256": "628ba407a038f957e01c747ff008cda849d29c1eedd44a13ddfaf1eea736cf72",
+        "sha256": "3108849eae5636b7748cf800d49b25a9c5d9aaac78bd6986559ea5e2aaa7b0ef",
         "exists": true
       }
     },
     "retain_only_if_gate_passes": true,
-    "engine_path_conditional": "evals/run-agentic.js"
+    "engine_path_conditional": "evals/run-agentic.js",
+    "study_id": "workflow-v1",
+    "decision_eligible": false,
+    "product_disposition": "delete_workflow_machinery"
   },
   "evidence_confirmation_requirements": [
     "matching_preregistration_sha256",

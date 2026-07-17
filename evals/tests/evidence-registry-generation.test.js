@@ -10,6 +10,7 @@ const { execFileSync } = require('child_process');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const EVIDENCE_PATH = path.join(REPO_ROOT, 'analysis', 'evidence.json');
 const REGISTRY_PATH = path.join(REPO_ROOT, 'evals', 'studies', 'registry.json');
+const WORKFLOW_AGGREGATE_PATH = path.join(REPO_ROOT, 'evals', 'studies', 'workflow-v1', 'aggregate.json');
 const AGGREGATE_PATH = path.join(REPO_ROOT, 'evals', 'studies', 'portfolio-v1', 'aggregate.json');
 const GENERATOR_PATH = path.join(REPO_ROOT, 'evals', 'generate-evidence-registry.js');
 
@@ -77,5 +78,34 @@ test('preregistered input registry remains distinct from post-gate output regist
     { cwd: REPO_ROOT }
   );
   assert.equal(sha256(frozenRegistry), portfolio.input_registry_ref.sha256);
-  assert.equal(sha256(fs.readFileSync(REGISTRY_PATH)), portfolio.current_registry_ref.sha256);
+  const postGateRegistry = execFileSync(
+    'git',
+    ['show', `${portfolio.current_registry_ref.git_commit}:${portfolio.current_registry_ref.path}`],
+    { cwd: REPO_ROOT }
+  );
+  assert.equal(sha256(postGateRegistry), portfolio.current_registry_ref.sha256);
+});
+
+test('workflow power failure is preserved as a zero-call deletion disposition', () => {
+  const aggregate = readJson(WORKFLOW_AGGREGATE_PATH);
+  const evidence = readJson(EVIDENCE_PATH);
+  const workflow = evidence.studies.find(study => study.study_id === 'workflow-v1');
+
+  assert.ok(workflow);
+  assert.equal(aggregate.run_status, 'no_run');
+  assert.equal(aggregate.usage.calls, 0);
+  assert.equal(aggregate.health.decision_eligible, false);
+  assert.equal(workflow.model_calls, 0);
+  assert.equal(workflow.decision_eligible, false);
+  assert.equal(workflow.product_disposition, 'delete_workflow_machinery');
+  assert.equal(evidence.workflow_form.product_disposition, 'delete_workflow_machinery');
+  assert.deepEqual(workflow.comparators, ['dynamic_typed', 'workflow_none_typed']);
+
+  const frozenRegistry = execFileSync(
+    'git',
+    ['show', `${workflow.input_registry_ref.git_commit}:${workflow.input_registry_ref.path}`],
+    { cwd: REPO_ROOT }
+  );
+  assert.equal(sha256(frozenRegistry), workflow.input_registry_ref.sha256);
+  assert.equal(sha256(fs.readFileSync(REGISTRY_PATH)), workflow.current_registry_ref.sha256);
 });

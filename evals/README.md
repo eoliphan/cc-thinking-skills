@@ -41,14 +41,14 @@ limit self-preference. Pair ordering is assigned by problem-index parity
 
 ## Agentic workflow ablation
 
-`run-agentic-workflow.js` is a pilot for multi-step route-vs-node scoring. It
-separates control-flow route accuracy from per-node binary decision accuracy,
-typed I/O effects, validator/repair effects, and verifier effects. Do not cite
-it as powered proof until the dataset is enlarged and pre-registered.
+`run-agentic.js` is the corrected multi-step route-vs-node runner. Its arms run
+independently, declared skill-route correctness is part of case success, and
+typed self-check arms make a separate semantic review call. Workflow results
+remain non-confirmatory until the frozen workflow study passes its evidence gate.
 
 ```bash
 EVAL_RUN=workflow-pilot CONC=3 SOLVER_MODEL=claude-sonnet-4-6 \
-  node evals/run-agentic-workflow.js
+  node evals/run-agentic.js
 ```
 
 ## Running

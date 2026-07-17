@@ -9,6 +9,7 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const REGISTRY_PATH = path.join(__dirname, 'studies', 'registry.json');
 const EVIDENCE_PATH = path.join(REPO_ROOT, 'analysis', 'evidence.json');
 const PORTFOLIO_DIR = path.join(__dirname, 'studies', 'portfolio-v1');
+const WORKFLOW_DIR = path.join(__dirname, 'studies', 'workflow-v1');
 
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -37,6 +38,9 @@ function main() {
   const manifest = readJson(path.join(PORTFOLIO_DIR, 'manifest.json'));
   const aggregate = readJson(path.join(PORTFOLIO_DIR, 'aggregate.json'));
   const cases = readJson(path.join(PORTFOLIO_DIR, 'cases.json'));
+  const workflowManifest = readJson(path.join(WORKFLOW_DIR, 'manifest.json'));
+  const workflowAggregate = readJson(path.join(WORKFLOW_DIR, 'aggregate.json'));
+  const workflowCases = readJson(path.join(WORKFLOW_DIR, 'cases.json'));
 
   const previousRows = {
     ...(previous.deleted_skills || {}),
@@ -135,9 +139,38 @@ function main() {
     },
   };
 
+  const workflowStudy = {
+    study_id: workflowAggregate.study_id,
+    bundle_dir: 'evals/studies/workflow-v1',
+    prereg_path: 'evals/studies/workflow-v1/prereg.md',
+    manifest_path: 'evals/studies/workflow-v1/manifest.json',
+    cases_path: 'evals/studies/workflow-v1/cases.json',
+    aggregate_path: 'evals/studies/workflow-v1/aggregate.json',
+    items_path: 'evals/studies/workflow-v1/items.jsonl',
+    prereg_sha256: workflowManifest.preregistration.sha256,
+    manifest_sha256: sha256File(path.join(WORKFLOW_DIR, 'manifest.json')),
+    input_registry_ref: workflowManifest.input_registry_ref,
+    current_registry_ref: workflowManifest.current_registry_ref,
+    frozen_artifacts: workflowManifest.frozen_artifacts,
+    candidate: workflowManifest.primary_arm,
+    comparators: workflowManifest.comparators,
+    models: workflowManifest.models,
+    run_status: workflowAggregate.run_status,
+    measured_result: workflowAggregate.measured_result,
+    statistical_status: workflowAggregate.statistical_status,
+    replication_status: workflowAggregate.replication_status,
+    evidence_validity: workflowAggregate.evidence_validity,
+    product_disposition: workflowAggregate.product_disposition,
+    decision_eligible: workflowAggregate.health.decision_eligible,
+    model_calls: workflowAggregate.usage.calls,
+    retention_gates: workflowAggregate.retention_gates,
+    blockers: workflowAggregate.reasons,
+    frozen_case_count: workflowCases.cases.length,
+  };
+
   const studies = (previous.studies || [])
-    .filter(study => study.study_id !== aggregate.study_id)
-    .concat(portfolioStudy)
+    .filter(study => study.study_id !== aggregate.study_id && study.study_id !== workflowAggregate.study_id)
+    .concat(portfolioStudy, workflowStudy)
     .sort((a, b) => a.study_id.localeCompare(b.study_id));
 
   const historicalStatuses = Object.values(skills).map(row => row.statistical_status || 'unknown');
@@ -145,8 +178,8 @@ function main() {
     schema_version: 2,
     created_at: previous.created_at,
     updated_at: aggregate.created_at,
-    phase: 4,
-    title: 'Canonical evidence registry — 28-skill manual-only portfolio',
+    phase: 5,
+    title: 'Canonical evidence registry — 28 manual-only skills; workflow machinery rejected',
     authority: 'analysis/evidence.json',
     generated_by: 'node evals/generate-evidence-registry.js',
     registry_ref: {
@@ -163,6 +196,7 @@ function main() {
         'A statistically significant row cannot silently become an ELEVATE product verdict.',
         'portfolio-v1 was preregistered, but zero solver calls were eligible under its frozen power and budget constraints.',
         'All 28 active skills remain manual-only; 11 removed skills are preserved separately with absorption provenance.',
+        'workflow-v1 made zero solver calls after its frozen 24-case design failed the pre-run power gate; workflow-only machinery is marked for deletion.',
       ],
     },
     summary: {
@@ -176,6 +210,10 @@ function main() {
       portfolio_run_status: aggregate.run_status,
       portfolio_model_calls: aggregate.usage.calls,
       portfolio_decision_eligible_count: aggregate.health.decision_eligible ? aggregate.summary.skill_count : 0,
+      workflow_run_status: workflowAggregate.run_status,
+      workflow_model_calls: workflowAggregate.usage.calls,
+      workflow_decision_eligible: workflowAggregate.health.decision_eligible,
+      workflow_product_disposition: workflowAggregate.product_disposition,
       historical_statistical_status_counts_active: countBy(historicalStatuses),
       product_disposition_counts_active: countBy(Object.values(skills).map(row => row.product_disposition)),
       evidence_validity: 'provisional',
@@ -184,7 +222,20 @@ function main() {
     studies,
     skills,
     deleted_skills: deletedSkills,
-    workflow_form: previous.workflow_form,
+    workflow_form: {
+      study_id: workflowAggregate.study_id,
+      measured_result: workflowAggregate.measured_result,
+      statistical_status: workflowAggregate.statistical_status,
+      replication_status: workflowAggregate.replication_status,
+      evidence_validity: workflowAggregate.evidence_validity,
+      product_disposition: workflowAggregate.product_disposition,
+      decision_eligible: workflowAggregate.health.decision_eligible,
+      model_calls: workflowAggregate.usage.calls,
+      candidate: workflowManifest.primary_arm,
+      comparators: workflowManifest.comparators,
+      retention_gates: workflowAggregate.retention_gates,
+      blockers: workflowAggregate.reasons,
+    },
   };
 
   if (Object.keys(skills).length !== 28) throw new Error('expected exactly 28 active skill rows');
@@ -194,6 +245,12 @@ function main() {
   }
   if (aggregate.usage.calls !== 0 || aggregate.health.decision_eligible !== false) {
     throw new Error('portfolio aggregate no longer records the zero-call blocked outcome');
+  }
+  if (workflowAggregate.usage.calls !== 0 || workflowAggregate.health.decision_eligible !== false) {
+    throw new Error('workflow aggregate no longer records the zero-call blocked outcome');
+  }
+  if (workflowAggregate.product_disposition !== 'delete_workflow_machinery') {
+    throw new Error('workflow disposition no longer requires failed-gate cleanup');
   }
 
   fs.writeFileSync(EVIDENCE_PATH, `${JSON.stringify(evidence, null, 2)}\n`);
