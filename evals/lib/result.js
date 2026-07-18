@@ -80,10 +80,18 @@ function failureRecord({ type, message, itemId = null, armId = null, trial = nul
 }
 
 function defaultUsage(usage = {}) {
+  const inputTokens = Number(usage.input_tokens || 0);
+  const outputTokens = Number(usage.output_tokens || 0);
+  const cachedTokens = Number(usage.cached_tokens || 0);
+  const cacheCreationTokens = Number(usage.cache_creation_tokens || 0);
   return {
-    input_tokens: Number(usage.input_tokens || 0),
-    output_tokens: Number(usage.output_tokens || 0),
-    cached_tokens: Number(usage.cached_tokens || 0),
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    cached_tokens: cachedTokens,
+    cache_creation_tokens: cacheCreationTokens,
+    total_tokens: usage.total_tokens != null
+      ? Number(usage.total_tokens)
+      : inputTokens + outputTokens + cachedTokens + cacheCreationTokens,
     calls: Number(usage.calls || 0),
     latency_ms: Number(usage.latency_ms || 0),
     estimated_cost_usd: Number(usage.estimated_cost_usd || 0),

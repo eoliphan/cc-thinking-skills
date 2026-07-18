@@ -430,6 +430,8 @@ function sumUsage(a, b) {
     input_tokens: x.input_tokens + y.input_tokens,
     output_tokens: x.output_tokens + y.output_tokens,
     cached_tokens: x.cached_tokens + y.cached_tokens,
+    cache_creation_tokens: x.cache_creation_tokens + y.cache_creation_tokens,
+    total_tokens: x.total_tokens + y.total_tokens,
     calls: x.calls + y.calls,
     latency_ms: x.latency_ms + y.latency_ms,
     estimated_cost_usd: x.estimated_cost_usd + y.estimated_cost_usd,
@@ -443,6 +445,8 @@ function normalizeSolveUsage(result, countDefaultCall = false) {
     input_tokens: raw.input_tokens || 0,
     output_tokens: raw.output_tokens || 0,
     cached_tokens: raw.cached_tokens || raw.cache_read_tokens || raw.cache_read_input_tokens || 0,
+    cache_creation_tokens: raw.cache_creation_tokens || raw.cache_creation_input_tokens || 0,
+    total_tokens: raw.total_tokens,
     calls: raw.calls != null
       ? raw.calls
       : (value.attempts != null ? value.attempts : (countDefaultCall ? 1 : 0)),
@@ -638,11 +642,13 @@ async function runObjectiveItems(spec) {
               {
                 tokenBudget: arm.tokenBudget,
                 tokenCounter: scorerOptions.tokenCounter || defaultTokenCounter,
-                tail: item.answer_instruction
-                  ? `\n\n${item.answer_instruction}`
-                  : (item.decision_instruction
-                    ? `\n\n${item.decision_instruction}\nEnd your response with exactly: ANSWER: <Yes or No>`
-                    : undefined),
+                tail: scorerName === 'file_localization'
+                  ? '\n\nYour final line must be exactly `ANSWER: path/to/file.ext` with no Markdown, bullets, or trailing text. Do not use Markdown on the ANSWER line.'
+                  : (item.answer_instruction
+                    ? `\n\n${item.answer_instruction}`
+                    : (item.decision_instruction
+                      ? `\n\n${item.decision_instruction}\nEnd your response with exactly: ANSWER: <Yes or No>`
+                      : undefined)),
               },
             );
         } catch (err) {
@@ -707,6 +713,7 @@ async function runObjectiveItems(spec) {
             solveResult = {
               ok: false,
               text: null,
+              usage: { calls: 0 },
               failure: failureRecord({
                 type: 'transport',
                 message: err && err.message ? err.message : String(err),
@@ -776,6 +783,7 @@ async function runObjectiveItems(spec) {
             value: null,
             prompt_sha256: promptHash,
             response_sha256: solveResult && solveResult.text != null ? sha256(solveResult.text) : null,
+            archive_uri: solveResult && solveResult.archive_uri || null,
             usage: rowUsage,
             failure,
             attempts: solveResult && solveResult.attempts != null ? solveResult.attempts : null,
@@ -838,6 +846,7 @@ async function runObjectiveItems(spec) {
             value: score.value,
             prompt_sha256: promptHash,
             response_sha256: responseHash,
+            archive_uri: solveResult.archive_uri || null,
             usage: rowUsage,
             failure,
             attempts: solveResult.attempts != null ? solveResult.attempts : null,
@@ -861,6 +870,7 @@ async function runObjectiveItems(spec) {
           value: score.value,
           prompt_sha256: promptHash,
           response_sha256: responseHash,
+          archive_uri: solveResult.archive_uri || null,
           usage: rowUsage,
           failure: null,
           attempts: solveResult.attempts != null ? solveResult.attempts : null,

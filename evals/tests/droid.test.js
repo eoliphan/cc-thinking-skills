@@ -181,6 +181,63 @@ test('tool leakage under isolation is typed tool_leakage', async () => {
   assert.equal(r.failure.type, 'tool_leakage');
 });
 
+test('tool-enabled isolation permits read tools with custom restrictions', async () => {
+  let captured = null;
+  const r = await executeDroid({
+    model: 'fixture-model',
+    prompt: 'inspect the checkout',
+    isolate: true,
+    allowToolUse: true,
+    cwd: '/tmp/checkout',
+    restrictTools: ['Read', 'LS', 'Grep', 'Glob'],
+    appendSystemPrompt: 'Use only read-only repository tools.',
+    runner: makeRunner(async (ctx) => {
+      captured = ctx;
+      return {
+        status: 0,
+        stdout: droidStdout('ANSWER: src/owner.js', {
+          extra: { tool_use: { name: 'Grep', input: { pattern: 'owner' } } },
+        }),
+        stderr: '',
+        error: null,
+        timedOut: false,
+        durationMs: 8,
+      };
+    }),
+  });
+  assert.equal(r.ok, true);
+  assert.equal(r.failure, null);
+  assert.equal(r.isolation.allow_tool_use, true);
+  assert.equal(r.isolation.effective_cwd, '/tmp/checkout');
+  const restrictedAt = captured.args.indexOf('--restrict-tools');
+  assert.equal(captured.args[restrictedAt + 1], 'Read LS Grep Glob');
+  assert.equal(captured.args.includes('--disabled-tools'), false);
+  const promptAt = captured.args.indexOf('--append-system-prompt');
+  assert.equal(captured.args[promptAt + 1], 'Use only read-only repository tools.');
+});
+
+test('tool-enabled isolation rejects tool events outside explicit restrictions', async () => {
+  const r = await executeDroid({
+    model: 'fixture-model',
+    prompt: 'inspect',
+    isolate: true,
+    allowToolUse: true,
+    restrictTools: ['Read', 'LS', 'Grep', 'Glob'],
+    runner: makeRunner(async () => ({
+      status: 0,
+      stdout: droidStdout('unexpected execution', {
+        extra: { tool_use: { name: 'Execute', input: { command: 'pwd' } } },
+      }),
+      stderr: '',
+      error: null,
+      timedOut: false,
+      durationMs: 2,
+    })),
+  });
+  assert.equal(r.ok, false);
+  assert.equal(r.failure.type, 'tool_leakage');
+});
+
 test('answer text mentioning tools is not tool_leakage', async () => {
   const r = await executeDroid({
     model: 'fixture-model',

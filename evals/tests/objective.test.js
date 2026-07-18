@@ -294,6 +294,25 @@ test('runObjectiveItems retains every attempted arm/item/trial including failure
   assert.equal(envelope.usage.calls, 0);
 });
 
+test('a solve callback that throws before transport records zero model calls', async () => {
+  const envelope = await runObjectiveItems({
+    studyId: 'pre-call-failure',
+    studyVersion: '1',
+    preregistrationSha256: 'p'.repeat(64),
+    dataset: { source: 'fixture', version: '1', split: 'heldout', sha256: 'd'.repeat(64) },
+    arms: [{ id: 'none' }],
+    solver: { model: 'fixture-model' },
+    scorer: 'boolean',
+    items: [{ id: 'i1', prompt: 'Question?', label: true }],
+    solve: async () => {
+      throw new Error('budget stopped before call');
+    },
+  });
+  assert.equal(envelope.health.attempted, 1);
+  assert.equal(envelope.usage.calls, 0);
+  assert.equal(envelope.items[0].usage.calls, 0);
+});
+
 test('none control prompt used for none arm; skill arm injects body', async () => {
   const seen = [];
   const envelope = await runObjectiveItems({
@@ -322,6 +341,34 @@ test('none control prompt used for none arm; skill arm injects body', async () =
   assert.doesNotMatch(noneP, /UNIQUE_SKILL|context-padding/);
   assert.match(placeP, /context-padding|PAD_/);
   assert.match(skillP, /UNIQUE_SKILL_BODY_XYZ/);
+});
+
+test('file-localization decision instruction is not followed by a Boolean answer tail', async () => {
+  let seenPrompt = null;
+  const instruction = 'End with exactly: ANSWER: <path/to/file.ext>';
+  const envelope = await runObjectiveItems({
+    studyId: 'file-tail',
+    studyVersion: '1',
+    preregistrationSha256: 'p'.repeat(64),
+    dataset: { source: 'fixture', version: '1', split: 'heldout', sha256: 'd'.repeat(64) },
+    arms: [{ id: 'none' }],
+    solver: { model: 'fixture-model' },
+    scorer: 'file_localization',
+    items: [{
+      id: 'one',
+      prompt: `Which source file owns this behavior?\n${instruction}`,
+      gold_files: ['src/owner.js'],
+    }],
+    solve: async ({ prompt }) => {
+      seenPrompt = prompt;
+      return { ok: true, text: 'ANSWER: src/owner.js', usage: { calls: 1 } };
+    },
+  });
+
+  assert.equal(envelope.items[0].correct, true);
+  assert.match(seenPrompt, /ANSWER: <path\/to\/file\.ext>/);
+  assert.doesNotMatch(seenPrompt, /ANSWER: <Yes or No>/);
+  assert.match(seenPrompt, /Do not use Markdown/);
 });
 
 // --- routing balanced accuracy nulls ---
@@ -455,12 +502,15 @@ test('live solve usage counts attempts latency cache and estimated cost', async 
     solve: async () => ({
       ok: true,
       text: 'ANSWER: Yes',
+      archive_uri: 'file:///tmp/response.txt',
       attempts: 1,
       durationMs: 25,
       usage: {
         input_tokens: 7,
         output_tokens: 3,
         cache_read_tokens: 2,
+        cache_creation_tokens: 5,
+        total_tokens: 17,
         est_cost_usd: 0.004,
       },
     }),
@@ -469,10 +519,13 @@ test('live solve usage counts attempts latency cache and estimated cost', async 
     input_tokens: 7,
     output_tokens: 3,
     cached_tokens: 2,
+    cache_creation_tokens: 5,
+    total_tokens: 17,
     calls: 1,
     latency_ms: 25,
     estimated_cost_usd: 0.004,
   });
+  assert.equal(envelope.items[0].archive_uri, 'file:///tmp/response.txt');
 });
 
 // --- arm order randomization ---

@@ -92,16 +92,26 @@ function isolationMetadata(opts = {}) {
   return {
     enabled,
     effective_cwd: effectiveCwd(opts),
-    disabled_tools: enabled ? ISOLATION_DISABLED_TOOLS.slice() : [],
+    disabled_tools: enabled
+      ? (opts.restrictTools ? [] : (opts.disabledTools || ISOLATION_DISABLED_TOOLS).slice())
+      : [],
+    restricted_tools: enabled && opts.restrictTools ? opts.restrictTools.slice() : [],
     env_allowlist: enabled ? ISOLATION_ENV_ALLOWLIST.slice() : null,
     system_prompt_appended: enabled,
+    allow_tool_use: enabled && opts.allowToolUse === true,
   };
 }
 
 function buildArgs(model, effort, promptFile, opts = {}) {
   const args = ['exec', '-m', model, '-r', effort, '-f', promptFile, '--output-format', 'json'];
   if (isolationEnabled(opts)) {
-    args.push('--disabled-tools', ISOLATION_DISABLED_TOOLS.join(' '), '--append-system-prompt', ISOLATION_PROMPT);
+    const isolation = isolationMetadata(opts);
+    if (isolation.restricted_tools.length) {
+      args.push('--restrict-tools', isolation.restricted_tools.join(' '));
+    } else {
+      args.push('--disabled-tools', isolation.disabled_tools.join(' '));
+    }
+    args.push('--append-system-prompt', opts.appendSystemPrompt || ISOLATION_PROMPT);
   }
   return args;
 }
@@ -237,6 +247,27 @@ function extractJson(text) {
 
 function detectToolLeakage(_text, parsed, isolation) {
   if (!isolation || !isolation.enabled || !parsed || typeof parsed !== 'object') return false;
+  if (isolation.allow_tool_use) {
+    if (!isolation.restricted_tools || !isolation.restricted_tools.length) return false;
+    const allowed = new Set(isolation.restricted_tools);
+    const names = [];
+    const collect = (event) => {
+      if (!event || typeof event !== 'object') return;
+      const name = event.name || event.tool_name || (event.tool && event.tool.name);
+      if (name) names.push(String(name));
+    };
+    collect(parsed.tool_use);
+    collect(parsed.function_call);
+    if (Array.isArray(parsed.tool_calls)) parsed.tool_calls.forEach(collect);
+    if (Array.isArray(parsed.tool_events)) parsed.tool_events.forEach(collect);
+    if (Array.isArray(parsed.content)) parsed.content.forEach(collect);
+    if (Array.isArray(parsed.events)) parsed.events.forEach((event) => {
+      collect(event);
+      collect(event && event.tool_use);
+      collect(event && event.tool_call);
+    });
+    return names.some((name) => !allowed.has(name));
+  }
   // Structured CLI/tool event fields only. Do NOT regex the model answer text —
   // ordinary answers may legitimately mention tools/functions without invoking them.
   if (parsed.tool_use || parsed.tool_calls || parsed.function_call || parsed.tool_events) return true;
