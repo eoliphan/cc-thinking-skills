@@ -21,6 +21,8 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 const { droidJsonAsync } = require('../lib/droid');
 const { leafSkills } = require('../lib/skills');
+const { mapSwebenchProRow } = require('./swebench-pro');
+const { mapSwebenchVerifiedToolRow } = require('./swebench-tool');
 
 const OUT_DIR = path.join(__dirname, 'external');
 fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -121,6 +123,16 @@ const SOURCES = {
         gold_files: files, repo: r.repo, instance_id: r.instance_id, skill_fit: ['scientific-method', 'systems', 'five-whys-plus'],
       };
     },
+  },
+  'swebench-pro': {
+    dataset: 'ScaleAI/SWE-bench_Pro', config: 'default', split: 'test',
+    mode: 'swe-localize', license: 'unknown',
+    map: mapSwebenchProRow,
+  },
+  'swebench-tool': {
+    dataset: 'princeton-nlp/SWE-bench_Verified', config: 'default', split: 'test',
+    mode: 'swe-tool-localize', license: 'MIT',
+    map: mapSwebenchVerifiedToolRow,
   },
   strategyqa: { // second-order proxy: implicit multi-hop yes/no (balanced Yes/No)
     dataset: 'ChilleD/StrategyQA', config: 'default', split: 'train',

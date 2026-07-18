@@ -29,6 +29,10 @@ evals/datasets/external/selfaware.jsonl
 evals/datasets/external/strategyqa.jsonl
 evals/datasets/external/swebench.jsonl
 evals/datasets/external/swebench-verified*.jsonl
+evals/datasets/external/swebench-pro.jsonl
+evals/datasets/external/swebench-tool.jsonl
+# generated read-only repository checkouts for tool-enabled localization evals
+evals/checkouts/
 # calibration scratch files (transient batch/sample outputs from run-calibration.js;
 # per-family canonical artifacts are candidate pools, harder pools, decisive splits,
 # manifests, and build-*.js scripts — these are committed. Scratch samples are
