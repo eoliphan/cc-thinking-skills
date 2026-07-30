@@ -10,6 +10,8 @@ const {
   validateSkillContent,
   validateAllSkills,
   DEFAULT_REQUIRED_SECTIONS,
+  parseFrontmatter,
+  listSkillDirs,
 } = require('../../scripts/validate-skills');
 const {
   validateDatasetSplits,
@@ -112,6 +114,48 @@ Old shape only.
   assert.ok(failedNames.some(n => n.includes('Procedure')));
   assert.ok(failedNames.some(n => n.includes('Output')));
   assert.ok(failedNames.some(n => n.includes('Verification')));
+});
+
+test('parseFrontmatter returns identical fields for LF and CRLF', () => {
+  const crlf = LEAN_BODY.replace(/\r?\n/g, '\r\n');
+  const lfParsed = parseFrontmatter(LEAN_BODY);
+  const crlfParsed = parseFrontmatter(crlf);
+  assert.equal(crlfParsed.has_frontmatter, true);
+  assert.deepEqual(crlfParsed.frontmatter, lfParsed.frontmatter);
+
+  const crlfResult = validateSkillContent(crlf, {
+    name: 'thinking-example',
+    maxWords: 100,
+    enforceBudget: true,
+  });
+  assert.equal(crlfResult.pass, true, JSON.stringify(crlfResult.failed));
+});
+
+test('router emits invocable thinking-skills IDs; NONE means no invocation', () => {
+  const routerPath = path.join(REPO_ROOT, 'skills', 'thinking-model-router', 'SKILL.md');
+  const content = fs.readFileSync(routerPath, 'utf8');
+  const plugin = JSON.parse(
+    fs.readFileSync(path.join(REPO_ROOT, '.claude-plugin', 'plugin.json'), 'utf8'),
+  );
+
+  // Positive: the invocation rule's exact ID is the plugin namespace plus a real
+  // skill directory, so `thinking-skills:thinking-<slug>` resolves for the catalog.
+  assert.equal(plugin.name, 'thinking-skills');
+  assert.ok(content.includes('`thinking-skills:thinking-<slug>`'));
+  const catalog = new Set(listSkillDirs());
+  for (const dir of catalog) {
+    assert.ok(dir.startsWith('thinking-'), `${dir} breaks the thinking-skills:<dir> ID rule`);
+  }
+
+  // Every fully-qualified thinking-* token the router cites must resolve to a
+  // shipped skill (regression: 11 stale IDs in the original PR table did not).
+  const refs = new Set([...content.matchAll(/thinking-[a-z0-9-]+/g)].map(m => m[0]));
+  refs.delete('thinking-model-router');
+  refs.delete('thinking-skills');
+  assert.deepEqual([...refs].filter(slug => !catalog.has(slug)), []);
+
+  // Negative: NONE is explicitly defined as no invocation.
+  assert.ok(/`?NONE`? means no invocation/.test(content));
 });
 
 test('word budget failure is observable for survivors', () => {

@@ -48,10 +48,10 @@ function listSkillDirs(skillsDir = SKILLS_DIR) {
 }
 
 function parseFrontmatter(content) {
-  const m = content.match(/^---\n([\s\S]*?)\n---/);
+  const m = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   const fm = {};
   if (!m) return { frontmatter: fm, body: content, has_frontmatter: false };
-  for (const line of m[1].split('\n')) {
+  for (const line of m[1].split(/\r?\n/)) {
     const kv = line.match(/^(\w[\w-]*):\s*(.*)$/);
     if (kv) fm[kv[1]] = kv[2].trim();
   }
