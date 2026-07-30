@@ -21,7 +21,7 @@ const { runDir, writeJson, mapPool } = require('./lib/io');
 
 const ROUTER = process.env.ROUTER_MODEL || 'claude-sonnet-4-6';
 const CONC = parseInt(process.env.CONC || '4', 10);
-const DATASET = path.join(__dirname, 'datasets', 'routing-cases.jsonl');
+const DATASET = process.env.ROUTING_DATASET || path.join(__dirname, 'datasets', 'routing-cases.jsonl');
 
 function loadCases() {
   return fs.readFileSync(DATASET, 'utf8').split('\n').map(l => l.trim()).filter(Boolean).map(l => JSON.parse(l));

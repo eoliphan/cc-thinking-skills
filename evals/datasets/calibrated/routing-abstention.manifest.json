@@ -6,7 +6,6 @@
     "cynefin",
     "model-combination",
     "model-router",
-    "model-selection",
     "socratic"
   ],
   "value_surface": "routing/discoverability",

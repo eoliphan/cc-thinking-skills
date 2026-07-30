@@ -15,6 +15,36 @@
       "id": "scientific-method-3",
       "prompt": "Our nightly batch job that aggregates analytics has started failing roughly every other night with an out-of-memory kill. The data engineer's read is 'the dataset is just getting too big' and the proposed fix is to double the container's memory from 8GB to 16GB. But the data volume has only grown about 6% this month, the job ran fine on 8GB until ~10 days ago, and the failures don't correlate with the nights that have the most data. We can afford a couple of nights of investigation before committing infra changes. How should we figure out the real cause?",
       "failure_mode": "Accepts the intuitive 'data too big → add memory' story and bumps the limit, ignoring evidence that directly contradicts it (only 6% growth, a clean break ~10 days ago, no correlation with data size) — rather than treating 'dataset too big' as a falsifiable hypothesis the existing data already undermines, and investigating what actually changed ~10 days ago (a deploy, dependency, leak, or skew) before spending on infra that may not fix it."
+    },
+    {
+      "id": "scientific-method-4",
+      "prompt": "Roughly 0.5% of card transactions have been charged twice since a release that bumped the payment SDK, added a client-side retry on request timeouts, and changed the format of our idempotency keys. A senior engineer is convinced it's the SDK and wants to roll it back tonight, but the rollback is disruptive and we can't reproduce the double charge in staging. What should we do before committing to that rollback?",
+      "failure_mode": "Rolls back the SDK on a hunch and treats any drop in duplicates as confirmation, without laying out the retry and idempotency-key changes as rival explanations, naming a single observation from data already in hand that would separate them (for example, whether the two charges in a duplicate carry identical or differing idempotency keys, which points at the retry versus the key-format change), and stating what evidence would clear the SDK."
+    },
+    {
+      "id": "scientific-method-5",
+      "prompt": "Our search API's p99 latency roughly doubled after a sprint that shipped a new ranking model, resized the database connection pool, and swapped the logging framework. The platform team wants to revert the pool resize first because 'it's always the pool.' We have production traces and can add targeted timing around any span. Where should we start?",
+      "failure_mode": "Reverts the pool change based on a prior belief and treats the sprint's timing as proof of cause, instead of reading the traces to find which span actually grew, tying each candidate cause to one of the three changes, and choosing the timing measurement that best discriminates among them before reverting anything."
+    },
+    {
+      "id": "scientific-method-6",
+      "prompt": "One integration test fails about one in eight CI runs but never fails when we run it locally. A teammate suggests wrapping it in an automatic retry so the pipeline goes green. We can run the test in a loop on CI hardware and add logging anywhere. What should we do before masking it?",
+      "failure_mode": "Adds the retry and calls a green pipeline success, treating the flake as noise rather than a symptom with several possible sources such as shared fixture state, test-ordering dependence, async timing, or an external clock, and skips reproducing it under a loop and using logs or deliberate ordering changes as observations that would confirm or eliminate each candidate."
+    },
+    {
+      "id": "scientific-method-7",
+      "prompt": "Finance's revenue dashboard and the product-analytics dashboard disagree by three to seven percent on the same days. Each team insists the other's pipeline is wrong. Both read from the same warehouse but through different transformations. How should we settle which figures to trust?",
+      "failure_mode": "Picks a side or splits the difference to move on, rather than listing concrete reasons the two pipelines could diverge (timezone bucketing, refund and test-account filters, deduplication, late-arriving events) and reconciling on one small shared slice where each transformation can be traced back to the raw source to pinpoint where the gap is introduced."
+    },
+    {
+      "id": "scientific-method-8",
+      "prompt": "Sensors deployed in the field report physically implausible spikes a handful of times a day. The vendor attributes it to electrical noise and recommends a costly hardware swap across the whole fleet. We already have raw timestamped readings and firmware logs for every unit. Before approving the fleet-wide swap, how should we investigate?",
+      "failure_mode": "Accepts the vendor's noise story and approves the expensive swap, without first checking whether the spikes cluster by firmware version, time of day, or a specific value transition in the data on hand — checks that would separate a firmware or numeric-overflow defect from genuine electrical interference and might avoid the swap entirely."
+    },
+    {
+      "id": "scientific-method-9",
+      "prompt": "Signups dropped 12% week over week. Marketing blames the new pricing page, product blames seasonality, and the paid team quietly paused a campaign midweek. Leadership wants a single cause named by tomorrow morning. How should we approach attributing the decline?",
+      "failure_mode": "Names one cause to satisfy the deadline and ignores the paused campaign and normal seasonal variation, instead of breaking the drop down by channel and cohort, comparing against a prior-year baseline to gauge seasonality, and lining up the campaign-pause timing so each factor's contribution can be estimated rather than asserting a single convenient story."
     }
   ]
 }

@@ -24,7 +24,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { mcnemarMidp, pairedDiff } = require('./lib/stats');
+const { mcnemarMidp, meanPairedRiskDiff, clusterBootstrapPairedRiskDiff } = require('./lib/stats');
 
 /** Verdict taxonomy (must match architecture.md) */
 const VERDICT = {
@@ -108,32 +108,119 @@ function passesThreshold(s) {
 }
 
 /**
+ * Aggregate JSONL rows into one sample summary.
+ * Supports:
+ *  - pre-aggregated rows with delta_pp + p_value
+ *  - paired binary rows with treatment/control or skill_correct/placebo_correct
+ * Never silently drops unparseable lines — they count as failures.
+ */
+function aggregateJsonlRows(results) {
+  if (!results || results.length === 0) {
+    return { delta_pp: 0, p_value: 1, n: 0, failures: 0, rows: 0 };
+  }
+
+  // Path A: rows already carry delta_pp (and optionally p)
+  const withDelta = results.filter(r => r && typeof r.delta_pp === 'number');
+  if (withDelta.length === results.length) {
+    const n = withDelta.length;
+    const meanDelta = withDelta.reduce((s, r) => s + r.delta_pp, 0) / n;
+    // Prefer min p (most conservative) when multiple p-values present; else 1
+    const ps = withDelta.map(r => r.p_value ?? r.p ?? r.mcnemar_p).filter(p => typeof p === 'number');
+    const p_value = ps.length ? Math.max(...ps) : 1;
+    const nField = withDelta.reduce((s, r) => s + (typeof r.n === 'number' ? r.n : 1), 0);
+    return {
+      delta_pp: +meanDelta.toFixed(6),
+      p_value,
+      n: nField,
+      rows: n,
+      failures: 0,
+      aggregation: 'mean_delta_pp',
+    };
+  }
+
+  // Path B: paired binary observations
+  const obs = [];
+  let failures = 0;
+  for (const r of results) {
+    if (!r || typeof r !== 'object') { failures++; continue; }
+    let t = r.treatment ?? r.skill_correct ?? r.skill ?? r.lean;
+    let c = r.control ?? r.placebo_correct ?? r.placebo ?? r.none;
+    if (typeof t === 'boolean') t = t ? 1 : 0;
+    if (typeof c === 'boolean') c = c ? 1 : 0;
+    if (typeof t !== 'number' || typeof c !== 'number' || !Number.isFinite(t) || !Number.isFinite(c)) {
+      failures++;
+      continue;
+    }
+    obs.push({
+      treatment: t,
+      control: c,
+      item_id: r.item_id || r.id,
+      leakage_family: r.leakage_family || r.cluster_id,
+    });
+  }
+
+  if (obs.length === 0) {
+    return { delta_pp: 0, p_value: 1, n: 0, failures, rows: results.length, aggregation: 'empty' };
+  }
+
+  const rd = meanPairedRiskDiff(obs);
+  let b = 0, cCount = 0;
+  for (const o of obs) {
+    const t = Number(o.treatment) ? 1 : 0;
+    const ctrl = Number(o.control) ? 1 : 0;
+    if (t === 1 && ctrl === 0) b++;
+    else if (t === 0 && ctrl === 1) cCount++;
+  }
+  const p_value = mcnemarMidp(b, cCount);
+  // Optional bootstrap CI kept for diagnostics (deterministic seed)
+  const boot = clusterBootstrapPairedRiskDiff(obs, { seed: 1, resamples: 200 });
+
+  return {
+    delta_pp: +(rd * 100).toFixed(6),
+    p_value,
+    n: obs.length,
+    rows: results.length,
+    failures,
+    discordant: { b, c: cCount },
+    bootstrap_ci: boot.ci,
+    aggregation: 'paired_binary',
+  };
+}
+
+/**
  * Parse a result file, accepting both pretty-JSON (objective-runner schema
  * with delta_pp / mcnemar_p / significant) and JSONL (one object per line).
  *
- * Pretty-JSON schema (objective runners like run-swe.js):
+ * Pretty-JSON schema (legacy objective runners / generic envelope aggregates):
  *   { delta_pp, mcnemar_p, significant, n, ... }
  *
  * JSONL schema (paired experiment runners):
  *   { delta_pp, p_value, direction, n, ... } per line
+ *   OR { treatment, control } / { skill_correct, placebo_correct } per line
  *
  * Returns normalized { delta_pp, p_value, n } or null if unparseable/empty.
  */
 function parseResultsFile(filePath) {
   const text = fs.readFileSync(filePath, 'utf8').trim();
+  if (!text) return null;
 
   // Try pretty-JSON first (single object with delta_pp / mcnemar_p / significant)
   try {
     const obj = JSON.parse(text);
-    if (typeof obj === 'object' && obj !== null && typeof obj.delta_pp === 'number') {
+    if (typeof obj === 'object' && obj !== null && !Array.isArray(obj) && typeof obj.delta_pp === 'number') {
       const p_value = obj.mcnemar_p ?? obj.p_value ?? null;
       if (p_value !== null) {
         return {
           delta_pp: obj.delta_pp,
           p_value,
           n: obj.n ?? null,
+          aggregation: 'pretty_json',
         };
       }
+    }
+    // Array of objects
+    if (Array.isArray(obj)) {
+      return aggregateJsonlRows(obj);
     }
   } catch (e) {
     // Not valid JSON — fall through to JSONL
@@ -141,23 +228,28 @@ function parseResultsFile(filePath) {
 
   // Try JSONL (one JSON object per line)
   const lines = text.split('\n').filter(l => l.trim());
-  const results = lines.map((line, i) => {
-    try { return JSON.parse(line); } catch (e) {
-      throw new Error(`Invalid JSONL at line ${i + 1}: ${e.message}`);
+  const results = [];
+  const parseFailures = [];
+  lines.forEach((line, i) => {
+    try {
+      results.push(JSON.parse(line));
+    } catch (e) {
+      parseFailures.push({ line: i + 1, message: e.message });
     }
   });
 
+  if (results.length === 0 && parseFailures.length > 0) {
+    throw new Error(`Invalid JSONL: ${parseFailures.length} unparseable line(s); first: line ${parseFailures[0].line}: ${parseFailures[0].message}`);
+  }
+
   if (results.length === 0) return null;
 
-  // Aggregate: use mean delta_pp, combined p-value via paired stats
-  // For simplicity, take the first result's paired test result
-  // (in practice, this would aggregate across items)
-  const first = results[0];
-  return {
-    delta_pp: first.delta_pp ?? 0,
-    p_value: first.p_value ?? first.mcnemar_p ?? 1,
-    n: first.n ?? results.length,
-  };
+  const agg = aggregateJsonlRows(results);
+  if (parseFailures.length) {
+    agg.failures = (agg.failures || 0) + parseFailures.length;
+    agg.parse_failures = parseFailures.length;
+  }
+  return agg;
 }
 
 /** CLI entry point */
@@ -177,6 +269,8 @@ async function main() {
 
   const v = verdict({ primary, replication });
   console.log(`VERDICT: ${v}`);
+  if (primary) console.log(`primary: delta_pp=${primary.delta_pp} p=${primary.p_value} n=${primary.n}`);
+  if (replication) console.log(`replication: delta_pp=${replication.delta_pp} p=${replication.p_value} n=${replication.n}`);
 
   // Exit non-zero for non-ELEVATE verdicts (guardrail enforcement)
   if (v !== VERDICT.ELEVATE) {
@@ -184,7 +278,14 @@ async function main() {
   }
 }
 
-module.exports = { verdict, VERDICT, parseResultsFile, passesThreshold, normalizeSample };
+module.exports = {
+  verdict,
+  VERDICT,
+  parseResultsFile,
+  passesThreshold,
+  normalizeSample,
+  aggregateJsonlRows,
+};
 
 if (require.main === module) {
   main().catch(e => { console.error(e); process.exit(1); });

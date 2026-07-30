@@ -135,8 +135,9 @@ Structural quality is not enough. Any change that alters a skill's reasoning pro
 - Run `node scripts/validate-skills.js` for format regressions.
 - Run `EVAL_RUN=<name> node evals/run-structural.js` after skill catalog changes.
 - For routing/description changes, run `EVAL_RUN=<name> node evals/run-routing.js`.
-- For behavioral claims, use length-controlled skill-vs-placebo comparisons and document the dataset, model, N, and p-value.
-- For debugging-skill claims, prefer `evals/run-swe.js` on SWE-bench localization.
+- For objective claims, use `evals/run-objective.js` with a declared scorer (`boolean`, `multiple_choice`, `abstention`, `numeric_order_of_magnitude`, `probability_brier`, or `file_localization`) and document the dataset, model, N, and p-value.
+- For judged pairwise claims, use length-controlled skill-vs-placebo comparisons via `evals/run-pairwise.js` (fixture/no-model for harness checks; live panel only under a declared study).
+- For debugging-skill localization claims, use the `file_localization` scorer on SWE-bench-style items through `evals/run-objective.js`.
 
 Do not claim a skill is "proven" or "firm" from pre-edit results. Re-run after edits, especially after trimming content.
 

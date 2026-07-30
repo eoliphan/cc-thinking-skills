@@ -55,7 +55,7 @@ for (const line of lines) {
   seen.add(o.id);
   if (o.mode !== 'correctness') { console.error(`${o.id}: mode != correctness`); errors++; }
   if (!/^[A-E]$/.test(o.answer_idx)) { console.error(`${o.id}: answer_idx '${o.answer_idx}' fails /^[A-E]$/`); errors++; continue; }
-  if (!Array.isArray(o.skill_fit) || o.skill_fit[0] !== 'bayesian') { console.error(`${o.id}: skill_fit wrong`); errors++; }
+  if (!Array.isArray(o.skill_fit) || o.skill_fit[0] !== 'probabilistic') { console.error(`${o.id}: skill_fit wrong`); errors++; }
   if (typeof o.posterior !== 'number') { console.error(`${o.id}: posterior not a number`); errors++; continue; }
   if (typeof o.prompt !== 'string' || !o.prompt.includes('A)') || !o.prompt.includes('E)')) { console.error(`${o.id}: prompt missing A-E lettered options`); errors++; }
 
