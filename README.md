@@ -2,6 +2,8 @@
 
 > 28 portable Agent Skills for structured reasoning in Claude Code, GitHub Copilot, Codex, Cursor, and other compatible tools
 
+This repository is a maintained fork of [tjboudreaux/cc-thinking-skills](https://github.com/tjboudreaux/cc-thinking-skills). It includes the Claude Code plugin installation fix from upstream [PR #13](https://github.com/tjboudreaux/cc-thinking-skills/pull/13).
+
 Claude Code Thinking Skills is a public catalog of Agent Skills. Use it for decisions, diagnosis, systems, risk, strategy, and innovation. Each skill gives an agent a clear procedure. Use a skill when its mechanism fits the task.
 
 ![Claude Code thinking skills banner](assets/readme-banner.png)
@@ -21,26 +23,26 @@ Read the [catalog audit](analysis/AUDIT.md) before making performance claims.
 ### Skills CLI
 
 ```bash
-npx skills add tjboudreaux/cc-thinking-skills
+npx skills add eoliphan/cc-thinking-skills
 ```
 
 Install all skills without prompts:
 
 ```bash
-npx skills add tjboudreaux/cc-thinking-skills --all
+npx skills add eoliphan/cc-thinking-skills --all
 ```
 
 ### Claude Code plugin
 
 ```text
-/plugin marketplace add tjboudreaux/cc-thinking-skills
+/plugin marketplace add eoliphan/cc-thinking-skills
 /plugin install thinking-skills@thinking-skills-marketplace
 ```
 
 ### Copy from a clone
 
 ```bash
-git clone https://github.com/tjboudreaux/cc-thinking-skills.git
+git clone https://github.com/eoliphan/cc-thinking-skills.git
 mkdir -p /path/to/project/.agents/skills
 cp -R cc-thinking-skills/plugin/skills/* /path/to/project/.agents/skills/
 ```
