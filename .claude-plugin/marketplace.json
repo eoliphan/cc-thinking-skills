@@ -1,8 +1,8 @@
 {
   "name": "thinking-skills-marketplace",
   "owner": {
-    "name": "TJ Boudreaux",
-    "email": "tj@tjboudreaux.com"
+    "name": "Erich Oliphant",
+    "email": "erich.oliphant@gmail.com"
   },
   "metadata": {
     "description": "Mental models and thinking skills for Claude Code, with eval-informed guidance for better reasoning",
