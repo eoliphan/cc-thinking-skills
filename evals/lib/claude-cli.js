@@ -168,6 +168,17 @@ function classify(rawResult, opts, attempt, isolation) {
 
   const text = typeof parsed.result === 'string' ? parsed.result : JSON.stringify(parsed.result);
   const json = droid.extractJson(text);
+  const observedModels = parsed.modelUsage ? Object.keys(parsed.modelUsage) : [];
+  base.observed_models = observedModels;
+  // A full model ID must be the model that served the call. Aliases such as
+  // `haiku` are not checked; preregistrations pin full IDs.
+  if (/^claude-.+-\d/.test(opts.model) && observedModels.length && !observedModels.includes(opts.model)) {
+    return { ...fail('transport', `model mismatch: requested ${opts.model}, served ${observedModels.join(', ')}`, {
+      model_mismatch: true,
+      requested: opts.model,
+      observed: observedModels,
+    }, attempt, base), text };
+  }
   if (detectToolLeakage(parsed, isolation)) {
     return { ...fail('tool_leakage', 'tool invocation observed under isolation', {
       num_turns: parsed.num_turns,
@@ -260,6 +271,12 @@ async function executeClaude(opts = {}) {
     const isolation = isolationMetadata(opts);
     return finalize(fail('transport', 'model and prompt required', null, 1, { raw: '', isolation }), 1, null, 0, [], null);
   }
+  if (droid.modelFamilyForCost(opts.model) !== 'claude') {
+    const isolation = isolationMetadata(opts);
+    return finalize(fail('transport', `claude-cli backend serves Claude models only; got ${opts.model}`, {
+      unsupported_model: opts.model,
+    }, 1, { raw: '', isolation }), 1, null, 0, [], null);
+  }
   const maxAttempts = Math.max(1, Number(opts.attempts || opts.maxAttempts || 1));
   let usage = null;
   let cliCost = null;
@@ -279,7 +296,9 @@ async function executeClaude(opts = {}) {
       durationMs: result.durationMs != null ? result.durationMs : null,
       failure: result.failure ? result.failure.toJSON() : null,
     });
-    const retryable = result.failure && (result.failure.type === 'transport' || result.failure.type === 'timeout');
+    const retryable = result.failure
+      && (result.failure.type === 'transport' || result.failure.type === 'timeout')
+      && !(result.failure.details && result.failure.details.model_mismatch);
     if (result.ok || !retryable || attempt === maxAttempts) break;
   }
   return finalize(result, Math.min(attempt, maxAttempts), usage, duration, records, cliCost);
@@ -302,6 +321,7 @@ function finalize(result, attempts, usage, durationMs, records, cliCost) {
     cli_cost_usd: cliCost,
     cli_cost_note: 'total_cost_usd reported by Claude Code; notional under subscription OAuth',
     model_usage: result.model_usage || null,
+    observed_models: result.observed_models || [],
   };
 }
 

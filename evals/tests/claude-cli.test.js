@@ -166,6 +166,42 @@ test('claudeJsonAsync retries once when no JSON is extractable', async () => {
   assert.deepEqual(r.json, { answer: 'B' });
 });
 
+test('non-Claude models fail before any process starts', async () => {
+  let called = false;
+  const r = await claude.executeClaude({
+    ...base,
+    model: 'gpt-5.5-pro',
+    prompt: 'q',
+    attempts: 3,
+    runner: async () => { called = true; },
+  });
+  assert.equal(r.ok, false);
+  assert.equal(called, false);
+  assert.equal(r.failure.details.unsupported_model, 'gpt-5.5-pro');
+});
+
+test('a full model ID served by a different model fails without retry', async () => {
+  const seen = [];
+  const r = await claude.executeClaude({
+    ...base,
+    prompt: 'q',
+    attempts: 3,
+    runner: fixedRunner([{ ...SUCCESS, modelUsage: { 'claude-sonnet-5-5': {} } }], seen),
+  });
+  assert.equal(r.ok, false);
+  assert.equal(seen.length, 1);
+  assert.equal(r.failure.details.model_mismatch, true);
+  assert.deepEqual(r.observed_models, ['claude-sonnet-5-5']);
+  const alias = await claude.executeClaude({
+    ...base,
+    model: 'haiku',
+    prompt: 'q',
+    runner: fixedRunner([SUCCESS]),
+  });
+  assert.equal(alias.ok, true);
+  assert.deepEqual(alias.observed_models, ['claude-haiku-4-5-20251001']);
+});
+
 test('model-backend defaults to droid and validates EVAL_BACKEND', () => {
   assert.equal(backend.backendName({}), 'droid');
   assert.equal(backend.select({}).backend, 'droid');

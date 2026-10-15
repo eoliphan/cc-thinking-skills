@@ -60,9 +60,12 @@ behavioral, rubric, SWE, workflow, shell-batch, and experiment-specific runners
 are historical producers only. Current studies use the generic objective or
 pairwise engine. Historical manifests keep the retired command names and hashes
 for provenance. Tool-localization v1 also preserves its pre-cutover
-`skills/thinking-scientific-method/SKILL.md` path. Run that study from its
-historical revision. Create a new versioned manifest and runner for the current
-`plugin/skills/` layout instead of changing its frozen pins.
+`skills/thinking-scientific-method/SKILL.md` path. Git cannot reproduce that
+study byte for byte. No committed revision matches its pins for
+`evals/lib/droid.js` or `evals/lib/tool-localization-runner.js`, and its
+dataset is external. Its recorded disposition is diagnostic-only. Create a new
+versioned manifest and runner for the current `plugin/skills/` layout instead
+of changing its frozen pins.
 
 ## Other gates
 
