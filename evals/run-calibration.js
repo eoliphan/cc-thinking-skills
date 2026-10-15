@@ -28,7 +28,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { droidJsonAsync, maxEffortFor } = require('./lib/droid');
+const { backend, modelJsonAsync, maxEffortFor } = require('./lib/model-backend');
 const { runDir, writeJson, mapPool, readJsonIfExists } = require('./lib/io');
 
 // ---- CLI ----
@@ -228,7 +228,7 @@ async function processItemTrial(item, itemIndex, trialIndex = null) {
     const isFilepathItem = normLabel && normLabel.type === 'filepath';
     const prompt = isFilepathItem ? rawPrompt : truncatePrompt(rawPrompt);
 
-    const r = await droidJsonAsync({ model: SOLVER_MODEL, prompt, effort: SOLVER_EFFORT });
+    const r = await modelJsonAsync({ model: SOLVER_MODEL, prompt, effort: SOLVER_EFFORT });
 
     let correct = null;
     let prediction = null;
@@ -479,6 +479,7 @@ function buildOutput(datasetName, totalItems, limitedItems, trialResults, perIte
     tier: 'calibration',
     dataset: datasetName,
     run_id: EVAL_RUN,
+    solver_backend: backend,
     solver_model: SOLVER_MODEL,
     solver_effort: SOLVER_EFFORT,
     k_trials: K_TRIALS,

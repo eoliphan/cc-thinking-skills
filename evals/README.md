@@ -5,9 +5,32 @@ Outcome-based evaluation for the thinking skills. The repo's original
 the right headers/tables/checkboxes). This harness measures whether a skill
 actually **improves reasoning** and **fires at the right time**.
 
-All model calls go through the authenticated `droid` CLI (`evals/lib/droid.js`).
-`claude -p` is not used — the headless subprocess fails auth (401); `droid` has
-provider keys configured and can drive Claude/GPT/Gemini/DeepSeek uniformly.
+## Model-call backends
+
+Unpinned runners (`run-routing.js`, `run-objective.js`, `run-pairwise.js`,
+`run-calibration.js`, and `lib/judge.js`) select a backend through
+`evals/lib/model-backend.js`:
+
+| `EVAL_BACKEND` | Module | Use |
+|---|---|---|
+| `droid` (default) | `evals/lib/droid.js` | Historical path. Drives Claude, GPT, Gemini, and DeepSeek through the Factory `droid` CLI. |
+| `claude-cli` | `evals/lib/claude-cli.js` | Drives `claude -p` with the interactive Claude Code login. Claude models only. |
+
+The `claude-cli` backend sends the prompt on stdin. It runs from a neutral
+directory. It disables all tools, MCP servers, slash commands, skills, and
+settings sources, and replaces the system prompt. A structured check found
+0 tools, 0 MCP servers, and 0 skills in the solver session. Each result records
+the backend, CLI version, and exact arguments in `isolation`.
+
+Do not pool `claude-cli` results with droid-era artifacts. Do not use them under
+a droid-era preregistration. The solver context differs, so a measured study on
+this backend needs a new `study_version` and preregistration. `cli_cost_usd` is
+the cost that Claude Code reports. Under a subscription login it is notional.
+
+`evals/lib/droid.js` is hash-pinned by
+`evals/studies/scientific-method-vnext/manifest-tool-v1.json`. Do not edit it.
+Its header still says that `claude -p` fails with a 401. That was true when the
+file was frozen. It no longer holds for the interactive login.
 
 ## Canonical engines
 

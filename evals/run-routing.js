@@ -16,7 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const { loadAllSkills } = require('./lib/skills');
-const { droidJsonAsync, maxEffortFor } = require('./lib/droid');
+const { backend, modelJsonAsync, maxEffortFor } = require('./lib/model-backend');
 const { runDir, writeJson, mapPool } = require('./lib/io');
 
 const ROUTER = process.env.ROUTER_MODEL || 'claude-sonnet-4-6';
@@ -61,7 +61,7 @@ async function main() {
 
   let n = 0;
   const results = await mapPool(cases, CONC, async (c) => {
-    const r = await droidJsonAsync({ model: ROUTER, prompt: buildPrompt(catalog, c.prompt) });
+    const r = await modelJsonAsync({ model: ROUTER, prompt: buildPrompt(catalog, c.prompt) });
     n++;
     if (!r.ok) { console.log(`  [${n}/${cases.length}] ${c.id}: FAILED (${r.error})`); return { id: c.id, ok: false, error: r.error }; }
     const chosen = (r.json.skill || 'none').trim();
@@ -80,7 +80,7 @@ async function main() {
   const acc = ok.length ? ok.filter(r => r.correct).length / ok.length : 0;
   const accStrict = ok.length ? ok.filter(r => r.correctStrict).length / ok.length : 0;
   const out = {
-    tier: 2, router: ROUTER, effort: maxEffortFor(ROUTER),
+    tier: 2, backend, router: ROUTER, effort: maxEffortFor(ROUTER),
     n: results.length, n_ok: ok.length,
     accuracy_lenient: acc, accuracy_strict: accStrict,
     by_type: Object.fromEntries(Object.entries(byType).map(([k, v]) => [k, { ...v, acc: +(v.correct / v.total).toFixed(2) }])),

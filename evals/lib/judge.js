@@ -9,7 +9,7 @@
  * argument to panelJudge / judgesExcludingSolver — env vars do not override.
  */
 
-const { droidJsonAsync, usageSummary } = require('./droid');
+const { modelJsonAsync, usageSummary } = require('./model-backend');
 
 /** Frozen cross-family panel — one vote each. */
 const DEFAULT_PANEL_MODELS = Object.freeze([
@@ -112,7 +112,7 @@ async function panelJudge(judgePromptFor, judges = panelModels()) {
   const panel = judges || [];
   const votes = await Promise.all(panel.map(async model => {
     try {
-      const r = await droidJsonAsync({ model, prompt: judgePromptFor });
+      const r = await modelJsonAsync({ model, prompt: judgePromptFor });
       if (!r.ok || !r.json) {
         return {
           model,

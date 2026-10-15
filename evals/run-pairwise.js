@@ -33,14 +33,14 @@ const path = require('path');
 const { sha256, validateResultEnvelope } = require('./lib/result');
 const { runPairwiseItems } = require('./lib/pairwise');
 const { panelModels, panelJudge } = require('./lib/judge');
-const { executeDroid, usageSummary } = require('./lib/droid');
+const { backend, executeModel, usageSummary } = require('./lib/model-backend');
 
 function usage(code = 0) {
   const msg = `Usage:
   node evals/run-pairwise.js --fixture <fixture.json> [--out file.json]
   node evals/run-pairwise.js --study <study.json> [--out file.json]
 
-Fixture mode requires fixture_responses per arm. Live mode uses the authenticated droid transport.
+Fixture mode requires fixture_responses per arm. Live mode uses the EVAL_BACKEND transport (droid by default, or claude-cli).
 `;
   if (code) console.error(msg);
   else console.log(msg);
@@ -101,7 +101,7 @@ function fixtureSolve(study) {
 function liveSolve(study) {
   return async function solve({ prompt }) {
     const model = (study.solver && study.solver.model) || process.env.SOLVER_MODEL;
-    const result = await executeDroid({
+    const result = await executeModel({
       model,
       effort: (study.solver && study.solver.effort) || process.env.SOLVER_EFFORT,
       prompt,
@@ -302,7 +302,9 @@ async function main() {
     },
     arms,
     pair,
-    solver: study.solver || { model: fixtureMode ? 'fixture-model' : process.env.SOLVER_MODEL, effort: null },
+    solver: fixtureMode
+      ? (study.solver || { model: 'fixture-model', effort: null })
+      : { ...(study.solver || { model: process.env.SOLVER_MODEL, effort: null }), backend },
     judges,
     items,
     trials: args.trials || study.trials || 1,

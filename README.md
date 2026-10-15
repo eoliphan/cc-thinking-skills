@@ -160,10 +160,11 @@ Run the local structural gate:
 EVAL_RUN=local node evals/run-structural.js
 ```
 
-Run routing evaluation with the authenticated `droid` CLI:
+Run routing evaluation with the authenticated `droid` CLI, or with your Claude Code login:
 
 ```bash
 EVAL_RUN=local node evals/run-routing.js
+EVAL_BACKEND=claude-cli EVAL_RUN=local node evals/run-routing.js
 ```
 
 Read the [evaluation harness guide](evals/README.md) and [CONTRIBUTING.md](CONTRIBUTING.md) before changing the catalog.

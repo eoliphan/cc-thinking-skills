@@ -28,7 +28,7 @@ const fs = require('fs');
 const path = require('path');
 const { sha256 } = require('./lib/result');
 const { runObjectiveItems, SCORERS } = require('./lib/objective');
-const { executeDroid, usageSummary } = require('./lib/droid');
+const { backend, executeModel, usageSummary } = require('./lib/model-backend');
 const { normalizeCondition } = require('./lib/conditions');
 
 function usage(code = 0) {
@@ -131,7 +131,7 @@ async function main() {
     ? null
     : async ({ prompt }) => {
       const model = (study.solver && study.solver.model) || process.env.SOLVER_MODEL;
-      const result = await executeDroid({
+      const result = await executeModel({
         model,
         effort: (study.solver && study.solver.effort) || process.env.SOLVER_EFFORT,
         prompt,
@@ -156,7 +156,7 @@ async function main() {
     preregistrationSha256: study.preregistration_sha256 || study.preregistrationSha256,
     dataset: study.dataset,
     arms: study.arms,
-    solver: study.solver || { model: 'fixture-model' },
+    solver: fixtureMode ? (study.solver || { model: 'fixture-model' }) : { ...study.solver, backend },
     items: study.items,
     trials: study.trials || 1,
     scorer: study.scorer,
