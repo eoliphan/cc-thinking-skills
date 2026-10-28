@@ -354,6 +354,9 @@ module.exports = {
   executeClaude,
   claudeJsonAsync,
   maxEffortFor: (model) => effortFor(model),
+  // Shared with the other CLI backends
+  defaultAsyncRunner,
+  sumUsage,
   // Test surface
   buildArgs,
   classify,

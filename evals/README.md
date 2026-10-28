@@ -15,6 +15,18 @@ Unpinned runners (`run-routing.js`, `run-objective.js`, `run-pairwise.js`,
 |---|---|---|
 | `droid` (default) | `evals/lib/droid.js` | Historical path. Drives Claude, GPT, Gemini, and DeepSeek through the Factory `droid` CLI. |
 | `claude-cli` | `evals/lib/claude-cli.js` | Drives `claude -p` with the interactive Claude Code login. Claude models only. |
+| `local-cli` | `evals/lib/model-backend.js` | Routes each call by model family: Claude to `claude-cli`, GPT to `evals/lib/codex-cli.js` (`codex exec` with the ChatGPT login). Other families fail before a process starts. |
+
+The `codex-cli` adapter gives each process a private `CODEX_HOME` that holds
+only a symlink to the real `auth.json`. The user's `config.toml`, global
+`AGENTS.md`, hooks, MCP servers, and rules do not load. Codex's built-in
+instructions are replaced. Codex still offers built-in tools, so any tool item
+in its event stream is a `tool_leakage` failure. Codex does not report the
+model that served a call, so results record `model_verified: false`.
+
+The pairwise judge panel needs at least two judge families other than the
+solver's. With a Claude solver, `local-cli` supplies only GPT, so a pairwise
+study on this backend stays ineligible until a second judge family is added.
 
 The `claude-cli` backend sends the prompt on stdin. It runs from a neutral
 directory. It disables all tools, MCP servers, slash commands, skills, and
