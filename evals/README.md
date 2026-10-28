@@ -15,7 +15,7 @@ Unpinned runners (`run-routing.js`, `run-objective.js`, `run-pairwise.js`,
 |---|---|---|
 | `droid` (default) | `evals/lib/droid.js` | Historical path. Drives Claude, GPT, Gemini, and DeepSeek through the Factory `droid` CLI. |
 | `claude-cli` | `evals/lib/claude-cli.js` | Drives `claude -p` with the interactive Claude Code login. Claude models only. |
-| `local-cli` | `evals/lib/model-backend.js` | Routes each call by model family: Claude to `claude-cli`, GPT to `evals/lib/codex-cli.js` (`codex exec` with the ChatGPT login). Other families fail before a process starts. |
+| `local-cli` | `evals/lib/model-backend.js` | Routes each call by model family: Claude to `claude-cli`, GPT to `evals/lib/codex-cli.js` (`codex exec` with the ChatGPT login), Gemini to `evals/lib/gemini-cli.js` (`gemini -p` with an API key). Other families fail before a process starts. |
 
 The `codex-cli` adapter gives each process a private `CODEX_HOME` that holds
 only a symlink to the real `auth.json`. The user's `config.toml`, global
@@ -24,9 +24,19 @@ instructions are replaced. Codex still offers built-in tools, so any tool item
 in its event stream is a `tool_leakage` failure. Codex does not report the
 model that served a call, so results record `model_verified: false`.
 
+The `gemini-cli` adapter uses API-key auth, because Gemini CLI no longer
+serves personal Google logins. It reads `GEMINI_API_KEY`, or `GOOGLE_API_KEY`
+when that is unset, and each call bills that key. Each process gets a private
+`HOME` that holds only an API-key `settings.json`, so the user's `GEMINI.md`,
+MCP servers, hooks, extensions, and policies do not load. `GEMINI_SYSTEM_MD`
+replaces the system prompt. A recorded tool call is a `tool_leakage` failure.
+Gemini CLI reports the serving model, so a different model is a failure.
+Gemini CLI has no reasoning-effort setting.
+
 The pairwise judge panel needs at least two judge families other than the
-solver's. With a Claude solver, `local-cli` supplies only GPT, so a pairwise
-study on this backend stays ineligible until a second judge family is added.
+solver's. With a Claude solver, `local-cli` supplies GPT and Gemini judges,
+for example `["gpt-6.1-sol", "gemini-3.1-pro-preview"]`. A two-judge panel
+cannot break a split vote, so a split counts as unresolved.
 
 The `claude-cli` backend sends the prompt on stdin. It runs from a neutral
 directory. It disables all tools, MCP servers, slash commands, skills, and

@@ -6,8 +6,8 @@
  * EVAL_BACKEND=droid (default) keeps the historical `droid exec` path.
  * EVAL_BACKEND=claude-cli uses `claude -p` through `./claude-cli`; Claude only.
  * EVAL_BACKEND=local-cli routes each call by model family to a local CLI:
- *   claude -> `./claude-cli`, gpt -> `./codex-cli`. Other families fail
- *   before any process starts.
+ *   claude -> `./claude-cli`, gpt -> `./codex-cli`, gemini -> `./gemini-cli`.
+ *   Other families fail before any process starts.
  *
  * Frozen study runners import `./droid` directly and are unaffected.
  */
@@ -15,12 +15,14 @@
 const droid = require('./droid');
 const claude = require('./claude-cli');
 const codex = require('./codex-cli');
+const gemini = require('./gemini-cli');
 
 const BACKENDS = Object.freeze(['droid', 'claude-cli', 'local-cli']);
 
 const LOCAL_CLI_ROUTES = Object.freeze({
   claude: { backend: claude.BACKEND, execute: claude.executeClaude, json: claude.claudeJsonAsync, effort: claude.maxEffortFor },
   gpt: { backend: codex.BACKEND, execute: codex.executeCodex, json: codex.codexJsonAsync, effort: codex.maxEffortFor },
+  gemini: { backend: gemini.BACKEND, execute: gemini.executeGemini, json: gemini.geminiJsonAsync, effort: gemini.maxEffortFor },
 });
 
 function backendName(env = process.env) {
