@@ -1,0 +1,856 @@
+{
+  "tier": 2,
+  "backend": "claude-cli",
+  "router": "claude-haiku-5-5",
+  "effort": "high",
+  "n": 71,
+  "n_ok": 71,
+  "accuracy_lenient": 0.971830985915493,
+  "accuracy_strict": 0.9154929577464789,
+  "by_type": {
+    "positive": {
+      "total": 39,
+      "correct": 37,
+      "acc": 0.95
+    },
+    "negative": {
+      "total": 16,
+      "correct": 16,
+      "acc": 1
+    },
+    "ambiguous": {
+      "total": 16,
+      "correct": 16,
+      "acc": 1
+    }
+  },
+  "misroutes": [
+    {
+      "id": "steel-manning-vendor-decision",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-steel-manning",
+      "chosen": "thinking-kepner-tregoe",
+      "correct": false,
+      "correctStrict": false,
+      "confidence": 0.6,
+      "rationale": "A high-stakes, two-year vendor commitment is a consequential option choice, and Kepner-Tregoe's must/want weighting and adverse-consequence comparison can test whether the vendor is chosen on current merits rather than habit."
+    },
+    {
+      "id": "reversibility-expensive-instinct",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-reversibility",
+      "chosen": "thinking-pre-mortem",
+      "correct": false,
+      "correctStrict": false,
+      "confidence": 0.7,
+      "rationale": "Before an expensive-to-reverse architecture commitment, assuming the plan has already failed and reasoning backward can turn the vague gut sense of wrongness into concrete failure paths that can be checked or mitigated."
+    }
+  ],
+  "discrimination_only_errors": [
+    {
+      "id": "ambig-pick-database",
+      "expected": "thinking-reversibility",
+      "chose": "thinking-kepner-tregoe"
+    },
+    {
+      "id": "ambig-feature-or-not",
+      "expected": "thinking-opportunity-cost",
+      "chose": "thinking-kepner-tregoe"
+    },
+    {
+      "id": "ambig-overconfident-plan",
+      "expected": "thinking-steel-manning",
+      "chose": "thinking-pre-mortem"
+    },
+    {
+      "id": "ambig-design-debate",
+      "expected": "thinking-steel-manning",
+      "chose": "thinking-kepner-tregoe"
+    }
+  ],
+  "results": [
+    {
+      "id": "systems-recurring-firefight",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-systems",
+      "chosen": "thinking-systems",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "Repeated headcount additions that are undone within a month or two point to a feedback loop with delays, where the fix itself may be driving escalations back up, which matches the systems skill's focus on stocks, flows, and archetypes."
+    },
+    {
+      "id": "probabilistic-flaky-test-belief",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-probabilistic",
+      "chosen": "thinking-probabilistic",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.75,
+      "rationale": "The user is asking how much to update their risk estimate, which is a base-rate and Bayesian problem: roughly two failures in a year against months of green runs, weighed against what a single new failure should change."
+    },
+    {
+      "id": "bounded-rationality-good-enough-config",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-bounded-rationality",
+      "chosen": "thinking-bounded-rationality",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.92,
+      "rationale": "The user is in an open-ended tuning search with diminishing returns and needs an explicit good-enough threshold to know when to stop, which is exactly what this skill provides."
+    },
+    {
+      "id": "circle-of-competence-crypto-feature",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-circle-of-competence",
+      "chosen": "thinking-circle-of-competence",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.6,
+      "rationale": "The user is deciding whether to take on a high-stakes lead role in a domain where they have no experience, which is a question about their own competence boundary and the cost of being wrong, so checking that boundary before committing fits best."
+    },
+    {
+      "id": "cynefin-classify-problem",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-cynefin",
+      "chosen": "thinking-cynefin",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The user needs to decide which response mode (detailed upfront planning versus experimentation) fits their problem, and Cynefin's first step of classifying the cause-effect domain directly addresses that question."
+    },
+    {
+      "id": "steel-manning-vendor-decision",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-steel-manning",
+      "chosen": "thinking-kepner-tregoe",
+      "correct": false,
+      "correctStrict": false,
+      "confidence": 0.6,
+      "rationale": "A high-stakes, two-year vendor commitment is a consequential option choice, and Kepner-Tregoe's must/want weighting and adverse-consequence comparison can test whether the vendor is chosen on current merits rather than habit."
+    },
+    {
+      "id": "reversibility-expensive-instinct",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-reversibility",
+      "chosen": "thinking-pre-mortem",
+      "correct": false,
+      "correctStrict": false,
+      "confidence": 0.7,
+      "rationale": "Before an expensive-to-reverse architecture commitment, assuming the plan has already failed and reasoning backward can turn the vague gut sense of wrongness into concrete failure paths that can be checked or mitigated."
+    },
+    {
+      "id": "effectuation-startup-no-plan",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-effectuation",
+      "chosen": "thinking-effectuation",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "The user faces genuine uncertainty with no reliable demand forecast and asks how to start with what they have, which matches effectuation's approach of inventorying means, capping downside, and letting goals emerge from controllable moves."
+    },
+    {
+      "id": "systems-growth-spiral",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-systems",
+      "chosen": "thinking-systems",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.88,
+      "rationale": "The spike and plateau come from a referral feedback loop (reinforcing growth) meeting a saturation limit, so the question is about emergent behavior from loops and delays, which calls for mapping stocks, flows, and feedback and identifying archetypes like Limits to Growth."
+    },
+    {
+      "id": "probabilistic-capacity-estimate",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-probabilistic",
+      "chosen": "thinking-probabilistic",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The user needs an order-of-magnitude estimate of write throughput from unmeasured inputs (population, activity rate, peak factor), which is a sizing and estimation problem that calls for base rates and ranged bounds, not a buffer decision yet."
+    },
+    {
+      "id": "first-principles-rebuild-auth",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-first-principles",
+      "chosen": "thinking-first-principles",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.92,
+      "rationale": "The user treats the 'use an off-the-shelf provider' convention as a fixed constraint and wants to separate the fundamental requirements of authentication from industry practice, which is exactly what this skill does."
+    },
+    {
+      "id": "five-whys-incident-postmortem",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-five-whys-plus",
+      "chosen": "thinking-five-whys-plus",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "The fault is localized to a bad-config deploy and the proximate cause is known, but the systemic root cause is not, which is exactly what evidence-linked whys with a countermeasure are built to find."
+    },
+    {
+      "id": "pre-mortem-launch-plan",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-pre-mortem",
+      "chosen": "thinking-pre-mortem",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.93,
+      "rationale": "The user wants to plan a launch while focusing on how it could fail on launch day, which is exactly what pre-mortem is designed for: assume failure, reason backward to concrete causes, and convert them into mitigations, gates, and stop checks."
+    },
+    {
+      "id": "jtbd-feature-prioritization",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-jobs-to-be-done",
+      "chosen": "thinking-jobs-to-be-done",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.93,
+      "rationale": "The user lacks an understanding of the progress users hire the note-taking app to make, which is the core of the jobs-to-be-done lens for diagnosing adoption and retention failure."
+    },
+    {
+      "id": "kepner-tregoe-vendor-matrix",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-kepner-tregoe",
+      "chosen": "thinking-kepner-tregoe",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.88,
+      "rationale": "The user is making a consequential choice among four options against a dozen weighted criteria and needs a defensible rationale, which matches Kepner-Tregoe's must/want weighting and adverse-consequence comparison."
+    },
+    {
+      "id": "systems-high-leverage-intervention",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-systems",
+      "chosen": "thinking-systems",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.82,
+      "rationale": "The user wants the few leverage points in a broadly failing, interconnected onboarding system, which calls for mapping feedback loops and stocks/flows and then ranking interventions by systemic leverage rather than fixing symptoms one by one."
+    },
+    {
+      "id": "lindy-framework-longevity",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-lindy-effect",
+      "chosen": "thinking-lindy-effect",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "The user is asking how to judge which framework will survive ten years, which is the Lindy effect's remaining-life prior on a non-perishable option, with a domain-drift check before favoring the proven one."
+    },
+    {
+      "id": "map-territory-monitoring-lies",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-map-territory",
+      "chosen": "thinking-map-territory",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The dashboards (the map) conflict with what customers actually experience (the territory), so the right move is to verify live user-facing latency and error data rather than theorize from the metrics."
+    },
+    {
+      "id": "margin-of-safety-deadline",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-margin-of-safety",
+      "chosen": "thinking-margin-of-safety",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The user must commit a delivery date under uncertainty, so the task is to size a buffer above the six-week estimate in proportion to unscoped integration risk and the cost of missing the date, rather than committing to the optimistic edge."
+    },
+    {
+      "id": "model-combination-messy-strategy",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-model-combination",
+      "chosen": "thinking-model-combination",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.87,
+      "rationale": "The user says a single lens keeps leaving blind spots on a high-stakes decision spanning technical, people, timing, and budget domains, which is the case for sequencing complementary models with named roles and a conflict rule."
+    },
+    {
+      "id": "model-router-which-approach",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-model-router",
+      "chosen": "thinking-model-router",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The user is unsure which reasoning approach fits their engineering decision and asks how to think about it, which is exactly what the model-router skill is designed to handle."
+    },
+    {
+      "id": "model-router-new-problem-type",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-model-router",
+      "chosen": "thinking-model-router",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "The user wants to know how to choose a problem-solving approach that fits the problem class, which is exactly what the model-router skill does by mapping domain and problem type to a primary skill."
+    },
+    {
+      "id": "scientific-method-simple-hypothesis",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-scientific-method",
+      "chosen": "thinking-scientific-method",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "There are two competing causal hypotheses for the stale data, and the user needs to rank them and run the cheapest observation that discriminates between them before investing in the expensive race-condition investigation."
+    },
+    {
+      "id": "ooda-live-incident",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-ooda",
+      "chosen": "thinking-ooda",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.93,
+      "rationale": "An active outage with a shifting situation and a need to make fast calls before certainty matches the OODA loop's Observe→Orient→Decide→Act cycle with re-observation."
+    },
+    {
+      "id": "opportunity-cost-build-vs-buy",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-opportunity-cost",
+      "chosen": "thinking-opportunity-cost",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The core question is whether a quarter spent building an in-house pipeline is worth more than the core-product work it displaces, which is a scarce-resource tradeoff where the cheaper-on-paper cost ignores the forgone alternative."
+    },
+    {
+      "id": "pre-mortem-project-kickoff",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-pre-mortem",
+      "chosen": "thinking-pre-mortem",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.93,
+      "rationale": "The user wants the team to surface risks before committing to a six-month plan while optimism is high, which is exactly the pre-mortem setup of assuming failure and reasoning backward to concrete causes and mitigations."
+    },
+    {
+      "id": "probabilistic-estimate-range",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-probabilistic",
+      "chosen": "thinking-probabilistic",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "The user needs to express date estimates as ranges with calibrated uncertainty, anchor them on base rates, and improve forecasts by updating on evidence over time, which is the core of this probabilistic skill."
+    },
+    {
+      "id": "red-team-prelaunch-security",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-red-team",
+      "chosen": "thinking-red-team",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.93,
+      "rationale": "The user wants an attacker's-eye review of their own payments API before launch, which matches the red-team skill's model-the-attacker, map-the-attack-surface, and verified-exploit-path approach for APIs they control."
+    },
+    {
+      "id": "reversibility-career-optionality",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-reversibility",
+      "chosen": "thinking-reversibility",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.5,
+      "rationale": "The user's fear of 'making the wrong call' maps to classifying whether a career move is cheap or costly to undo, though the identity and values question sits outside any catalog skill's focus."
+    },
+    {
+      "id": "reversibility-schema-change",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-reversibility",
+      "chosen": "thinking-reversibility",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The question is how much deliberation the decision deserves, and classifying whether a Postgres-to-NoSQL switch is cheap or costly to undo directly sets that level of process."
+    },
+    {
+      "id": "scientific-method-perf-investigation",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-scientific-method",
+      "chosen": "thinking-scientific-method",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.93,
+      "rationale": "The user has a symptom (p99 latency tripled) with several plausible causes and wants a disciplined, hypothesis-driven investigation rather than random changes, which matches ranking falsifiable hypotheses and running the cheapest discriminating observation first."
+    },
+    {
+      "id": "second-order-rate-limit-policy",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-second-order",
+      "chosen": "thinking-second-order",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The user is asking how an immediate fix (aggressive rate limiting) will ripple into downstream effects on power users and integrations over time, which is exactly the consequence-chain analysis this skill covers."
+    },
+    {
+      "id": "socratic-vague-requirements",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-socratic",
+      "chosen": "thinking-socratic",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.93,
+      "rationale": "The stakeholder's request is vague and likely has unstated requirements, so asking a few load-bearing questions to surface them before building fits the need better than any other skill."
+    },
+    {
+      "id": "steel-manning-design-review",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-steel-manning",
+      "chosen": "thinking-steel-manning",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "The user has a preferred conclusion (microservices) and wants to engage the strongest faithful version of a colleague's monolith case before writing a recommendation, which is exactly what steel-manning addresses."
+    },
+    {
+      "id": "systems-emergent-behavior",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-systems",
+      "chosen": "thinking-systems",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.86,
+      "rationale": "The symptom is emergent: each component is healthy alone but the system stalls when they interact, which points to feedback loops and delays across components, the core case for the systems skill."
+    },
+    {
+      "id": "theory-of-constraints-pipeline-throughput",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-theory-of-constraints",
+      "chosen": "thinking-theory-of-constraints",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The user's CI pipeline latency is pipeline-limited, and they suspect they are optimizing non-constraints, which is exactly what identifying the single binding constraint and exploiting it addresses."
+    },
+    {
+      "id": "thought-experiment-scale-edge",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-thought-experiment",
+      "chosen": "thinking-thought-experiment",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.88,
+      "rationale": "A 100x load test is too large to run for real, so a controlled counterfactual that isolates one variable, fixes conditions, traces the mechanistic chain, and bounds the implications fits the need better than broader consequence-mapping skills."
+    },
+    {
+      "id": "triz-contradiction-fast-and-safe",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-triz",
+      "chosen": "thinking-triz",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "The user describes two seemingly mutually exclusive requirements (instant deploys versus multi-stage approval) and asks for a no-compromise way out, which is exactly what TRIZ's contradiction-separation method is designed for."
+    },
+    {
+      "id": "via-negativa-bloated-product",
+      "ok": true,
+      "type": "positive",
+      "expected": "thinking-via-negativa",
+      "chosen": "thinking-via-negativa",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.93,
+      "rationale": "The user's reflex is to add 'smart defaults' layers on top of an overgrown settings page, and they're asking whether subtraction is the better approach, which is exactly what via negativa addresses."
+    },
+    {
+      "id": "neg-rename-variable",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "This is a routine, mechanical find-and-replace rename of a variable across a codebase with no ambiguity, uncertainty, or tradeoff that a mental-model guide would meaningfully improve."
+    },
+    {
+      "id": "neg-bash-for-loop",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "This is a routine, factual syntax question with a direct answer, and no mental-model guide would add meaningful value."
+    },
+    {
+      "id": "neg-fix-typo",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.97,
+      "rationale": "This is a routine, single-word typo fix in a README with no ambiguity, tradeoffs, or uncertainty, so a mental-model guide would add nothing."
+    },
+    {
+      "id": "neg-add-console-log",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "Adding a console.log to inspect a payload is a routine, well-scoped edit with no uncertainty, multi-cause diagnosis, or decision trade-off that a mental-model guide would meaningfully improve."
+    },
+    {
+      "id": "neg-format-json",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "Pretty-printing JSON with two-space indentation is a routine formatting task that a mental-model guide would not improve."
+    },
+    {
+      "id": "neg-git-stash",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "This is a routine factual question about how `git stash` works and how to restore changes, so a mental-model guide would add noise rather than help."
+    },
+    {
+      "id": "neg-convert-async",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "Converting a callback function to async/await is a routine, well-defined refactor that a mental-model guide would add nothing to."
+    },
+    {
+      "id": "neg-email-regex",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "Writing a basic email regex is a routine coding task that does not involve uncertainty, risk, trade-offs, or a systemic problem, so no thinking-skill guide would add value."
+    },
+    {
+      "id": "neg-css-center-div",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "This is a routine, well-known CSS question with a direct answer (justify-content and align-items on a flex container), so no mental-model guide would add value."
+    },
+    {
+      "id": "neg-install-package",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.97,
+      "rationale": "This is a routine, factual syntax question (npm install --save-dev lodash) with no uncertainty, tradeoff, or complex decision that a mental-model guide would help with."
+    },
+    {
+      "id": "neg-sql-join",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "Writing a basic SQL JOIN between two tables on a key is a routine, well-defined task with no uncertainty, tradeoffs, or decision structure that a thinking-skill guide would meaningfully improve."
+    },
+    {
+      "id": "neg-sort-array",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "This is a routine, well-defined coding question (sorting objects by a date field in descending order) with a straightforward answer, so no thinking-skill guide would add value."
+    },
+    {
+      "id": "neg-docker-port",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "Adding a port mapping to a docker-compose file is a routine, well-specified edit with no uncertainty, multi-option tradeoff, or systemic concern that a thinking-skill guide would meaningfully improve."
+    },
+    {
+      "id": "neg-env-var",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.97,
+      "rationale": "This is a routine, factual how-to question with a well-known answer (use process.env), so a mental-model guide would add no value."
+    },
+    {
+      "id": "neg-git-undo-commit",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "This is a routine git question with a known answer (git reset --soft HEAD~1), so no thinking-skill mental model is needed and loading one would be noise."
+    },
+    {
+      "id": "neg-update-deps",
+      "ok": true,
+      "type": "negative",
+      "expected": null,
+      "chosen": "none",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.95,
+      "rationale": "Bumping a dependency to the latest 4.x version is a routine, mechanical edit, and a mental-model guide would add no value."
+    },
+    {
+      "id": "ambig-incident-rootcause",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-five-whys-plus",
+      "chosen": "thinking-five-whys-plus",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.7,
+      "rationale": "A bounded, localized incident (3% of checkouts for one hour) needs a root-cause chain with evidence-linked whys and a countermeasure to support a prevention write-up, which matches this skill's description."
+    },
+    {
+      "id": "ambig-pick-database",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-reversibility",
+      "chosen": "thinking-kepner-tregoe",
+      "correct": true,
+      "correctStrict": false,
+      "confidence": 0.72,
+      "rationale": "Choosing a database that will be hard to replace is a consequential option choice, which Kepner-Tregoe handles with must/want criteria weighting and comparison of adverse consequences across candidates."
+    },
+    {
+      "id": "ambig-feature-or-not",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-opportunity-cost",
+      "chosen": "thinking-kepner-tregoe",
+      "correct": true,
+      "correctStrict": false,
+      "confidence": 0.72,
+      "rationale": "Choosing one of three competing features for a single scarce slot is a consequential option choice, which Kepner-Tregoe handles with must/want criteria weighting and adverse-consequence comparison."
+    },
+    {
+      "id": "ambig-slow-feature-adoption",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-jobs-to-be-done",
+      "chosen": "thinking-jobs-to-be-done",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.92,
+      "rationale": "The user's feature has low adoption and they want to know why and what to do next, which matches the guide's focus on recovering the progress users hire a solution for and why adoption fails."
+    },
+    {
+      "id": "ambig-scaling-risks",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-pre-mortem",
+      "chosen": "thinking-pre-mortem",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.82,
+      "rationale": "A marketing push that is about to 10x users is a launch about to commit, so assuming the scale-up has already failed and reasoning backward from concrete causes to mitigations, gates, and stop checks fits the user's need to get ahead of what will break."
+    },
+    {
+      "id": "ambig-which-bug-cause",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-scientific-method",
+      "chosen": "thinking-scientific-method",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.9,
+      "rationale": "Five competing theories about one symptom call for ranking falsifiable hypotheses and running the cheapest discriminating test to see which survives the evidence."
+    },
+    {
+      "id": "ambig-tech-debt-tradeoff",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-opportunity-cost",
+      "chosen": "thinking-opportunity-cost",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.62,
+      "rationale": "The choice is about spending a month of scarce engineering capacity, so naming the best forgone use (feature work) and the value delta versus paying down debt directly addresses the decision."
+    },
+    {
+      "id": "ambig-org-recurring-conflict",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-systems",
+      "chosen": "thinking-systems",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The recurring collapse of truces over a year points to a feedback loop with delays, where each fix is temporary and the cycle reinforces itself, which is the emergent, archetype-driven pattern the systems guide is built to map."
+    },
+    {
+      "id": "ambig-confidence-in-estimate",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-probabilistic",
+      "chosen": "thinking-probabilistic",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.88,
+      "rationale": "The user asks for a calibrated confidence level on a schedule forecast and how to update it over time, which is a forecasting task that calls for base rates, ranged estimates, and prior-to-posterior updating on new evidence."
+    },
+    {
+      "id": "ambig-simplify-architecture",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-via-negativa",
+      "chosen": "thinking-via-negativa",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.88,
+      "rationale": "The user wants to simplify a complicated service mesh by identifying parts that aren't earning their keep, which is a removal-first problem that calls for deleting nonessential elements with an irreversibility guard before any deletion."
+    },
+    {
+      "id": "ambig-bottleneck-or-leverage",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-theory-of-constraints",
+      "chosen": "thinking-theory-of-constraints",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.8,
+      "rationale": "A sales funnel is a sequential pipeline, and the user wants the single change with the largest effect on output, which is the binding-constraint question Theory of Constraints is built to answer."
+    },
+    {
+      "id": "ambig-risky-pivot",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-reversibility",
+      "chosen": "thinking-reversibility",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.6,
+      "rationale": "The pivot is a high-stakes, possibly one-way decision, and the user's regret framing calls for classifying how costly it is to undo and staging any irreversible commitment to preserve options."
+    },
+    {
+      "id": "ambig-unexpected-metric-drop",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-scientific-method",
+      "chosen": "thinking-scientific-method",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.85,
+      "rationale": "The user has several competing causes (product change, algorithm tweak, marketing, possibly a tracking bug) and needs the cheapest discriminating observation to rank and test them, rather than the blame-driven debate happening now."
+    },
+    {
+      "id": "ambig-overconfident-plan",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-steel-manning",
+      "chosen": "thinking-pre-mortem",
+      "correct": true,
+      "correctStrict": false,
+      "confidence": 0.88,
+      "rationale": "The user is about to commit to a Q4 plan and feels unease despite team confidence, so assuming the plan has already failed and reasoning backward through concrete causes directly targets that overconfidence before the commitment."
+    },
+    {
+      "id": "ambig-defer-to-expert",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-circle-of-competence",
+      "chosen": "thinking-circle-of-competence",
+      "correct": true,
+      "correctStrict": true,
+      "confidence": 0.6,
+      "rationale": "The user explicitly says they know nothing about drug development or this market, so the core need is checking whether they can evaluate the claim at all before deciding how much of their savings to risk."
+    },
+    {
+      "id": "ambig-design-debate",
+      "ok": true,
+      "type": "ambiguous",
+      "expected": "thinking-steel-manning",
+      "chosen": "thinking-kepner-tregoe",
+      "correct": true,
+      "correctStrict": false,
+      "confidence": 0.8,
+      "rationale": "The team needs a fair, structured way to choose between two consequential API options, which matches Kepner-Tregoe's must/want weighting and adverse-consequence comparison."
+    }
+  ]
+}
