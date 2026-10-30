@@ -254,3 +254,38 @@ test('evaluateJudgeCalibration: requires all three panel models', () => {
   assert.strictEqual(bad.ok, false);
   assert.ok(bad.failures.some(f => f.gate === 'per_judge_accuracy' && /deepseek/.test(String(f.judge || f.message || ''))));
 });
+
+test('evaluateJudgeCalibration: accepts a declared two-family panel', () => {
+  const panel = ['gpt-6.1-sol', 'gemini-3.1-pro-preview'];
+  const ok = evaluateJudgeCalibration({
+    panel_majority_accuracy: 0.90,
+    per_judge_accuracy: [0.80, 0.78],
+    fleiss_kappa: 0.65,
+    order_effect_delta_pp: 1,
+    verbosity_effect_delta_pp: 1,
+    missing_vote_rate: 0,
+    n_pairs: 30,
+  }, { panel });
+  assert.strictEqual(ok.ok, true);
+  assert.deepStrictEqual(ok.required_panel, panel);
+});
+
+test('evaluateJudgeCalibration: rejects a single-family declared panel', () => {
+  const bad = evaluateJudgeCalibration({
+    panel_majority_accuracy: 0.90,
+    per_judge_accuracy: { 'gpt-6.1-sol': 0.9, 'gpt-6-luna': 0.9 },
+    fleiss_kappa: 0.65,
+    order_effect_delta_pp: 1,
+    verbosity_effect_delta_pp: 1,
+    missing_vote_rate: 0,
+    n_pairs: 30,
+  }, { panel: ['gpt-6.1-sol', 'gpt-6-luna'] });
+  assert.strictEqual(bad.ok, false);
+  assert.ok(bad.failures.some(f => f.gate === 'panel'));
+});
+
+test('evaluateJudgeCalibration: default panel is still the frozen three', () => {
+  const r = evaluateJudgeCalibration({});
+  assert.deepStrictEqual(r.required_panel, [...DEFAULT_PANEL_MODELS]);
+  assert.ok(!r.failures.some(f => f.gate === 'panel'));
+});

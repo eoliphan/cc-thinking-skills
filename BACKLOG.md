@@ -38,3 +38,22 @@ The 2026-10-15 `claude-cli` routing runs (Haiku, Sonnet, and Opus 5.5;
 `evals/results/cc-routing-*`) show that `kepner-tregoe` and `pre-mortem` take
 cases labelled `steel-manning` and `reversibility`. Sharpen those descriptions
 before flipping `steel-manning`, `reversibility`, or `pre-mortem`.
+
+## Calibrate a local-cli judge panel
+
+Added 2026-10-30.
+
+The `local-cli` backend can judge with GPT (Codex) and Gemini, but those
+verdicts are not decision evidence. `judgePanelDecisionEligible` requires
+`calibration_status: calibrated`, and the registry records
+`blocked_missing_human_labels`.
+
+- Done: `evaluateJudgeCalibration` accepts a declared panel of 2 or more models
+  from 2 or more known families. The frozen three-judge panel stays the default.
+- Blocked on the user: label 30 or more pairwise items (A, B, or tie) by hand.
+  Do not generate the gold labels with a model.
+- Then: declare the panel in a new study's prereg, run both judges on the
+  labelled pairs, and compute per-judge accuracy, panel-majority accuracy,
+  kappa, order and verbosity deltas, and missing-vote rate.
+- Decide in the prereg how a 1-1 split counts toward panel-majority accuracy.
+  The conservative choice counts it as wrong.

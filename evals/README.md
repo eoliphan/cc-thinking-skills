@@ -38,6 +38,13 @@ solver's. With a Claude solver, `local-cli` supplies GPT and Gemini judges,
 for example `["gpt-6.1-sol", "gemini-3.1-pro-preview"]`. A two-judge panel
 cannot break a split vote, so a split counts as unresolved.
 
+Such a panel can run, but its verdicts are not decision evidence until it is
+calibrated. `evaluateJudgeCalibration(metrics, { panel })` checks a panel that a
+study declares in its prereg; with no `panel` it checks the frozen three-judge
+panel. Calibration scores each judge against human labels on at least 30
+pairs. No human-labelled set exists yet (`evals/studies/registry.json`,
+`judge_panel.human_labeled_pairs`), so every panel is still blocked.
+
 The `claude-cli` backend sends the prompt on stdin. It runs from a neutral
 directory. It disables all tools, MCP servers, slash commands, skills, and
 settings sources, and replaces the system prompt. A structured check found

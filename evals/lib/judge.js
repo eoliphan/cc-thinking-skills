@@ -227,12 +227,24 @@ function judgesExcludingSolver(solverModel, allJudges = panelModels()) {
 
 /**
  * Evaluate calibration metrics against frozen thresholds.
- * Requires n_pairs >= min and one valid accuracy per frozen panel model.
+ * Requires n_pairs >= min and one valid accuracy per panel model.
+ * `panel` defaults to the frozen panel. A study may declare its own panel in its
+ * prereg; it needs >= 2 models from >= 2 distinct known families.
  */
-function evaluateJudgeCalibration(metrics = {}) {
+function evaluateJudgeCalibration(metrics = {}, { panel = DEFAULT_PANEL_MODELS } = {}) {
   const t = JUDGE_CALIBRATION_THRESHOLDS;
   const failures = [];
-  const requiredPanel = [...DEFAULT_PANEL_MODELS];
+  const requiredPanel = [...panel];
+
+  const families = new Set(requiredPanel.map(m => modelFamily(m)).filter(f => f && f !== 'unknown'));
+  if (requiredPanel.length < 2 || families.size < 2) {
+    failures.push({
+      gate: 'panel',
+      required: '>= 2 models from >= 2 known families',
+      observed: requiredPanel,
+      message: 'declared panel lacks family independence',
+    });
+  }
 
   const nPairs = metrics.n_pairs;
   if (!(nPairs >= t.min_calibration_pairs)) {
@@ -269,7 +281,7 @@ function evaluateJudgeCalibration(metrics = {}) {
       gate: 'per_judge_accuracy',
       required: t.per_judge_accuracy_min,
       observed: null,
-      message: 'per_judge_accuracy missing; need one score per frozen panel model',
+      message: 'per_judge_accuracy missing; need one score per panel model',
     });
   } else {
     for (const model of requiredPanel) {
