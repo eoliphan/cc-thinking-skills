@@ -39,6 +39,16 @@ The 2026-10-15 `claude-cli` routing runs (Haiku, Sonnet, and Opus 5.5;
 cases labelled `steel-manning` and `reversibility`. Sharpen those descriptions
 before flipping `steel-manning`, `reversibility`, or `pre-mortem`.
 
+2026-10-30: the `steel-manning`, `reversibility`, and `kepner-tregoe`
+descriptions were sharpened and the three models rerun
+(`evals/results/cc-routing-*-desc-v2`; post-edit, directional, one run per
+model). Lenient accuracy went from 97/96/97% to 100/97/99% (Haiku/Sonnet/Opus);
+strict went from 92/90/90% to 94/92/90%. `steel-manning-vendor-decision` now
+routes correctly on Haiku and Sonnet. Opus still sends
+`reversibility-expensive-instinct` to `pre-mortem`. `ambig-incident-rootcause`
+moved from `five-whys-plus` to `kepner-tregoe` on Sonnet and Opus (an accepted
+alternative). Gains of 1 to 2 cases are within run-to-run noise.
+
 ## Calibrate a local-cli judge panel
 
 Added 2026-10-30.

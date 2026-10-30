@@ -1,6 +1,6 @@
 ---
 name: thinking-reversibility
-description: Before heavy deliberation, classify the decision as cheap or costly to undo; decide two-way doors fast and stage one-way doors to preserve options.
+description: To size how much analysis or verification a decision deserves, classify it as cheap or costly to undo; decide two-way doors fast and stage one-way doors to preserve options.
 disable-model-invocation: true
 ---
 

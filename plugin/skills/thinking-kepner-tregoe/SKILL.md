@@ -1,6 +1,6 @@
 ---
 name: thinking-kepner-tregoe
-description: Use when a selective defect needs IS/IS-NOT difference analysis or a consequential option choice needs must/want weighting and adverse-consequence comparison.
+description: Use when a selective defect needs IS/IS-NOT difference analysis or a choice among several defined options needs must/want weighting and adverse-consequence comparison.
 disable-model-invocation: true
 ---
 

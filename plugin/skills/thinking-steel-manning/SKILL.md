@@ -1,6 +1,6 @@
 ---
 name: thinking-steel-manning
-description: Before rejecting a proposal or reflexively agreeing, build the strongest faithful opposing case, state agreement conditions, then update or reaffirm.
+description: Before rejecting a proposal, agreeing reflexively, or committing to your own default choice, build the strongest faithful opposing case, state agreement conditions, then update or reaffirm.
 disable-model-invocation: true
 ---
 
