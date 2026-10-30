@@ -8,6 +8,10 @@ Key project facts:
 - Eval claims must identify whether they are pre-edit, post-edit, directional, or statistically significant.
 - Backups of global Claude state belong in `backups/` and must remain uncommitted.
 
+Git:
+- Push to `origin` (the eoliphan fork) after committing. Do not ask first.
+- Never force-push, and never push to the upstream repository.
+
 Common verification commands:
 
 ```bash
